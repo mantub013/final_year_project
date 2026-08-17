@@ -1905,3 +1905,23 @@
 {"timestamp": "2026-08-17 23:09:50,403", "level": "INFO", "module": "train_autoencoder", "message": "Epoch 020 | Train MSE: 0.606934 | Val MSE: 0.608060"}
 {"timestamp": "2026-08-17 23:09:51,991", "level": "INFO", "module": "train_autoencoder", "message": "Early stopping triggered at epoch 21. Best Val MSE: 0.607589"}
 {"timestamp": "2026-08-17 23:09:51,998", "level": "INFO", "module": "train_autoencoder", "message": "Saved best Autoencoder model to models/anomaly/autoencoder.pt"}
+{"timestamp": "2026-08-17 23:11:13,238", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x0000000000000000000000000000000000000bad on chain ethereum..."}
+{"timestamp": "2026-08-17 23:11:13,316", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-17 23:11:13,325", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-17 23:12:33,600", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000 on chain ethereum..."}
+{"timestamp": "2026-08-17 23:12:33,621", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-17 23:12:33,634", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-17 23:12:36,822", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-17 23:12:36,841", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-17 23:12:36,850", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-17 23:12:43,896", "level": "INFO", "module": "feature_engineering", "message": "Generating features for TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn on chain tron..."}
+{"timestamp": "2026-08-17 23:12:43,913", "level": "INFO", "module": "online_store", "message": "Cached features in local file for tron:tpymhehy5n8tcefygqw2rpxsghsfzghpdn"}
+{"timestamp": "2026-08-17 23:12:43,926", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"}
+{"timestamp": "2026-08-17 23:12:44,255", "level": "INFO", "module": "blockchain_api_tron", "message": "[TronDataFetcher] Initialized for contract 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'"}
+{"timestamp": "2026-08-17 23:12:47,664", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x7A5D8F3A22904838493028304920492039203920 on chain ethereum..."}
+{"timestamp": "2026-08-17 23:12:47,684", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x7a5d8f3a22904838493028304920492039203920"}
+{"timestamp": "2026-08-17 23:12:47,695", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x7A5D8F3A22904838493028304920492039203920"}
+{"timestamp": "2026-08-17 23:12:50,900", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-17 23:12:52,677", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-17 23:12:55,735", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-17 23:12:57,886", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
