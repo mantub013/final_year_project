@@ -1925,3 +1925,22 @@
 {"timestamp": "2026-08-17 23:12:52,677", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
 {"timestamp": "2026-08-17 23:12:55,735", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0x0000000000000000000000000000000000000bad"}
 {"timestamp": "2026-08-17 23:12:57,886", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-17 23:31:58,734", "level": "INFO", "module": "data_preprocessing", "message": "Generating mock blockchain dataset with 10000 samples..."}
+{"timestamp": "2026-08-17 23:31:58,920", "level": "INFO", "module": "data_preprocessing", "message": "Saved dataset to data/datasets/blockchain_data.csv"}
+{"timestamp": "2026-08-17 23:31:58,929", "level": "INFO", "module": "data_preprocessing", "message": "Original class distribution: {0: 9597, 1: 403}"}
+{"timestamp": "2026-08-17 23:31:59,085", "level": "INFO", "module": "data_preprocessing", "message": "Resampled class distribution: {0: 9597, 1: 9597}"}
+{"timestamp": "2026-08-17 23:31:59,105", "level": "INFO", "module": "data_preprocessing", "message": "Saved scaler to models/scaler.pkl"}
+{"timestamp": "2026-08-17 23:31:59,113", "level": "INFO", "module": "data_preprocessing", "message": "Data preprocessing completed successfully."}
+{"timestamp": "2026-08-17 23:32:03,985", "level": "INFO", "module": "train_model", "message": "Training Logistic Regression..."}
+{"timestamp": "2026-08-17 23:32:04,073", "level": "INFO", "module": "train_model", "message": "Training Decision Tree..."}
+{"timestamp": "2026-08-17 23:32:04,386", "level": "INFO", "module": "train_model", "message": "Training Random Forest..."}
+{"timestamp": "2026-08-17 23:32:10,780", "level": "INFO", "module": "train_model", "message": "Training XGBoost..."}
+{"timestamp": "2026-08-17 23:32:11,247", "level": "INFO", "module": "train_model", "message": "Saved XGBoost model to models/xgboost_classifier.pkl"}
+{"timestamp": "2026-08-17 23:32:11,268", "level": "INFO", "module": "train_model", "message": "
+              Model  Accuracy  Precision   Recall  F1-Score  ROC-AUC
+Logistic Regression  0.665538   0.673515 0.635411  0.653908 0.725414
+      Decision Tree  0.859078   0.836283 0.891042  0.862795 0.859252
+      Random Forest  0.919510   0.897614 0.946045  0.921194 0.974745
+            XGBoost  0.833550   0.799246 0.888423  0.841479 0.908924"}
+{"timestamp": "2026-08-17 23:32:16,082", "level": "INFO", "module": "anomaly_detection", "message": "Training Isolation Forest Anomaly Detector..."}
+{"timestamp": "2026-08-17 23:32:16,653", "level": "INFO", "module": "anomaly_detection", "message": "Saved Isolation Forest model to models/isolation_forest.pkl"}
