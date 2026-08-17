@@ -1,0 +1,49 @@
+model_registry:
+  path: "models/registry"
+  current_version: "v2.0"
+
+features:
+  tabular:
+    - transaction_amount
+    - transaction_frequency
+    - failed_transactions
+    - average_gas_fee
+    - wallet_age
+    - wallet_balance
+    - unique_counterparties
+    - smart_contract_calls
+    - rug_pull_token_interaction
+    - flash_loan_usage
+    - token_transfers
+    - nft_transfers
+  network:
+    - graph_centrality
+    - cluster_risk_score
+    - distance_to_blacklisted_wallet
+  anomaly:
+    - reconstruction_error
+  behavioral:
+    - burst_activity_score
+
+fusion:
+  weights:
+    tabular: 0.5
+    gnn: 0.3
+    anomaly: 0.2
+
+risk_levels:
+  safe:
+    min: 0
+    max: 20
+  low:
+    min: 21
+    max: 40
+  medium:
+    min: 41
+    max: 60
+  high:
+    min: 61
+    max: 80
+  critical:
+    min: 81
+    max: 100

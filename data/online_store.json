@@ -1,0 +1,1266 @@
+{
+  "tron:tcu8d3v6nvcf6w9oa72un83wpgsr8k5buu": {
+    "expires_at": 1786547045.6116698,
+    "features": {
+      "address": "TCu8d3V6nVCf6W9oA72UN83WpgSr8k5buU",
+      "chain": "tron",
+      "risk_score": 68,
+      "risk_level": "HIGH",
+      "breakdown": {
+        "tabular_ensemble": 0.9514,
+        "gnn_network_risk": 0.0,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [
+          {
+            "feature": "rug_pull_token_interaction",
+            "value": 4,
+            "contribution": 0.25
+          },
+          {
+            "feature": "failed_transactions",
+            "value": 1,
+            "contribution": 0.03
+          }
+        ],
+        "graph_explanation": {
+          "critical_path_hops": 1,
+          "influential_nodes": [
+            {
+              "address": "0x0000000000000000000000000000000000000bad",
+              "relationship": "Direct transaction to blacklisted mixer"
+            }
+          ]
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 220.0277099609375,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "Wallet has directly transacted with a known blacklisted address (1 hop).",
+        "Interacted with flagged rug-pull/scam tokens 4 times.",
+        "Autoencoder flags transaction behavioral anomalies relative to baseline wallets."
+      ],
+      "recommendation": "AVOID INTERACTION. Flag address for manual security audit. Do not approve smart contract transactions or bridge funds.",
+      "cached": false,
+      "recent_transfers": [
+        {
+          "transaction_id": "af4b68ee6ef26082b72c7f4100c20a827edfecf1a3b32c2a23a02c3a7b0a220a",
+          "block_timestamp": 1786546750733,
+          "from_address": "TCu8d3V6nVCf6W9oA72UN83WpgSr8k5buU",
+          "to_address": "T837f20a8977e2a74220a31cc6e4d0e2e",
+          "amount_usdt": 1950.42,
+          "raw_value": "1950420000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "02b1f46733c40315b23364e988eef3b531f3fada74ec5097e003496a32d94d9e",
+          "block_timestamp": 1786544617373,
+          "from_address": "T492dca93c51f529e163acac785485ed6",
+          "to_address": "TCu8d3V6nVCf6W9oA72UN83WpgSr8k5buU",
+          "amount_usdt": 4535.0,
+          "raw_value": "4535000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "aab21ed65cefa555016c313a4963b280bc85516936f18d1af67ffa41b902ab23",
+          "block_timestamp": 1786535673871,
+          "from_address": "TCu8d3V6nVCf6W9oA72UN83WpgSr8k5buU",
+          "to_address": "T25b06cf9901ab1fe56ff6dac358a55da",
+          "amount_usdt": 3867.74,
+          "raw_value": "3867740000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "21276a19077ba6a989f7b53399acc013830697ac331d3f706d4c590ba2fc606d",
+          "block_timestamp": 1786537641605,
+          "from_address": "T9652c8595f9bd905429ba00d2efd5275",
+          "to_address": "TCu8d3V6nVCf6W9oA72UN83WpgSr8k5buU",
+          "amount_usdt": 512.13,
+          "raw_value": "512130000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "9eac5ebd18a975bd48c4a4f8d1397294b8f679dea7d340ea1950e4280f20d000",
+          "block_timestamp": 1786524896105,
+          "from_address": "TCu8d3V6nVCf6W9oA72UN83WpgSr8k5buU",
+          "to_address": "T3ac0b0936fe535a0e3924a5755dcf8d0",
+          "amount_usdt": 2008.47,
+          "raw_value": "2008470000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "cfad764b6fd65006b4faead24abebb86b3a3485288132b177927963d0cb67a34",
+          "block_timestamp": 1786514380378,
+          "from_address": "T4b96ed879984c5709c56b9cd841623be",
+          "to_address": "TCu8d3V6nVCf6W9oA72UN83WpgSr8k5buU",
+          "amount_usdt": 2002.06,
+          "raw_value": "2002060000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        }
+      ]
+    }
+  },
+  "tron:0x0000000000000000000000000000000000000bad": {
+    "expires_at": 1786555758.7641242,
+    "features": {
+      "address": "0x0000000000000000000000000000000000000bad",
+      "chain": "tron",
+      "risk_score": 83,
+      "risk_level": "CRITICAL",
+      "breakdown": {
+        "tabular_ensemble": 0.9943,
+        "gnn_network_risk": 0.4395,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [
+          {
+            "feature": "rug_pull_token_interaction",
+            "value": 18,
+            "contribution": 0.25
+          },
+          {
+            "feature": "failed_transactions",
+            "value": 14,
+            "contribution": 0.15
+          },
+          {
+            "feature": "burst_activity_score",
+            "value": 0.58,
+            "contribution": 0.053
+          }
+        ],
+        "graph_explanation": {
+          "critical_path_hops": 0,
+          "influential_nodes": []
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 6283.607421875,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\ud83d\udfe1 MEDIUM: Wallet is 0 hops from a known malicious node in the transaction graph \u2014 elevated network exposure.",
+        "\u26a1 High graph centrality (1.00): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Interacted with 18 flagged rug-pull or scam token contract(s). These tokens are associated with known exit-scam deployer wallets.",
+        "\ud83d\udd34 14 failed transactions detected. High failure rates suggest repeated exploit attempts, broken automated scripts, or front-running bot activity.",
+        "\ud83d\udfe1 Moderate burst activity (57%): Unusual transaction clustering detected \u2014 possible MEV bot or high-frequency arbitrage.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 6283.6074 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\ud83d\udea8 DO NOT INTERACT. Immediately flag this address for manual security audit. Block all smart-contract approvals, token transfers, and bridge transactions involving this wallet. Alert connected protocol security teams.",
+      "cached": false,
+      "recent_transfers": []
+    }
+  },
+  "tron:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000": {
+    "expires_at": 1786555762.6610954,
+    "features": {
+      "address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+      "chain": "tron",
+      "risk_score": 83,
+      "risk_level": "CRITICAL",
+      "breakdown": {
+        "tabular_ensemble": 0.9916,
+        "gnn_network_risk": 0.4395,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [
+          {
+            "feature": "flash_loan_usage",
+            "value": 1,
+            "contribution": 0.35
+          },
+          {
+            "feature": "rug_pull_token_interaction",
+            "value": 12,
+            "contribution": 0.25
+          },
+          {
+            "feature": "failed_transactions",
+            "value": 16,
+            "contribution": 0.15
+          },
+          {
+            "feature": "burst_activity_score",
+            "value": 0.56,
+            "contribution": 0.051
+          }
+        ],
+        "graph_explanation": {
+          "critical_path_hops": 0,
+          "influential_nodes": []
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 4632.525390625,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\ud83d\udfe1 MEDIUM: Wallet is 0 hops from a known malicious node in the transaction graph \u2014 elevated network exposure.",
+        "\u26a1 High graph centrality (1.10): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Flash-loan contract calls detected in active session. Flash loans are the primary mechanism for price-oracle manipulation and single-block exploits.",
+        "\ud83d\udd34 Interacted with 12 flagged rug-pull or scam token contract(s). These tokens are associated with known exit-scam deployer wallets.",
+        "\ud83d\udd34 16 failed transactions detected. High failure rates suggest repeated exploit attempts, broken automated scripts, or front-running bot activity.",
+        "\ud83d\udfe1 Moderate burst activity (56%): Unusual transaction clustering detected \u2014 possible MEV bot or high-frequency arbitrage.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 4632.5254 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\ud83d\udea8 DO NOT INTERACT. Immediately flag this address for manual security audit. Block all smart-contract approvals, token transfers, and bridge transactions involving this wallet. Alert connected protocol security teams.",
+      "cached": false,
+      "recent_transfers": []
+    }
+  },
+  "ethereum:tpymhehy5n8tcefygqw2rpxsghsfzghpdn": {
+    "expires_at": 1786555846.159164,
+    "features": {
+      "address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+      "chain": "ethereum",
+      "risk_score": 21,
+      "risk_level": "LOW",
+      "breakdown": {
+        "tabular_ensemble": 0.0119,
+        "gnn_network_risk": 0.0,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [],
+        "graph_explanation": {
+          "critical_path_hops": 1,
+          "influential_nodes": [
+            {
+              "address": "0x0000000000000000000000000000000000000bad",
+              "relationship": "Direct transaction to blacklisted mixer"
+            }
+          ]
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 1.6415433883666992,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\ud83d\udd34 CRITICAL: Wallet has a direct (1-hop) transaction to a known blacklisted address \u2014 likely mixer, rug-pull deployer, or phishing contract.",
+        "\u26a1 High graph centrality (1.00): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 1.6415 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\ud83d\udfe1 MONITOR. Wallet shows minor elevated signals. Safe for small interactions but maintain watchlist status. Re-score after next significant transaction.",
+      "cached": false,
+      "recent_transfers": [
+        {
+          "transaction_id": "0x2dc9f4920e5a56e0e3aa80c354a5c83ce1a898f25066dc257455eaa5934c543c",
+          "block_timestamp": 1786520628000,
+          "from_address": "0x5d20447d132729a7c83929f33fc51c466be19972",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 1262.26,
+          "raw_value": "126226449560",
+          "token_symbol": "WBTC",
+          "contract_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x03e26e2eb3b7fdd6fbd0fe9a979d874a7f072234f71a7c14d80911c4f002e6ce",
+          "block_timestamp": 1786322129000,
+          "from_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "to_address": "0xd534ded6db809ef4879bce4420e5308b834bd5fc",
+          "amount_usdt": 4270.48,
+          "raw_value": "427047667018",
+          "token_symbol": "WBTC",
+          "contract_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x179ebafcae59f5e7f90b3645e7fdd179419ec77a698bbdf8d4a6eabf79be5402",
+          "block_timestamp": 1786124180000,
+          "from_address": "0x5d21711d21cc8ac40eeb1eb5cce8c1a1f297d429",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 933.49,
+          "raw_value": "93349003787",
+          "token_symbol": "WBTC",
+          "contract_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0xe3464efbe9eaf55390a32e898fa531f3d0c71f512b4cd2aa80a61403552d9ddd",
+          "block_timestamp": 1784916198000,
+          "from_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "to_address": "0xa9004ea57ab35135f5a2e8dcb37e3c88ed570612",
+          "amount_usdt": 3798.69,
+          "raw_value": "3798688183",
+          "token_symbol": "USDT",
+          "contract_address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "confirmed": true
+        }
+      ]
+    }
+  },
+  "tron:0x7a5d8f3a22904838493028304920492039203920": {
+    "expires_at": 1786560127.6040778,
+    "features": {
+      "address": "0x7A5D8F3A22904838493028304920492039203920",
+      "chain": "tron",
+      "risk_score": 20,
+      "risk_level": "SAFE",
+      "breakdown": {
+        "tabular_ensemble": 0.0038,
+        "gnn_network_risk": 0.0,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [],
+        "graph_explanation": {
+          "critical_path_hops": 99,
+          "influential_nodes": []
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 3.7371466159820557,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\u26a1 High graph centrality (1.00): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 3.7371 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\u2705 SAFE TO INTERACT. No active threat vectors detected across all model branches. Standard DeFi interaction approved. Continue periodic re-scoring every 24 hours.",
+      "cached": true,
+      "recent_transfers": []
+    }
+  },
+  "tron:tnpeeaatk7v3qgibbwnwnfuzhmhucejm84": {
+    "expires_at": 1786560324.9449093,
+    "features": {
+      "address": "TNPeeaaTK7v3QGiBBWnWNFUzhMHucEjm84",
+      "chain": "tron",
+      "risk_score": 20,
+      "risk_level": "SAFE",
+      "breakdown": {
+        "tabular_ensemble": 0.0018,
+        "gnn_network_risk": 0.0,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [],
+        "graph_explanation": {
+          "critical_path_hops": 1,
+          "influential_nodes": [
+            {
+              "address": "0x0000000000000000000000000000000000000bad",
+              "relationship": "Direct transaction to blacklisted mixer"
+            }
+          ]
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 3.860513925552368,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\ud83d\udd34 CRITICAL: Wallet has a direct (1-hop) transaction to a known blacklisted address \u2014 likely mixer, rug-pull deployer, or phishing contract.",
+        "\u26a1 High graph centrality (1.00): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 3.8605 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\u2705 SAFE TO INTERACT. No active threat vectors detected across all model branches. Standard DeFi interaction approved. Continue periodic re-scoring every 24 hours.",
+      "cached": false,
+      "recent_transfers": []
+    }
+  },
+  "tron:tr7nhqjekqxgtci8q8zy4pl8otszgjlj6t": {
+    "expires_at": 1786560370.40633,
+    "features": {
+      "address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+      "chain": "tron",
+      "risk_score": 20,
+      "risk_level": "SAFE",
+      "breakdown": {
+        "tabular_ensemble": 0.004,
+        "gnn_network_risk": 0.0001,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [],
+        "graph_explanation": {
+          "critical_path_hops": 1,
+          "influential_nodes": [
+            {
+              "address": "0x0000000000000000000000000000000000000bad",
+              "relationship": "Direct transaction to blacklisted mixer"
+            }
+          ]
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 0.946284294128418,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\ud83d\udd34 CRITICAL: Wallet has a direct (1-hop) transaction to a known blacklisted address \u2014 likely mixer, rug-pull deployer, or phishing contract.",
+        "\u26a1 High graph centrality (0.90): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 0.9463 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\u2705 SAFE TO INTERACT. No active threat vectors detected across all model branches. Standard DeFi interaction approved. Continue periodic re-scoring every 24 hours.",
+      "cached": false,
+      "recent_transfers": [
+        {
+          "transaction_id": "fed14a4764c5978371a9c888986f00422810d88125b52f32714a12ae1dd87ea7",
+          "block_timestamp": 1786559757000,
+          "from_address": "TWS1onJnNTg8tJHomceqxBxTsUB1DHh7PV",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 14.0,
+          "raw_value": "14000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "29b04509f4789f170b6adbb65ba2583ab56fe43956336d23054f46c305b098a1",
+          "block_timestamp": 1786556796000,
+          "from_address": "TYKGu4bUrihi7btWFQUCsAjPtSU4tYfqco",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 10.0,
+          "raw_value": "10000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "14dc320b884509a2fba6b8aacf52318058a6dc869e6af100766b399bfcf484b4",
+          "block_timestamp": 1786556664000,
+          "from_address": "TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 149.0,
+          "raw_value": "149000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "fb72d50975d2c1d06914408e3ab42e710da6e21a9851ce4763da3067b2016e09",
+          "block_timestamp": 1786555878000,
+          "from_address": "TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 262.0,
+          "raw_value": "262000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "09042f7a14839801984244bc5d7d5b1703cb03b41696d06e2419ceea6676c974",
+          "block_timestamp": 1786553187000,
+          "from_address": "TTW8e958hafYJeWsdKjhunogEfPchChEru",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 85.0,
+          "raw_value": "85000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "c60122716cdc88cd978a15f7f074d9717f97efa39fb54e820f8d914622a3c6f5",
+          "block_timestamp": 1786551036000,
+          "from_address": "TTWSAXEJahRpRkWYYomAqxGTfu5hZy7BPD",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 67.891315,
+          "raw_value": "67891315",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "8b2c70e3517e3abae69fc66d8b3380614f5d9511d4f204b539dc27721e2db058",
+          "block_timestamp": 1786549782000,
+          "from_address": "TC45Jwa9QC3N9Z4rnqbu64WbRy2TWWLFwm",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 26.0,
+          "raw_value": "26000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "921e7a459dd57dd6ee6a0a7354c24c78d26b1bd16894bd483665e60e9ee7b267",
+          "block_timestamp": 1786546470000,
+          "from_address": "TUeQM4q91ZyraKHuQw5jrEmxEpspNgpSdw",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 1.3,
+          "raw_value": "1300000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "10428432d68a0d33917a41ce644263146fc9bd4e56e2e7a7c4ca8553a6409ace",
+          "block_timestamp": 1786546065000,
+          "from_address": "TQHzufPr3XS5gF2iQVbKWEqdnrkfJ4LSen",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 500.0,
+          "raw_value": "500000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "cbccca485f4c70125d3e595b8a91134836526fbb47958f47f9bd7e1ca0ab3e5e",
+          "block_timestamp": 1786545372000,
+          "from_address": "TPcANMAG6Jdit3SRUkMKF8axRPaf4nJsrB",
+          "to_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "amount_usdt": 1250.0,
+          "raw_value": "1250000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        }
+      ]
+    }
+  },
+  "tron:ty00000000000000000000000000000bad": {
+    "expires_at": 1786560384.4140887,
+    "features": {
+      "address": "TY00000000000000000000000000000bad",
+      "chain": "tron",
+      "risk_score": 83,
+      "risk_level": "CRITICAL",
+      "breakdown": {
+        "tabular_ensemble": 0.9943,
+        "gnn_network_risk": 0.4395,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [
+          {
+            "feature": "rug_pull_token_interaction",
+            "value": 16,
+            "contribution": 0.25
+          },
+          {
+            "feature": "failed_transactions",
+            "value": 10,
+            "contribution": 0.15
+          },
+          {
+            "feature": "burst_activity_score",
+            "value": 0.57,
+            "contribution": 0.052
+          }
+        ],
+        "graph_explanation": {
+          "critical_path_hops": 0,
+          "influential_nodes": []
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 5161.79345703125,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\ud83d\udfe1 MEDIUM: Wallet is 0 hops from a known malicious node in the transaction graph \u2014 elevated network exposure.",
+        "\u26a1 High graph centrality (1.00): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Interacted with 16 flagged rug-pull or scam token contract(s). These tokens are associated with known exit-scam deployer wallets.",
+        "\ud83d\udfe1 10 failed transactions \u2014 above normal baseline. May indicate smart contract probing or failed arbitrage attempts.",
+        "\ud83d\udfe1 Moderate burst activity (56%): Unusual transaction clustering detected \u2014 possible MEV bot or high-frequency arbitrage.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 5161.7935 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\ud83d\udea8 DO NOT INTERACT. Immediately flag this address for manual security audit. Block all smart-contract approvals, token transfers, and bridge transactions involving this wallet. Alert connected protocol security teams.",
+      "cached": false,
+      "recent_transfers": []
+    }
+  },
+  "ethereum:0x0000000000000000000000000000000000000bad": {
+    "expires_at": 1786988773.311438,
+    "features": {
+      "address": "0x0000000000000000000000000000000000000bad",
+      "chain": "ethereum",
+      "risk_score": 82,
+      "risk_level": "CRITICAL",
+      "breakdown": {
+        "tabular_ensemble": 0.9981,
+        "gnn_network_risk": 0.3945,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [
+          {
+            "feature": "rug_pull_token_interaction",
+            "value": 18,
+            "contribution": 0.25
+          },
+          {
+            "feature": "failed_transactions",
+            "value": 14,
+            "contribution": 0.15
+          },
+          {
+            "feature": "burst_activity_score",
+            "value": 0.58,
+            "contribution": 0.053
+          }
+        ],
+        "graph_explanation": {
+          "critical_path_hops": 0,
+          "influential_nodes": []
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 5639.390625,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\ud83d\udfe1 MEDIUM: Wallet is 0 hops from a known malicious node in the transaction graph \u2014 elevated network exposure.",
+        "\u26a1 High graph centrality (1.00): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Interacted with 18 flagged rug-pull or scam token contract(s). These tokens are associated with known exit-scam deployer wallets.",
+        "\ud83d\udd34 14 failed transactions detected. High failure rates suggest repeated exploit attempts, broken automated scripts, or front-running bot activity.",
+        "\ud83d\udfe1 Moderate burst activity (57%): Unusual transaction clustering detected \u2014 possible MEV bot or high-frequency arbitrage.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 5639.3906 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\ud83d\udea8 DO NOT INTERACT. Immediately flag this address for manual security audit. Block all smart-contract approvals, token transfers, and bridge transactions involving this wallet. Alert connected protocol security teams.",
+      "features": {
+        "wallet_balance": 0.0057,
+        "transaction_amount": 13017.4395,
+        "transaction_frequency": 2.11,
+        "failed_transactions": 14,
+        "average_gas_fee": 0.004564,
+        "wallet_age": 21.33,
+        "unique_counterparties": 45,
+        "smart_contract_calls": 0,
+        "rug_pull_token_interaction": 18,
+        "flash_loan_usage": 0,
+        "token_transfers": 18,
+        "nft_transfers": 0,
+        "burst_activity_score": 0.58,
+        "graph_centrality": 1.0,
+        "cluster_risk_score": 0.0,
+        "distance_to_blacklisted_wallet": 0,
+        "reconstruction_error": 5639.390625
+      },
+      "cached": false,
+      "recent_transfers": [
+        {
+          "transaction_id": "0x4257d8be729d60c8e113189e159c0fe26005a36cbeeb87b33fee0481774d1312",
+          "block_timestamp": 1786969311000,
+          "from_address": "0xe601234395b776e504dc952a199f4e85032f9c17",
+          "to_address": "0x0000000000000000000000000000000000000bad",
+          "amount_usdt": 6601.87,
+          "raw_value": "6601867009943143448576",
+          "token_symbol": "WETH",
+          "contract_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0xfb52c6bd68934466eaba21a8686c0a8e499da186c85a77f382d901b580bb6ea9",
+          "block_timestamp": 1786956243000,
+          "from_address": "0x500c06cde1fa79eb06611b452bc53be01918b97a",
+          "to_address": "0x0000000000000000000000000000000000000bad",
+          "amount_usdt": 7451.24,
+          "raw_value": "7451241554346455859200",
+          "token_symbol": "SCAM_TOKEN",
+          "contract_address": "0xbadc0de1f111e111222333444555666777888999",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x9203efd0b136e2c6107ff6dd5b77ce547fb491c927ba811683857beb50f764a5",
+          "block_timestamp": 1786930710000,
+          "from_address": "0x9579505df70071d501378f94fc34e7a2bf416188",
+          "to_address": "0x0000000000000000000000000000000000000bad",
+          "amount_usdt": 35966.8,
+          "raw_value": "35966802495994205306880",
+          "token_symbol": "SCAM_TOKEN",
+          "contract_address": "0xbadc0de1f111e111222333444555666777888999",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0xba97b06785797d97373e9499d52255854e0cdcfbb86b067b5203a7d7ff3711a8",
+          "block_timestamp": 1786618888000,
+          "from_address": "0x15668b75acf6a7fc61f6bbdfb17e533e3373dd97",
+          "to_address": "0x0000000000000000000000000000000000000bad",
+          "amount_usdt": 34.85,
+          "raw_value": "34850959943898386432",
+          "token_symbol": "LINK",
+          "contract_address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0xe6e6c95d9c075c96eca93303ad95407713f1e09729083c385adbae1584444a48",
+          "block_timestamp": 1786570981000,
+          "from_address": "0x0000000000000000000000000000000000000bad",
+          "to_address": "0xe8cf56327551e818d87caf33f8bad68243b6d7f9",
+          "amount_usdt": 20544.53,
+          "raw_value": "20544531099742235525120",
+          "token_symbol": "WETH",
+          "contract_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x38ed45d1f1791b705bf6534f04411370a19ca357831be85ffe9261ae854d817a",
+          "block_timestamp": 1786337811000,
+          "from_address": "0x0000000000000000000000000000000000000bad",
+          "to_address": "0x74fda1ba03b780ef86c45bd2b15c5c9f8816ab1f",
+          "amount_usdt": 44830.17,
+          "raw_value": "44830168060378080083968",
+          "token_symbol": "SCAM_TOKEN",
+          "contract_address": "0xbadc0de1f111e111222333444555666777888999",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0xcc5b405d95a470812f66fcfe54ae23e75afed8f4a99eec3654494d1ae8cfbcd6",
+          "block_timestamp": 1786196517000,
+          "from_address": "0x0000000000000000000000000000000000000bad",
+          "to_address": "0xcb0ea663066bdda18e665150668374a4020f7093",
+          "amount_usdt": 17094.66,
+          "raw_value": "17094659009357121847296",
+          "token_symbol": "SCAM_TOKEN",
+          "contract_address": "0xbadc0de1f111e111222333444555666777888999",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x2cd67a2ce24b4ecb37f6df1622f9062bcb9d2c74de584902a84a0219d3090b84",
+          "block_timestamp": 1785654759000,
+          "from_address": "0xab6197575135e397986e7813a5d891db34419b1b",
+          "to_address": "0x0000000000000000000000000000000000000bad",
+          "amount_usdt": 20075.31,
+          "raw_value": "2007530835558",
+          "token_symbol": "WBTC",
+          "contract_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x40b19347eedb155d0cb5513ab46e06b748454c7de3efe0aa3fe7497f3cbfbe7a",
+          "block_timestamp": 1785360925000,
+          "from_address": "0x132e76cf7c2d334895f8e48cd1707d7f01811767",
+          "to_address": "0x0000000000000000000000000000000000000bad",
+          "amount_usdt": 19789.81,
+          "raw_value": "19789806945899944869888",
+          "token_symbol": "SCAM_TOKEN",
+          "contract_address": "0xbadc0de1f111e111222333444555666777888999",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x588dae7e2bfd576b15ed04cc31c54295ff6c69b7789bb00fdd392800fb149507",
+          "block_timestamp": 1785278879000,
+          "from_address": "0x0000000000000000000000000000000000000bad",
+          "to_address": "0xbf35c625384c70ea25a73b597d69562210788e3f",
+          "amount_usdt": 20655.7,
+          "raw_value": "20655695896696925978624",
+          "token_symbol": "SCAM_TOKEN",
+          "contract_address": "0xbadc0de1f111e111222333444555666777888999",
+          "confirmed": true
+        }
+      ]
+    }
+  },
+  "ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000": {
+    "expires_at": 1786988853.6160996,
+    "features": {
+      "address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+      "chain": "ethereum",
+      "risk_score": 82,
+      "risk_level": "CRITICAL",
+      "breakdown": {
+        "tabular_ensemble": 0.9994,
+        "gnn_network_risk": 0.4143,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [
+          {
+            "feature": "flash_loan_usage",
+            "value": 1,
+            "contribution": 0.35
+          },
+          {
+            "feature": "rug_pull_token_interaction",
+            "value": 12,
+            "contribution": 0.25
+          },
+          {
+            "feature": "failed_transactions",
+            "value": 16,
+            "contribution": 0.15
+          },
+          {
+            "feature": "burst_activity_score",
+            "value": 0.56,
+            "contribution": 0.051
+          }
+        ],
+        "graph_explanation": {
+          "critical_path_hops": 0,
+          "influential_nodes": []
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 4155.0068359375,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\ud83d\udfe1 MEDIUM: Wallet is 0 hops from a known malicious node in the transaction graph \u2014 elevated network exposure.",
+        "\u26a1 High graph centrality (1.10): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Flash-loan contract calls detected in active session. Flash loans are the primary mechanism for price-oracle manipulation and single-block exploits.",
+        "\ud83d\udd34 Interacted with 12 flagged rug-pull or scam token contract(s). These tokens are associated with known exit-scam deployer wallets.",
+        "\ud83d\udd34 16 failed transactions detected. High failure rates suggest repeated exploit attempts, broken automated scripts, or front-running bot activity.",
+        "\ud83d\udfe1 Moderate burst activity (56%): Unusual transaction clustering detected \u2014 possible MEV bot or high-frequency arbitrage.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 4155.0068 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\ud83d\udea8 DO NOT INTERACT. Immediately flag this address for manual security audit. Block all smart-contract approvals, token transfers, and bridge transactions involving this wallet. Alert connected protocol security teams.",
+      "features": {
+        "wallet_balance": 0.0347,
+        "transaction_amount": 11188.3573,
+        "transaction_frequency": 1.59,
+        "failed_transactions": 16,
+        "average_gas_fee": 0.005674,
+        "wallet_age": 25.8,
+        "unique_counterparties": 41,
+        "smart_contract_calls": 5,
+        "rug_pull_token_interaction": 12,
+        "flash_loan_usage": 1,
+        "token_transfers": 16,
+        "nft_transfers": 0,
+        "burst_activity_score": 0.56,
+        "graph_centrality": 1.1,
+        "cluster_risk_score": 0.0,
+        "distance_to_blacklisted_wallet": 0,
+        "reconstruction_error": 4155.0068359375
+      },
+      "cached": false,
+      "recent_transfers": [
+        {
+          "transaction_id": "0xc0fba04cf3e8f659dbd6b0e3643ed40a15a7a1b5ddef5a0829ae5235a5c163ea",
+          "block_timestamp": 1786882216000,
+          "from_address": "0xb98808c20e6ede977350644fb40fef3493202aab",
+          "to_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "amount_usdt": 11342.43,
+          "raw_value": "11342425598431613419520",
+          "token_symbol": "LINK",
+          "contract_address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x956bf098ffa000aea83e8e5b8e61080c3d6c39fd0b8affa0fcf35abcd8c941e5",
+          "block_timestamp": 1786615378000,
+          "from_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "to_address": "0xe95a8bcaa4c4cdc44cffc323d8c8b2dac6ead3d8",
+          "amount_usdt": 5603.57,
+          "raw_value": "560356785213",
+          "token_symbol": "WBTC",
+          "contract_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x901c54e66ca11caad0c98218e772087a8cb9acbc7e7767fcd365cd8238678716",
+          "block_timestamp": 1786398955000,
+          "from_address": "0xb12a6ef05f8ee01e94e418538b09c3cdcdf3fe4c",
+          "to_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "amount_usdt": 9236.61,
+          "raw_value": "9236610207966731173888",
+          "token_symbol": "SCAM_TOKEN",
+          "contract_address": "0xbadc0de1f111e111222333444555666777888999",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0xa07ec4d3d07df6a5d6593eeef3fb460f99f4a1ee3abaaf0000ba0033380f238e",
+          "block_timestamp": 1786324177000,
+          "from_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "to_address": "0x589c9bcb5f0146cf6faa5cf01d9751caefe7446c",
+          "amount_usdt": 8887.3,
+          "raw_value": "888729717771",
+          "token_symbol": "WBTC",
+          "contract_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0xc24a72cf04a0be5f88cb021c9f0c92178c4ff723dc53aaecd0bf9b42ac38c786",
+          "block_timestamp": 1786136571000,
+          "from_address": "0xd791d0bf7992648c7e32d5e4bcc9b8e14ddd1801",
+          "to_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "amount_usdt": 25773.88,
+          "raw_value": "2577388363971",
+          "token_symbol": "WBTC",
+          "contract_address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x2be87458e14e39ec71b85d39661e66099f41e7111d23468c9a785f93cb03ed7b",
+          "block_timestamp": 1786036713000,
+          "from_address": "0x57597b39ee4e0b46be9c67ff602885c1adc96382",
+          "to_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "amount_usdt": 42009.91,
+          "raw_value": "42009907148",
+          "token_symbol": "USDT",
+          "contract_address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x42931f67ade1c3340483e1c923af424af6ee2873c1e29e22bee2f0566e3aa040",
+          "block_timestamp": 1785933248000,
+          "from_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "to_address": "0x0e16ab0348f575bcd5b0938b41072e054404248e",
+          "amount_usdt": 19934.88,
+          "raw_value": "19934878417157108006912",
+          "token_symbol": "WETH",
+          "contract_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0xf8518318237ed699324ef1681191bd32612ece50fd0103e57180f268606beea5",
+          "block_timestamp": 1785631207000,
+          "from_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "to_address": "0xa56341bfbce2835170125747732032fb4ec31a48",
+          "amount_usdt": 44131.95,
+          "raw_value": "44131948639606106226688",
+          "token_symbol": "DAI",
+          "contract_address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x1173ff3976b753903979ea6eb8cd0c6cdc7293e5300fc706f69d025c24eb09d1",
+          "block_timestamp": 1785608443000,
+          "from_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "to_address": "0xf1739bd83de7736f7753d81dd94c58d872120fd4",
+          "amount_usdt": 45750.44,
+          "raw_value": "45750436999373061619712",
+          "token_symbol": "SCAM_TOKEN",
+          "contract_address": "0xbadc0de1f111e111222333444555666777888999",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x40f4302a00ad4fcd71e1cda22c11e379547221de8132dc3261542537682286af",
+          "block_timestamp": 1785497787000,
+          "from_address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+          "to_address": "0x9f3492ca8aeac72f1ecf4d6217954c7aa0dcb70f",
+          "amount_usdt": 22062.24,
+          "raw_value": "22062239467825386225664",
+          "token_symbol": "LINK",
+          "contract_address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+          "confirmed": true
+        }
+      ]
+    }
+  },
+  "ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e": {
+    "expires_at": 1786988856.835092,
+    "features": {
+      "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+      "chain": "ethereum",
+      "risk_score": 21,
+      "risk_level": "LOW",
+      "breakdown": {
+        "tabular_ensemble": 0.0216,
+        "gnn_network_risk": 0.0,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [],
+        "graph_explanation": {
+          "critical_path_hops": 99,
+          "influential_nodes": []
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 8.000227928161621,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\u26a1 High graph centrality (1.00): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 8.0002 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\ud83d\udfe1 MONITOR. Wallet shows minor elevated signals. Safe for small interactions but maintain watchlist status. Re-score after next significant transaction.",
+      "features": {
+        "wallet_balance": 110.1387,
+        "transaction_amount": 103.6933,
+        "transaction_frequency": 0.6,
+        "failed_transactions": 0,
+        "average_gas_fee": 0.003842,
+        "wallet_age": 14.99,
+        "unique_counterparties": 9,
+        "smart_contract_calls": 0,
+        "rug_pull_token_interaction": 0,
+        "flash_loan_usage": 0,
+        "token_transfers": 4,
+        "nft_transfers": 0,
+        "burst_activity_score": 0.0,
+        "graph_centrality": 1.0,
+        "cluster_risk_score": 0.0,
+        "distance_to_blacklisted_wallet": 99,
+        "reconstruction_error": 8.000227928161621
+      },
+      "cached": false,
+      "recent_transfers": [
+        {
+          "transaction_id": "0x5d903770262f93769d1a05c98bde69d16e06e37ac0e4d94dd6b9ea74c9ae4a9f",
+          "block_timestamp": 1785838069000,
+          "from_address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+          "to_address": "0x5fcbf9b201a679b447ac36cfbef1173f94d1f82a",
+          "amount_usdt": 3022.33,
+          "raw_value": "3022334517636051238912",
+          "token_symbol": "WETH",
+          "contract_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0xa3426e5eb9ed09ff9acb8bb69607b5fbfa84d2eac56e7e737f8adf7e960f7c14",
+          "block_timestamp": 1785795292000,
+          "from_address": "0x5f4117b98acade506905ac0314bf1a64dcf6ce52",
+          "to_address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+          "amount_usdt": 2595.61,
+          "raw_value": "2595613365565398712320",
+          "token_symbol": "WETH",
+          "contract_address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x9fb970bead295617b00ab524f352bafa7091eea7081baa1231cfc25786849021",
+          "block_timestamp": 1785426833000,
+          "from_address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+          "to_address": "0xe1a06263240839921230447e86b0aa29942764cb",
+          "amount_usdt": 1457.08,
+          "raw_value": "1457077179505876664320",
+          "token_symbol": "DAI",
+          "contract_address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "0x9cfb6b98683393e9f4228afc2fc3a77c101b2387883b6970ff49bf336285714e",
+          "block_timestamp": 1785276126000,
+          "from_address": "0x159378477685f5af217a191d82bc0dac379f0053",
+          "to_address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+          "amount_usdt": 2848.07,
+          "raw_value": "2848072477590926917632",
+          "token_symbol": "DAI",
+          "contract_address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+          "confirmed": true
+        }
+      ]
+    }
+  },
+  "tron:tpymhehy5n8tcefygqw2rpxsghsfzghpdn": {
+    "expires_at": 1786988863.907794,
+    "features": {
+      "address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+      "chain": "tron",
+      "risk_score": 21,
+      "risk_level": "LOW",
+      "breakdown": {
+        "tabular_ensemble": 0.0227,
+        "gnn_network_risk": 0.0,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [],
+        "graph_explanation": {
+          "critical_path_hops": 1,
+          "influential_nodes": [
+            {
+              "address": "0x0000000000000000000000000000000000000bad",
+              "relationship": "Direct transaction to blacklisted mixer"
+            }
+          ]
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 1.575639247894287,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\ud83d\udd34 CRITICAL: Wallet has a direct (1-hop) transaction to a known blacklisted address \u2014 likely mixer, rug-pull deployer, or phishing contract.",
+        "\u26a1 High graph centrality (1.00): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 1.5756 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\ud83d\udfe1 MONITOR. Wallet shows minor elevated signals. Safe for small interactions but maintain watchlist status. Re-score after next significant transaction.",
+      "features": {
+        "wallet_balance": 52.7488,
+        "transaction_amount": 97.2942,
+        "transaction_frequency": 0.36,
+        "failed_transactions": 0,
+        "average_gas_fee": 0.002382,
+        "wallet_age": 19.33,
+        "unique_counterparties": 7,
+        "smart_contract_calls": 0,
+        "rug_pull_token_interaction": 0,
+        "flash_loan_usage": 0,
+        "token_transfers": 4,
+        "nft_transfers": 0,
+        "burst_activity_score": 0.0,
+        "graph_centrality": 1.0,
+        "cluster_risk_score": 0.125,
+        "distance_to_blacklisted_wallet": 1,
+        "reconstruction_error": 1.575639247894287
+      },
+      "cached": false,
+      "recent_transfers": [
+        {
+          "transaction_id": "f2b04d3c283fe7b0e8510284bf78cc1cd264e941fefa211e624f31e79ad981aa",
+          "block_timestamp": 1760034384000,
+          "from_address": "TC5uMQCrgM2Zqc48W2t9LVSgcN2gSKcZiy",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 10.0,
+          "raw_value": "10000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "afe242643eeeab7faab0409ad8f3e07d8985ce8b2a4518e0c4a9b34c37c1e162",
+          "block_timestamp": 1734440064000,
+          "from_address": "TZ7nW98C6M7S5XmA3hY3LaK11SbfZsVVMs",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 1e-06,
+          "raw_value": "1",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "bd14be7a4ff7be4c765048dfdef6b7e6050d2ea0c0a63f1f086fa5a7a8c17f68",
+          "block_timestamp": 1732349703000,
+          "from_address": "TDsooayvGjKV54fng29HipcdnED3U65xAA",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 14.0,
+          "raw_value": "14000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "3c3ebaeb706888194a7ed9d7791e6447218c7c6db4bb896c76fe05e61b90c895",
+          "block_timestamp": 1731876960000,
+          "from_address": "TEN4KrL95t6cSWZwb71gaiXj5ZbadJuT3o",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 4.0,
+          "raw_value": "4000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "7aa8707c8899a6f3b7bf5b51a242683c81e26903f75433fc3fae46d4b04d7c00",
+          "block_timestamp": 1725985749000,
+          "from_address": "TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 10.0,
+          "raw_value": "10000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "c0cafae916423f2c5d45d7b9bc49c6d6694c106e892462bf3f1054072ea6e94e",
+          "block_timestamp": 1725982440000,
+          "from_address": "TYyZrg8zPyWrYdeNu6U3MijdaPvA5qwich",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 47.5,
+          "raw_value": "47500000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "6e0f838e5c7094bf541f525514cf4c55c6bc18244bb6061db1908613c65560a0",
+          "block_timestamp": 1725211692000,
+          "from_address": "TWS1onJnNTg8tJHomceqxBxTsUB1DHh7PV",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 65.114234,
+          "raw_value": "65114234",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "fb458a05017cd5da462dab1e403f6dd9dd3adf3ffbea6e66a227b8d14c604e14",
+          "block_timestamp": 1725204858000,
+          "from_address": "TEPw46opFbfSBLLsrruydgnZMrmhGrahMH",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 35.2,
+          "raw_value": "35200000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "59490e7439b5c4848d4734a9961c1da2f19e60a7f9c6092c506b67431dd0ec58",
+          "block_timestamp": 1725021027000,
+          "from_address": "TSwTVDnqGgdzuz9ZtbfDSPSbGzfpVkZmyL",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 10.0,
+          "raw_value": "10000000",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        },
+        {
+          "transaction_id": "c8bbd433f0df4a017fd2c7483d0020de02ce3f053bd7348ceb21ab16bfef1824",
+          "block_timestamp": 1722960435000,
+          "from_address": "TUpHuDkiCCmwaTZBHZvQdwWzGNm5t8J2b9",
+          "to_address": "TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn",
+          "amount_usdt": 478.56536,
+          "raw_value": "478565360",
+          "token_symbol": "USDT",
+          "contract_address": "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
+          "confirmed": true
+        }
+      ]
+    }
+  },
+  "ethereum:0x7a5d8f3a22904838493028304920492039203920": {
+    "expires_at": 1786988867.6779585,
+    "features": {
+      "address": "0x7A5D8F3A22904838493028304920492039203920",
+      "chain": "ethereum",
+      "risk_score": 22,
+      "risk_level": "LOW",
+      "breakdown": {
+        "tabular_ensemble": 0.0497,
+        "gnn_network_risk": 0.0,
+        "anomaly_score": 1.0
+      },
+      "explanations": {
+        "tabular_explanations": [],
+        "graph_explanation": {
+          "critical_path_hops": 99,
+          "influential_nodes": []
+        },
+        "anomaly_explanation": {
+          "reconstruction_error": 2.9292449951171875,
+          "anomaly_contribution": 1.0
+        }
+      },
+      "reasons": [
+        "\u26a1 High graph centrality (1.00): Wallet acts as a major hub in the transaction network \u2014 consistent with mixing, bridging, or orchestration roles.",
+        "\ud83d\udd34 Autoencoder reconstruction error: 2.9292 \u2014 places this wallet in the top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+      ],
+      "recommendation": "\ud83d\udfe1 MONITOR. Wallet shows minor elevated signals. Safe for small interactions but maintain watchlist status. Re-score after next significant transaction.",
+      "features": {
+        "wallet_balance": 22.0553,
+        "transaction_amount": 113.1278,
+        "transaction_frequency": 0.84,
+        "failed_transactions": 0,
+        "average_gas_fee": 0.005954,
+        "wallet_age": 17.85,
+        "unique_counterparties": 15,
+        "smart_contract_calls": 0,
+        "rug_pull_token_interaction": 0,
+        "flash_loan_usage": 0,
+        "token_transfers": 5,
+        "nft_transfers": 0,
+        "burst_activity_score": 0.0,
+        "graph_centrality": 1.0,
+        "cluster_risk_score": 0.0,
+        "distance_to_blacklisted_wallet": 99,
+        "reconstruction_error": 2.9292449951171875
+      },
+      "cached": false
+    }
+  }
+}

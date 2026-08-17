@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.env
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Datasets and Large Files (Models)
+data/datasets/
+models/tabular/*.pkl
+models/graph/*.pt
+models/anomaly/*.pt
+models/scaler.pkl
+
+# IDE / OS Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

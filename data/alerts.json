@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": 1786390301,
+    "address": "0xdd2fd4581271e230360230f9337d5c0430bf44c0",
+    "chain": "arbitrum",
+    "risk_score": 66,
+    "risk_level": "HIGH",
+    "alert_id": "alert_427041",
+    "reason": "High risk transaction detected. Tabular score: 0.92, Network risk: 0.00"
+  },
+  {
+    "timestamp": 1786390278,
+    "address": "0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000",
+    "chain": "ethereum",
+    "risk_score": 45,
+    "risk_level": "MEDIUM",
+    "alert_id": "alert_450603",
+    "reason": "High risk transaction detected. Tabular score: 0.23, Network risk: 0.44"
+  }
+]

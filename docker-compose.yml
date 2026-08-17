@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: defi-risk-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: defi-risk-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secure_db_password_123
+      POSTGRES_DB: defi_risk_offline
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+  api:
+    build: .
+    container_name: defi-risk-api
+    command: uvicorn api.app:app --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - postgres
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_HOST=postgres
+    restart: always
+
+  dashboard:
+    build: .
+    container_name: defi-risk-dashboard
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+    volumes:
+      - .:/app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    restart: always
+
+volumes:
+  pgdata:

@@ -1,0 +1,138 @@
+"""
+DeFi Risk Intelligence Platform — FastAPI Application Entry Point
+Run with:  uvicorn api.app:app --reload --port 8000
+Docs at:   http://localhost:8000/docs
+"""
+import os
+import time
+from fastapi import FastAPI, Depends, HTTPException, status, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.security import OAuth2PasswordRequestForm
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+
+from api.auth import create_access_token, verify_password, MOCK_USER
+from api.schemas import TokenResponse
+from api.rate_limit import limiter
+from api.routes import wallet, transaction, health, alerts
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# ── App definition ─────────────────────────────────────────────────────────────
+app = FastAPI(
+    title="🛡️ DeFi Risk Intelligence API",
+    description="""
+## AI-Powered Multi-Chain Wallet & Transaction Risk Platform
+
+This API exposes the DeFi Risk Intelligence Platform, combining:
+- **Tabular ML Ensemble** (Random Forest + XGBoost)
+- **GNN Network Exposure** (GraphSAGE)
+- **Autoencoder Anomaly Detection**
+
+### Authentication
+All endpoints (except `/api/health` and `/api/token`) require a **Bearer JWT token**.
+
+1. Call `POST /api/token` with `username=defi_analyst` and `password=secure_password_123`
+2. Copy the `access_token` and pass it as `Authorization: Bearer <token>`
+
+### Supported Chains
+`ethereum` · `bsc` · `polygon` · `arbitrum`
+""",
+    version="2.0.0",
+    contact={"name": "DeFi Risk Team", "url": "https://github.com/your-org/defi-risk"},
+    license_info={"name": "MIT"},
+    openapi_tags=[
+        {"name": "Authentication",            "description": "JWT token management"},
+        {"name": "System Health",             "description": "Platform status and diagnostics"},
+        {"name": "Wallet Risk Analysis",      "description": "Single and batch wallet risk scoring"},
+        {"name": "Transaction Risk Analysis", "description": "Transaction-level risk evaluation"},
+        {"name": "Live Alerts",               "description": "Streaming threat alert feed"},
+    ],
+)
+
+# ── Rate limiting ──────────────────────────────────────────────────────────────
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# ── CORS ───────────────────────────────────────────────────────────────────────
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],      # tighten in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ── Request timing middleware ──────────────────────────────────────────────────
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    t0 = time.time()
+    response = await call_next(request)
+    response.headers["X-Process-Time-Ms"] = str(round((time.time() - t0) * 1000, 2))
+    return response
+
+# ── Routers ────────────────────────────────────────────────────────────────────
+app.include_router(health.router,      prefix="/api",              tags=["System Health"])
+app.include_router(wallet.router,      prefix="/api/wallet",       tags=["Wallet Risk Analysis"])
+app.include_router(wallet.router,      prefix="/api/v1/wallet",    tags=["Wallet Risk Analysis"])
+app.include_router(transaction.router, prefix="/api/transaction",  tags=["Transaction Risk Analysis"])
+app.include_router(alerts.router,      prefix="/api/alerts",       tags=["Live Alerts"])
+
+# ── Auth endpoint ──────────────────────────────────────────────────────────────
+@app.post(
+    "/api/token",
+    response_model=TokenResponse,
+    tags=["Authentication"],
+    summary="Login and get JWT access token",
+    description=(
+        "Use OAuth2 password flow to authenticate. "
+        "Default credentials: `defi_analyst` / `secure_password_123`"
+    ),
+)
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    if (form_data.username != MOCK_USER["username"] or
+            not verify_password(form_data.password, MOCK_USER["password_hash"])):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    token = create_access_token(data={"sub": form_data.username})
+    return TokenResponse(access_token=token)
+
+
+# ── Static Dashboard Files ─────────────────────────────────────────────────────
+@app.get("/app.js", include_in_schema=False)
+def serve_app_js():
+    js_path = os.path.join(BASE_DIR, "app.js")
+    if os.path.exists(js_path):
+        return FileResponse(js_path, media_type="application/javascript")
+    raise HTTPException(status_code=404, detail="app.js not found")
+
+@app.get("/dashboard", include_in_schema=False)
+@app.get("/index.html", include_in_schema=False)
+def serve_dashboard():
+    html_path = os.path.join(BASE_DIR, "index.html")
+    if os.path.exists(html_path):
+        return FileResponse(html_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="index.html not found")
+
+# ── Root ───────────────────────────────────────────────────────────────────────
+@app.get("/", tags=["General"], include_in_schema=False)
+def root():
+    return {
+        "name":        "DeFi Risk Intelligence API",
+        "version":     "2.0.0",
+        "docs":        "/docs",
+        "dashboard":   "/dashboard",
+        "health":      "/api/health",
+        "token":       "POST /api/token",
+        "endpoints": {
+            "wallet_check":   "GET  /api/v1/wallet/{wallet_address}?chain=tron",
+            "wallet_batch":   "POST /api/wallet/batch",
+            "wallet_history": "GET  /api/wallet/history/{address}",
+            "tx_check":       "GET  /api/transaction/check?tx_hash=...&from_address=...&to_address=...",
+            "alerts":         "GET  /api/alerts",
+        }
+    }
