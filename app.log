@@ -1944,3 +1944,226 @@ Logistic Regression  0.665538   0.673515 0.635411  0.653908 0.725414
             XGBoost  0.833550   0.799246 0.888423  0.841479 0.908924"}
 {"timestamp": "2026-08-17 23:32:16,082", "level": "INFO", "module": "anomaly_detection", "message": "Training Isolation Forest Anomaly Detector..."}
 {"timestamp": "2026-08-17 23:32:16,653", "level": "INFO", "module": "anomaly_detection", "message": "Saved Isolation Forest model to models/isolation_forest.pkl"}
+{"timestamp": "2026-08-25 09:42:18,906", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x7A5D8F3A22904838493028304920492039203920 on chain ethereum..."}
+{"timestamp": "2026-08-25 09:43:00,935", "level": "INFO", "module": "train_tabular", "message": "Generating mock tabular dataset with 50000 samples..."}
+{"timestamp": "2026-08-25 09:43:01,643", "level": "INFO", "module": "train_tabular", "message": "Saved massive mock dataset to data/datasets/tabular_dataset.csv"}
+{"timestamp": "2026-08-25 09:43:01,911", "level": "INFO", "module": "train_tabular", "message": "Saved scaler to models/scaler.pkl"}
+{"timestamp": "2026-08-25 09:43:01,911", "level": "INFO", "module": "train_tabular", "message": "Performing Hyperparameter Tuning for XGBoost..."}
+{"timestamp": "2026-08-25 09:43:13,452", "level": "INFO", "module": "train_tabular", "message": "Best XGBoost Params: {'learning_rate': 0.1, 'max_depth': 5, 'n_estimators': 200}"}
+{"timestamp": "2026-08-25 09:43:13,452", "level": "INFO", "module": "train_tabular", "message": "Training random_forest..."}
+{"timestamp": "2026-08-25 09:43:28,399", "level": "INFO", "module": "train_tabular", "message": "random_forest Evaluation: F1=0.4564, AUC=0.8138"}
+{"timestamp": "2026-08-25 09:43:28,587", "level": "INFO", "module": "train_tabular", "message": "Training gradient_boosting..."}
+{"timestamp": "2026-08-25 09:43:40,626", "level": "INFO", "module": "train_tabular", "message": "gradient_boosting Evaluation: F1=0.4506, AUC=0.8198"}
+{"timestamp": "2026-08-25 09:43:40,632", "level": "INFO", "module": "train_tabular", "message": "Training xgboost..."}
+{"timestamp": "2026-08-25 09:43:40,692", "level": "INFO", "module": "train_tabular", "message": "xgboost Evaluation: F1=0.4606, AUC=0.8185"}
+{"timestamp": "2026-08-25 09:43:40,698", "level": "INFO", "module": "train_tabular", "message": "Best model was xgboost with F1=0.4606"}
+{"timestamp": "2026-08-25 09:43:40,699", "level": "INFO", "module": "train_tabular", "message": "Generating Evaluation Charts..."}
+{"timestamp": "2026-08-25 09:43:43,050", "level": "INFO", "module": "train_tabular", "message": "Saved best model to models/tabular/best_model.pkl and generated charts in models/figures/"}
+{"timestamp": "2026-08-28 17:45:47,163", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000 on chain ethereum..."}
+{"timestamp": "2026-08-28 17:45:47,290", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-28 17:45:47,300", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-28 17:45:50,708", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0x7a5d8f3a22904838493028304920492039203920"}
+{"timestamp": "2026-08-28 17:45:52,618", "level": "INFO", "module": "feature_engineering", "message": "Generating features for TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn on chain tron..."}
+{"timestamp": "2026-08-28 17:45:52,648", "level": "INFO", "module": "online_store", "message": "Cached features in local file for tron:tpymhehy5n8tcefygqw2rpxsghsfzghpdn"}
+{"timestamp": "2026-08-28 17:45:52,698", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"}
+{"timestamp": "2026-08-28 17:45:52,864", "level": "INFO", "module": "blockchain_api_tron", "message": "[TronDataFetcher] Initialized for contract 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'"}
+{"timestamp": "2026-08-28 17:45:55,596", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-28 17:45:59,399", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-28 17:45:59,417", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-28 17:45:59,468", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-28 17:51:54,709", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-28 17:51:54,727", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-28 17:51:54,780", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-28 17:52:33,705", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8ba1f109551bD432803012645Ac136ddd64DBA72 on chain bsc..."}
+{"timestamp": "2026-08-28 17:52:33,728", "level": "INFO", "module": "online_store", "message": "Cached features in local file for bsc:0x8ba1f109551bd432803012645ac136ddd64dba72"}
+{"timestamp": "2026-08-28 17:52:33,783", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x8ba1f109551bD432803012645Ac136ddd64DBA72"}
+{"timestamp": "2026-08-28 17:53:07,237", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8ba1f109551bD432803012645Ac136ddd64DBA72 on chain ethereum..."}
+{"timestamp": "2026-08-28 17:53:07,277", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x8ba1f109551bd432803012645ac136ddd64dba72"}
+{"timestamp": "2026-08-28 17:53:07,295", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x8ba1f109551bD432803012645Ac136ddd64DBA72"}
+{"timestamp": "2026-08-28 17:53:11,154", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8ba1f109551bD432803012645Ac136ddd64DBA72 on chain arbitrum..."}
+{"timestamp": "2026-08-28 17:53:11,174", "level": "INFO", "module": "online_store", "message": "Cached features in local file for arbitrum:0x8ba1f109551bd432803012645ac136ddd64dba72"}
+{"timestamp": "2026-08-28 17:53:11,234", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x8ba1f109551bD432803012645Ac136ddd64DBA72"}
+{"timestamp": "2026-08-28 17:53:14,832", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8ba1f109551bD432803012645Ac136ddd64DBA72 on chain tron..."}
+{"timestamp": "2026-08-28 17:53:14,855", "level": "INFO", "module": "online_store", "message": "Cached features in local file for tron:0x8ba1f109551bd432803012645ac136ddd64dba72"}
+{"timestamp": "2026-08-28 17:53:14,910", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x8ba1f109551bD432803012645Ac136ddd64DBA72"}
+{"timestamp": "2026-08-28 17:53:14,911", "level": "INFO", "module": "blockchain_api_tron", "message": "[TronDataFetcher] Initialized for contract 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'"}
+{"timestamp": "2026-08-28 17:53:18,799", "level": "ERROR", "module": "blockchain_api_tron", "message": "[TronDataFetcher] Request failed with HTTP 400: {"message":"relatedAddress is not a valid address"}
+"}
+{"timestamp": "2026-08-28 22:06:12,232", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x7A5D8F3A22904838493028304920492039203920 on chain ethereum..."}
+{"timestamp": "2026-08-28 22:06:12,453", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x7a5d8f3a22904838493028304920492039203920"}
+{"timestamp": "2026-08-28 22:06:12,590", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x7A5D8F3A22904838493028304920492039203920"}
+{"timestamp": "2026-08-28 22:06:43,024", "level": "INFO", "module": "feature_engineering", "message": "Generating features for TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn on chain tron..."}
+{"timestamp": "2026-08-28 22:06:43,063", "level": "INFO", "module": "online_store", "message": "Cached features in local file for tron:tpymhehy5n8tcefygqw2rpxsghsfzghpdn"}
+{"timestamp": "2026-08-28 22:06:43,077", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for TPYmHEhy5n8TCEfYGqW2rPxsghSfzghPDn"}
+{"timestamp": "2026-08-28 22:06:43,079", "level": "INFO", "module": "blockchain_api_tron", "message": "[TronDataFetcher] Initialized for contract 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'"}
+{"timestamp": "2026-08-28 22:08:13,352", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for tron:tpymhehy5n8tcefygqw2rpxsghsfzghpdn"}
+{"timestamp": "2026-08-28 22:08:13,353", "level": "INFO", "module": "blockchain_api_tron", "message": "[TronDataFetcher] Initialized for contract 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'"}
+{"timestamp": "2026-08-28 22:08:40,473", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-28 22:08:40,514", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-28 22:08:40,527", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-28 22:11:16,910", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x7A5D8F3A22904838493028304920492039203920 on chain ethereum..."}
+{"timestamp": "2026-08-28 22:11:16,939", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x7a5d8f3a22904838493028304920492039203920"}
+{"timestamp": "2026-08-28 22:11:16,951", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x7A5D8F3A22904838493028304920492039203920"}
+{"timestamp": "2026-08-28 22:11:26,219", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x0000000000000000000000000000000000000bad on chain ethereum..."}
+{"timestamp": "2026-08-28 22:11:26,267", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-28 22:11:26,277", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-28 22:11:51,812", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000 on chain ethereum..."}
+{"timestamp": "2026-08-28 22:11:51,848", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-28 22:11:51,860", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-28 22:12:03,132", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-28 22:51:27,412", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-28 22:51:27,521", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-28 22:51:27,534", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-28 22:52:26,760", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8ba1f109551bD432803012645Ac136ddd64DBA72 on chain ethereum..."}
+{"timestamp": "2026-08-28 22:52:26,785", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x8ba1f109551bd432803012645ac136ddd64dba72"}
+{"timestamp": "2026-08-28 22:52:26,798", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x8ba1f109551bD432803012645Ac136ddd64DBA72"}
+{"timestamp": "2026-08-28 23:20:23,062", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8ba1f109551bD432803012645Ac136ddd64DBA72 on chain ethereum..."}
+{"timestamp": "2026-08-28 23:20:23,092", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x8ba1f109551bd432803012645ac136ddd64dba72"}
+{"timestamp": "2026-08-28 23:20:23,105", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x8ba1f109551bD432803012645Ac136ddd64DBA72"}
+{"timestamp": "2026-08-28 23:24:00,187", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-28 23:24:00,218", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-28 23:24:00,231", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-29 00:27:03,048", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0xde709f2102306220921060314715629080e2fb77 on chain ethereum..."}
+{"timestamp": "2026-08-29 00:27:03,136", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0xde709f2102306220921060314715629080e2fb77"}
+{"timestamp": "2026-08-29 00:27:03,149", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0xde709f2102306220921060314715629080e2fb77"}
+{"timestamp": "2026-08-29 00:27:29,402", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0xde709f2102306220921060314715629080e2fb77"}
+{"timestamp": "2026-08-29 00:31:28,850", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 00:31:28,869", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 00:31:28,881", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 00:32:11,272", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 07:41:32,292", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 07:41:32,423", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 07:41:32,475", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 07:47:27,898", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 07:48:21,237", "level": "INFO", "module": "train_autoencoder", "message": "Training Autoencoder with Early Stopping..."}
+{"timestamp": "2026-08-29 07:48:30,038", "level": "INFO", "module": "train_autoencoder", "message": "Epoch 005 | Train MSE: 0.551265 | Val MSE: 0.548420"}
+{"timestamp": "2026-08-29 07:48:36,508", "level": "INFO", "module": "train_autoencoder", "message": "Early stopping triggered at epoch 9. Best Val MSE: 0.546836"}
+{"timestamp": "2026-08-29 07:48:36,558", "level": "INFO", "module": "train_autoencoder", "message": "Saved best Autoencoder model to models/anomaly/autoencoder.pt"}
+{"timestamp": "2026-08-29 07:48:51,284", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 07:49:40,387", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8894e0a0c962cb623c1966a44226d86a9a0810d on chain ethereum..."}
+{"timestamp": "2026-08-29 07:49:55,202", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 08:03:19,182", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 08:03:19,291", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 08:03:19,303", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 08:05:09,535", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 08:05:09,628", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 08:05:09,639", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-29 08:23:57,585", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 08:23:57,616", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 08:23:57,629", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 08:30:52,085", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 08:30:56,587", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 08:30:56,599", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 08:31:04,460", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 08:31:09,018", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 08:31:09,033", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 09:00:05,939", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x0000000000000000000000000000000000000001 on chain ethereum..."}
+{"timestamp": "2026-08-29 09:00:39,458", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x0000000000000000000000000000000000000001"}
+{"timestamp": "2026-08-29 09:00:39,469", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x0000000000000000000000000000000000000001"}
+{"timestamp": "2026-08-29 09:01:36,946", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 09:01:42,247", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 09:01:42,259", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 09:51:16,972", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 09:51:23,197", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 09:51:23,206", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 09:51:23,207", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35cc6634c0532925a3b844bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 09:51:49,554", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 09:51:49,605", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 09:51:49,605", "level": "INFO", "module": "feature_engineering", "message": "Generating features for TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t on chain tron..."}
+{"timestamp": "2026-08-29 09:51:49,629", "level": "INFO", "module": "online_store", "message": "Cached features in local file for tron:tr7nhqjekqxgtci8q8zy4pl8otszgjlj6t"}
+{"timestamp": "2026-08-29 09:51:49,642", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"}
+{"timestamp": "2026-08-29 09:51:49,642", "level": "INFO", "module": "feature_engineering", "message": "Generating features for tpymhehy5n8tcefygqw2rpxsghsfzghpdn on chain tron..."}
+{"timestamp": "2026-08-29 09:51:49,656", "level": "INFO", "module": "online_store", "message": "Cached features in local file for tron:tpymhehy5n8tcefygqw2rpxsghsfzghpdn"}
+{"timestamp": "2026-08-29 09:51:49,668", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for tpymhehy5n8tcefygqw2rpxsghsfzghpdn"}
+{"timestamp": "2026-08-29 09:51:49,669", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8894e0a0c962cb623c1976a4421c95949be2d4e3 on chain bsc..."}
+{"timestamp": "2026-08-29 09:51:49,694", "level": "INFO", "module": "online_store", "message": "Cached features in local file for bsc:0x8894e0a0c962cb623c1976a4421c95949be2d4e3"}
+{"timestamp": "2026-08-29 09:51:49,705", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x8894e0a0c962cb623c1976a4421c95949be2d4e3"}
+{"timestamp": "2026-08-29 09:51:49,705", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270 on chain polygon..."}
+{"timestamp": "2026-08-29 09:51:49,722", "level": "INFO", "module": "online_store", "message": "Cached features in local file for polygon:0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"}
+{"timestamp": "2026-08-29 09:51:49,744", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"}
+{"timestamp": "2026-08-29 09:51:49,744", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x912ce59144191c1204e64559fe8253a0e49e6548 on chain arbitrum..."}
+{"timestamp": "2026-08-29 09:51:49,762", "level": "INFO", "module": "online_store", "message": "Cached features in local file for arbitrum:0x912ce59144191c1204e64559fe8253a0e49e6548"}
+{"timestamp": "2026-08-29 09:51:49,773", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x912ce59144191c1204e64559fe8253a0e49e6548"}
+{"timestamp": "2026-08-29 09:51:49,773", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000 on chain ethereum..."}
+{"timestamp": "2026-08-29 09:52:06,637", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-29 09:52:06,679", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-29 09:52:06,679", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x0000000000000000000000000000000000000bad on chain ethereum..."}
+{"timestamp": "2026-08-29 09:52:10,890", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-29 09:52:10,940", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-29 09:57:39,580", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 09:57:44,481", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 09:57:44,527", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 09:57:44,527", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35cc6634c0532925a3b844bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 09:58:15,883", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 09:58:15,894", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 09:58:15,895", "level": "INFO", "module": "feature_engineering", "message": "Generating features for TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t on chain tron..."}
+{"timestamp": "2026-08-29 09:58:15,910", "level": "INFO", "module": "online_store", "message": "Cached features in local file for tron:tr7nhqjekqxgtci8q8zy4pl8otszgjlj6t"}
+{"timestamp": "2026-08-29 09:58:15,921", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"}
+{"timestamp": "2026-08-29 09:58:15,921", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8894e0a0c962cb623c1976a4421c95949be2d4e3 on chain bsc..."}
+{"timestamp": "2026-08-29 09:58:15,936", "level": "INFO", "module": "online_store", "message": "Cached features in local file for bsc:0x8894e0a0c962cb623c1976a4421c95949be2d4e3"}
+{"timestamp": "2026-08-29 09:58:15,946", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x8894e0a0c962cb623c1976a4421c95949be2d4e3"}
+{"timestamp": "2026-08-29 09:58:15,947", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270 on chain polygon..."}
+{"timestamp": "2026-08-29 09:58:16,005", "level": "INFO", "module": "online_store", "message": "Cached features in local file for polygon:0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"}
+{"timestamp": "2026-08-29 09:58:16,072", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270"}
+{"timestamp": "2026-08-29 09:58:16,072", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x912ce59144191c1204e64559fe8253a0e49e6548 on chain arbitrum..."}
+{"timestamp": "2026-08-29 09:58:16,088", "level": "INFO", "module": "online_store", "message": "Cached features in local file for arbitrum:0x912ce59144191c1204e64559fe8253a0e49e6548"}
+{"timestamp": "2026-08-29 09:58:16,099", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x912ce59144191c1204e64559fe8253a0e49e6548"}
+{"timestamp": "2026-08-29 09:58:16,099", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000 on chain ethereum..."}
+{"timestamp": "2026-08-29 09:59:09,863", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-29 09:59:09,917", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-29 09:59:09,918", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x0000000000000000000000000000000000000bad on chain ethereum..."}
+{"timestamp": "2026-08-29 09:59:16,159", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-29 09:59:16,209", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-29 10:02:50,099", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 10:02:58,461", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 10:02:58,515", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 10:02:58,515", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35cc6634c0532925a3b844bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 10:03:45,927", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:03:45,935", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:03:45,935", "level": "INFO", "module": "feature_engineering", "message": "Generating features for TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t on chain tron..."}
+{"timestamp": "2026-08-29 10:03:45,955", "level": "INFO", "module": "online_store", "message": "Cached features in local file for tron:tr7nhqjekqxgtci8q8zy4pl8otszgjlj6t"}
+{"timestamp": "2026-08-29 10:03:45,968", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"}
+{"timestamp": "2026-08-29 10:03:45,968", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x8894e0a0c962cb623c1976a4421c95949be2d4e3 on chain bsc..."}
+{"timestamp": "2026-08-29 10:03:45,994", "level": "INFO", "module": "online_store", "message": "Cached features in local file for bsc:0x8894e0a0c962cb623c1976a4421c95949be2d4e3"}
+{"timestamp": "2026-08-29 10:03:46,005", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x8894e0a0c962cb623c1976a4421c95949be2d4e3"}
+{"timestamp": "2026-08-29 10:03:46,006", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000 on chain ethereum..."}
+{"timestamp": "2026-08-29 10:04:22,260", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-29 10:04:22,308", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0xdeadbeefdeadbeefdeadbeefdeadbeefdead0000"}
+{"timestamp": "2026-08-29 10:04:22,309", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x0000000000000000000000000000000000000bad on chain ethereum..."}
+{"timestamp": "2026-08-29 10:04:29,057", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-29 10:04:29,106", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x0000000000000000000000000000000000000bad"}
+{"timestamp": "2026-08-29 10:20:17,245", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 10:21:02,020", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:21:02,034", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:23:15,364", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 10:23:23,365", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 10:23:23,380", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 10:24:20,861", "level": "INFO", "module": "online_store", "message": "Cache hit (local file) for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:32:54,331", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 10:34:12,416", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 10:34:40,281", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:34:40,332", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:36:05,548", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 10:36:46,102", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:36:46,111", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:36:46,111", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 10:36:46,135", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 10:36:46,145", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 10:37:28,112", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 10:37:52,212", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:37:52,261", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:37:52,261", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 10:37:58,257", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 10:37:58,268", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 10:40:42,285", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 10:41:20,890", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:41:20,898", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:41:20,898", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x52908400098527886E0F7030069857D2E4169EE7 on chain ethereum..."}
+{"timestamp": "2026-08-29 10:41:32,888", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x52908400098527886e0f7030069857d2e4169ee7"}
+{"timestamp": "2026-08-29 10:41:32,898", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x52908400098527886E0F7030069857D2E4169EE7"}
+{"timestamp": "2026-08-29 10:41:32,899", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 on chain ethereum..."}
+{"timestamp": "2026-08-29 10:41:38,841", "level": "INFO", "module": "feature_engineering", "message": "Generating features for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e on chain ethereum..."}
+{"timestamp": "2026-08-29 10:42:04,848", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0x742d35cc6634c0532925a3b844bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:42:04,859", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0x742d35Cc6634C0532925a3b844Bc454e4438f44e"}
+{"timestamp": "2026-08-29 10:42:16,490", "level": "INFO", "module": "online_store", "message": "Cached features in local file for ethereum:0xd8da6bf26964af9d7eed9e03e53415d37aa96045"}
+{"timestamp": "2026-08-29 10:42:16,511", "level": "INFO", "module": "offline_store", "message": "Saved feature snapshot to offline store for 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"}

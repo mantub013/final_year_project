@@ -93,13 +93,16 @@ def predict_wallet_risk(address: str, chain: str, chains_config: Dict[str, Any])
     tabular_prob = float(_TAB_MODEL.predict_proba(tab_vector_scaled)[0, 1])
     
     # 3. Anomaly Prediction (Reconstruction error)
-    tensor_tab = torch.tensor(tab_vector_scaled, dtype=torch.float32)
+    # Clip scaled vector to [-3.0, 3.0] so benign outlier ages/balances do not cause MSE overflow
+    tab_vector_for_ae = np.clip(tab_vector_scaled, -3.0, 3.0)
+    tensor_tab = torch.tensor(tab_vector_for_ae, dtype=torch.float32)
     with torch.no_grad():
         recon_err = float(_AUTOENCODER.compute_reconstruction_error(tensor_tab)[0].item())
     
     features["reconstruction_error"] = recon_err
-    # Calibrate reconstruction error to 0-1 scale: standard error is ~0.01 - 0.05, above 0.1 is anomalous
-    anomaly_score = min(1.0, recon_err / 0.15)
+    # Calibrate reconstruction error to 0-1 scale: trained model baseline error is ~0.50
+    excess_err = max(0.0, recon_err - 0.45)
+    anomaly_score = min(1.0, excess_err / 1.5)
     
     # 4. GNN Prediction
     # Build local graph for GNN inference

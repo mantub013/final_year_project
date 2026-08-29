@@ -1,45 +1,147 @@
 /**
  * app.js — AI-DeFi Risk Intelligence v2.0
- * Fix: single-quoted class strings in ternaries, null-safe element access,
- *      features panel, token holdings, network metrics, history chart.
+ * Wallet Address Explorer Landing Page + Bento Box Dashboard Flow
  */
 
 const API_BASE  = "http://localhost:8000";
 const TOKEN_KEY = "defi_risk_jwt";
 const CREDS     = { username: "defi_analyst", password: "secure_password_123" };
 
-let miniGaugeChart  = null;
-let historyChart    = null;
+let miniGaugeChart = null;
+let historyChart   = null;
 
 // ── Boot ───────────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
-    const input  = g("wallet-search-input");
-    const btn    = g("scan-wallet-btn");
-    if (btn)   btn.addEventListener("click", go);
-    if (input) input.addEventListener("keypress", e => e.key === "Enter" && go());
+    const explorerInput  = g("explorer-address-input");
+    const explorerNet    = g("explorer-network-select");
+    const explorerBtn    = g("explorer-analyze-btn");
+    const pasteBtn       = g("paste-btn");
+    const clearBtn       = g("clear-btn");
+    const backToExplorer = g("back-to-explorer-btn");
 
+    if (explorerBtn)  explorerBtn.addEventListener("click", handleExplorerScan);
+    if (explorerInput) explorerInput.addEventListener("keypress", e => e.key === "Enter" && handleExplorerScan());
+
+    if (pasteBtn) {
+        pasteBtn.addEventListener("click", async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text && explorerInput) { explorerInput.value = text.trim(); hideExplorerError(); }
+            } catch(e) {
+                showExplorerError("Clipboard access restricted — please paste manually (Ctrl+V).");
+            }
+        });
+    }
+    if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+            if (explorerInput) explorerInput.value = "";
+            hideExplorerError();
+        });
+    }
+    if (backToExplorer) backToExplorer.addEventListener("click", showLandingView);
+
+    // Sample address badges
     document.querySelectorAll(".sample-address-badge").forEach(b => {
         b.addEventListener("click", () => {
-            if (input) input.value = b.dataset.address;
-            const cs = g("chain-select");
-            if (cs && b.dataset.chain) cs.value = b.dataset.chain;
-            go();
+            if (explorerInput) explorerInput.value = b.dataset.address;
+            if (explorerNet && b.dataset.chain) explorerNet.value = b.dataset.chain;
+            handleExplorerScan();
         });
     });
 
     initGauge(0);
     initHistory();
-    if (input && input.value.trim()) go();
+    checkApiStatus();
 });
 
-function go() {
-    const input = g("wallet-search-input");
-    const chain = g("chain-select") ? g("chain-select").value : "tron";
-    const addr  = input ? input.value.trim() : "";
-    if (addr) scan(addr, chain);
+async function checkApiStatus() {
+    const dot1 = g("landing-api-dot");
+    const txt1 = g("landing-api-status");
+    const dot2 = g("api-dot");
+    const txt2 = g("api-status-text");
+    try {
+        const r = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(4000) });
+        const ok = r.ok;
+        [dot1, dot2].forEach(d => { if (d) d.className = "w-2 h-2 rounded-full " + (ok ? "bg-emerald-400 pulse-dot" : "bg-red-400"); });
+        [txt1, txt2].forEach(t => { if (t) t.textContent = ok ? "API Online" : "API Error"; });
+    } catch {
+        [dot1, dot2].forEach(d => { if (d) d.className = "w-2 h-2 rounded-full bg-amber-400"; });
+        [txt1, txt2].forEach(t => { if (t) t.textContent = "API Offline"; });
+    }
 }
 
-// ── Auth ───────────────────────────────────────────────────────────────────────
+// ── View Transitions ──────────────────────────────────────────────────────────
+function showLandingView() {
+    const landing   = g("landing-view");
+    const dashboard = g("dashboard-view");
+    if (landing)   landing.classList.remove("hidden");
+    if (dashboard) dashboard.classList.add("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function showDashboardView() {
+    const landing   = g("landing-view");
+    const dashboard = g("dashboard-view");
+    if (landing)   landing.classList.add("hidden");
+    if (dashboard) dashboard.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function showExplorerError(msg) {
+    const box = g("explorer-error-alert");
+    const txt = g("explorer-error-msg");
+    if (txt) txt.textContent = msg;
+    if (box) box.classList.remove("hidden");
+    // scroll to error so user sees it
+    if (box) box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function hideExplorerError() {
+    const box = g("explorer-error-alert");
+    if (box) box.classList.add("hidden");
+}
+
+
+// ── Analysis Handler ──────────────────────────────────────────────────────────
+async function handleExplorerScan() {
+    const input  = g("explorer-address-input");
+    const netSel = g("explorer-network-select");
+    const addr   = input ? input.value.trim() : "";
+    const chain  = netSel ? netSel.value : "ethereum";
+
+    if (!addr) {
+        showExplorerError("Please enter a wallet address to analyze.");
+        return;
+    }
+
+    const isEvm  = /^0x[a-fA-F0-9]{40}$/.test(addr);
+    const isTron = /^T[a-zA-Z0-9]{32,33}$/.test(addr);
+
+    if (!isEvm && !isTron) {
+        if (addr.startsWith("0x")) {
+            showExplorerError(`Invalid EVM address — must be 42 characters (0x + 40 hex). Current length: ${addr.length}.`);
+        } else if (addr.startsWith("T")) {
+            showExplorerError(`Invalid TRON address — must be 34 characters. Current length: ${addr.length}.`);
+        } else {
+            showExplorerError("Invalid address format. EVM addresses start with 0x (42 chars). TRON addresses start with T (34 chars).");
+        }
+        return;
+    }
+    if (isTron && chain !== "tron") {
+        showExplorerError(`This looks like a TRON address (T...) but you selected ${chain.toUpperCase()}. Please choose TRON from the network selector.`);
+        return;
+    }
+    if (isEvm && chain === "tron") {
+        showExplorerError("This is an EVM address (0x...) but you selected TRON. Please select Ethereum, BSC, Polygon, or Arbitrum.");
+        return;
+    }
+
+    hideExplorerError();
+    await runAnalysisPipeline(addr, chain);
+}
+
+
+// ── Auth Token Fetching ───────────────────────────────────────────────────────
 async function token() {
     let t = localStorage.getItem(TOKEN_KEY);
     if (t) return t;
@@ -57,65 +159,105 @@ async function token() {
         localStorage.setItem(TOKEN_KEY, d.access_token);
         return d.access_token;
     } catch(e) {
-        err("Auth failed — backend unreachable at " + API_BASE);
+        showExplorerError("Authentication failed — backend server unreachable at " + API_BASE);
         return null;
     }
 }
 
-// ── Validation ────────────────────────────────────────────────────────────────
-function valid(a) {
-    return /^T[a-zA-Z0-9]{33}$/.test(a) || /^0x[a-fA-F0-9]{40}$/.test(a);
-}
+// ── Pipeline & Loading Modal ──────────────────────────────────────────────────
+async function runAnalysisPipeline(address, chain) {
+    showLoadingModal(address);
+    updateLoadingStep(1, "done", "✓ Address format validated");
+    updateLoadingStep(2, "done", `✓ Network: ${chain.toUpperCase()}`);
 
-// ── Fetch ─────────────────────────────────────────────────────────────────────
-async function scan(address, chain) {
-    if (!valid(address)) {
-        err("Invalid address. Use 0x… (42 chars) for EVM or T… (34 chars) for TRON.");
-        return;
-    }
-    loading(true);
-    setStatus("Scanning…", false);
     try {
+        updateLoadingStep(3, "active", "⟳ Fetching on-chain activity & balances...");
         const tok = await token();
-        if (!tok) { loading(false); return; }
+        if (!tok) { hideLoadingModal(); return; }
 
+        updateLoadingStep(4, "active", "⟳ Running Tabular ML + GraphSAGE GNN + Autoencoder...");
         const url = `${API_BASE}/api/v1/wallet/${encodeURIComponent(address)}?chain=${encodeURIComponent(chain)}`;
         const r = await fetch(url, { headers: { "Authorization": "Bearer " + tok, "Accept": "application/json" } });
 
-        if (r.status === 401) { localStorage.removeItem(TOKEN_KEY); return scan(address, chain); }
-        if (r.status === 429) { err("Rate limit hit — please wait a moment."); loading(false); return; }
-        if (r.status === 400) { const j = await r.json(); err("Validation: " + (j.detail || "Bad request")); loading(false); return; }
-        if (!r.ok) { err("Server error HTTP " + r.status); loading(false); return; }
+        if (r.status === 401) { localStorage.removeItem(TOKEN_KEY); return runAnalysisPipeline(address, chain); }
+        if (r.status === 429) { showExplorerError("Rate limit reached — please wait a moment and try again."); hideLoadingModal(); return; }
+        if (r.status === 400) { const j = await r.json(); showExplorerError("Validation error: " + (j.detail || "Bad request")); hideLoadingModal(); return; }
+        if (r.status === 404) { showExplorerError("Cannot fetch on-chain data for this address on " + chain.toUpperCase() + ". No transaction history found."); hideLoadingModal(); return; }
+        if (!r.ok) { showExplorerError("Cannot fetch data from server (HTTP " + r.status + "). Please try again."); hideLoadingModal(); return; }
 
+        updateLoadingStep(5, "active", "⟳ Computing risk score & generating AI explanations...");
         const data = await r.json();
-        fill(data, chain);
-        setStatus("API Online", true);
+
+        // Check if the response contains meaningful data
+        if (!data || data.risk_score == null) {
+            showExplorerError("Cannot fetch data for this address on " + chain.toUpperCase() + ". Data unavailable.");
+            hideLoadingModal();
+            return;
+        }
+
+        updateLoadingStep(5, "done", "✓ Analysis complete");
+        await new Promise(res => setTimeout(res, 250));
+        fillDashboard(data, chain);
+        hideLoadingModal();
+        showDashboardView();
     } catch(e) {
-        err("Network error — is FastAPI running at " + API_BASE + "?");
-        setStatus("Offline", false);
+        hideLoadingModal();
+        showExplorerError("Connection error — is the FastAPI server running at " + API_BASE + "?");
     }
-    loading(false);
 }
 
-// ── Populate all UI ────────────────────────────────────────────────────────────
-function fill(data, chain) {
+function showLoadingModal(addr) {
+    const modal = g("analysis-loading-modal");
+    const target = g("loading-target-addr");
+    if (target) target.textContent = addr;
+    if (modal) modal.classList.remove("hidden");
+
+    for (let i = 1; i <= 5; i++) {
+        updateLoadingStep(i, "pending", `Step ${i} initialized...`);
+    }
+}
+
+function hideLoadingModal() {
+    const modal = g("analysis-loading-modal");
+    if (modal) modal.classList.add("hidden");
+}
+
+function updateLoadingStep(stepNum, status, text) {
+    const step = g(`step-${stepNum}`);
+    if (!step) return;
+    if (status === "done") {
+        step.className = "flex items-center gap-2 text-emerald-400 font-semibold";
+        step.innerHTML = `<span>✓</span><span>${text}</span>`;
+    } else if (status === "active") {
+        step.className = "flex items-center gap-2 text-indigo-400 font-semibold";
+        step.innerHTML = `<span class="animate-spin">⟳</span><span>${text}</span>`;
+    } else {
+        step.className = "flex items-center gap-2 text-slate-500";
+        step.innerHTML = `<span>○</span><span>${text}</span>`;
+    }
+}
+
+// ── Populate Dashboard UI ─────────────────────────────────────────────────────
+function fillDashboard(data, chain) {
+    // Wire up export button
     const exportBtn = g("export-report-btn");
     if (exportBtn) {
-        exportBtn.classList.remove("hidden");
         exportBtn.onclick = () => {
-            document.title = "Risk_Report_" + (data.address || "Wallet").substring(0,8) + ".pdf";
             window.print();
         };
     }
 
-    const score     = Math.round(data.risk_score  || 0);
-    const level     = (data.risk_level || "SAFE").toUpperCase();
+    const score     = Math.round(data.risk_score || 0);
+    const level     = getRiskLevelClassification(score, data.risk_level);
     const bd        = data.breakdown  || {};
     const feats     = data.features   || {};
     const reasons   = data.reasons    || [];
     const transfers = data.recent_transfers || [];
 
-    /* ── Stat bar ── */
+    set("dash-full-address", data.address || "—");
+    set("dash-chain-pill", chain.toUpperCase());
+
+    /* ── Stat Bar ── */
     set("calibrated-risk-score", score);
     set("risk-level-text", level);
     cls("risk-level-text", "text-2xl font-black " + lvlClr(level));
@@ -123,14 +265,14 @@ function fill(data, chain) {
     const age = feats.wallet_age != null ? feats.wallet_age.toFixed(1) + " d" : "—";
     set("wallet-age-text", age);
 
-    const totalTx = Math.round((feats.transaction_frequency || 0) * Math.max(feats.wallet_age || 1, 1));
-    set("tx-count-text", totalTx || "—");
+    const totalTx = feats.total_transactions != null ? Math.round(feats.total_transactions) : Math.round((feats.transaction_frequency || 0) * Math.max(feats.wallet_age || 1, 1));
+    set("tx-count-text", totalTx != null ? totalTx : "—");
     set("failed-tx-text", (feats.failed_transactions || 0) + " failed");
 
     const hops = feats.distance_to_blacklisted_wallet;
     const hopsStr = (hops == null || hops === 99) ? "Safe" : String(hops);
     set("hops-text", hopsStr);
-    cls("hops-text", "text-2xl font-black " + (hops < 3 ? "text-red-500" : hops < 5 ? "text-amber-500" : "text-emerald-500"));
+    cls("hops-text", "text-2xl font-black " + (hops < 3 ? "text-rose-400" : hops < 5 ? "text-amber-400" : "text-emerald-400"));
 
     const suffix = g("risk-score-suffix");
     if (suffix) { suffix.textContent = "/ 100 · " + level; suffix.className = "tag-pill mt-2 inline-block " + lvlBadge(level); }
@@ -143,44 +285,49 @@ function fill(data, chain) {
     const lvlBadgeEl = g("risk-level-badge");
     if (lvlBadgeEl) { lvlBadgeEl.textContent = level; lvlBadgeEl.className = "tag-pill text-sm px-4 py-1 " + lvlBadge(level); }
 
-    /* ── Breakdown bars ── */
+    /* ── Breakdown Bars ── */
     const tab  = Math.round((bd.tabular_ensemble || 0) * 100);
     const gnn  = Math.round((bd.gnn_network_risk || 0) * 100);
     const anom = Math.round((bd.anomaly_score    || 0) * 100);
     bar("tabular", tab);
     bar("gnn",     gnn);
     bar("anomaly", anom);
-    set("model-fusion-signals",
-        "Tabular: " + fmt(bd.tabular_ensemble) +
-        " | GNN: " + fmt(bd.gnn_network_risk) +
-        " | Anomaly: " + fmt(bd.anomaly_score));
 
-    /* ── AI Reasons ── */
+    /* ── AI Reasons & Drivers ── */
     renderReasons(reasons, data.recommendation, level);
 
-    /* ── Mini gauge ── */
+    /* ── Mini gauge & Network Metrics ── */
     updateGauge(score);
-
-    /* ── Network metrics ── */
     set("centrality-val", fmtN(feats.graph_centrality, 4));
     set("cluster-val",    fmtN(feats.cluster_risk_score, 4));
     set("burst-val",      fmtN(feats.burst_activity_score, 2));
     set("flashloan-val",  feats.flash_loan_usage ? "⚠️ Detected" : "None");
 
-    /* ── Feature table ── */
+    /* ── Feature Table ── */
     renderFeats(feats);
 
-    /* ── Token holdings ── */
+    /* ── Token Holdings ── */
     renderTokens(transfers);
 
-    /* ── Transfers table ── */
+    /* ── Transfers Table ── */
     renderTx(transfers, data.address, chain);
 
-    /* ── History chart ── */
+    /* ── Threat Alerts Feed ── */
+    renderThreatAlerts(reasons, level);
+
+    /* ── History Sparkline & Trend ── */
     renderHistory(score, level);
 
-    /* ── Chain badge ── */
     set("tx-chain-badge", chain.toUpperCase());
+}
+
+// ── Classification Logic (0-20, 21-40, 41-60, 61-80, 81-100) ──────────────────
+function getRiskLevelClassification(score, rawLevel) {
+    if (score <= 20) return "VERY LOW RISK";
+    if (score <= 40) return "LOW RISK";
+    if (score <= 60) return "MODERATE RISK";
+    if (score <= 80) return "HIGH RISK";
+    return "CRITICAL RISK";
 }
 
 // ── Donut SVG ─────────────────────────────────────────────────────────────────
@@ -188,12 +335,12 @@ function updateDonut(score, level) {
     const circ = 251.2;
     const fill = document.getElementById("donut-fill");
     if (!fill) return;
-    const colors = { CRITICAL:"#EF4444", HIGH:"#F97316", MEDIUM:"#F59E0B", LOW:"#06B6D4", SAFE:"#10B981" };
+    const colors = { "CRITICAL RISK":"#EF4444", "HIGH RISK":"#F97316", "MODERATE RISK":"#F59E0B", "LOW RISK":"#38BDF8", "VERY LOW RISK":"#10B981" };
     fill.setAttribute("stroke-dashoffset", String(circ - (score / 100) * circ));
     fill.setAttribute("stroke", colors[level] || "#10B981");
 }
 
-// ── Progress bars ─────────────────────────────────────────────────────────────
+// ── Progress Bars ─────────────────────────────────────────────────────────────
 function bar(prefix, pct) {
     const p = g(prefix + "-percent");
     const b = g(prefix + "-bar");
@@ -204,19 +351,19 @@ function bar(prefix, pct) {
     }
 }
 
-// ── AI Reasons ────────────────────────────────────────────────────────────────
+// ── AI Reasons & Drivers ──────────────────────────────────────────────────────
 function renderReasons(reasons, rec, level) {
     const box = g("activity-manager-cards");
     if (!box) return;
     if (!reasons || !reasons.length) {
-        box.innerHTML = '<div class="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs">No risk triggers detected for this wallet.</div>';
+        box.innerHTML = '<div class="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs">No active risk triggers detected for this wallet.</div>';
     } else {
         box.innerHTML = reasons.map(r => {
             const isCrit = r.includes("CRITICAL") || r.includes("🔴");
             const isHigh = r.includes("HIGH") || r.includes("🟠") || r.includes("⚡");
-            const bg = isCrit ? "bg-rose-50 border-rose-200 text-rose-800"
-                     : isHigh ? "bg-amber-50 border-amber-200 text-amber-800"
-                     : "bg-slate-50 border-slate-200 text-slate-700";
+            const bg = isCrit ? "bg-rose-950/60 border-rose-800 text-rose-200"
+                     : isHigh ? "bg-amber-950/60 border-amber-800 text-amber-200"
+                     : "bg-slate-900/60 border-slate-800 text-slate-300";
             return '<div class="p-2.5 rounded-xl border text-xs ' + bg + '">' + esc(r) + '</div>';
         }).join("");
     }
@@ -227,9 +374,12 @@ function renderReasons(reasons, rec, level) {
 }
 
 function recBg(level) {
-    const m = { CRITICAL:"bg-rose-50 border-rose-200", HIGH:"bg-orange-50 border-orange-200",
-                MEDIUM:"bg-amber-50 border-amber-200", LOW:"bg-cyan-50 border-cyan-200", SAFE:"bg-emerald-50 border-emerald-100" };
-    return m[level] || m.SAFE;
+    const m = { "CRITICAL RISK":"bg-rose-950/80 border-rose-800 text-rose-200",
+                "HIGH RISK":"bg-orange-950/80 border-orange-800 text-orange-200",
+                "MODERATE RISK":"bg-amber-950/80 border-amber-800 text-amber-200",
+                "LOW RISK":"bg-sky-950/80 border-sky-800 text-sky-200",
+                "VERY LOW RISK":"bg-emerald-950/80 border-emerald-800 text-emerald-200" };
+    return m[level] || m["VERY LOW RISK"];
 }
 
 // ── Feature Table ─────────────────────────────────────────────────────────────
@@ -260,11 +410,11 @@ function renderFeats(feats) {
         const risky = (k === "rug_pull_token_interaction" && v > 0) ||
                       (k === "flash_loan_usage" && v > 0) ||
                       (k === "burst_activity_score" && v > 0.5) ||
-                      (k === "reconstruction_error" && v > 0.08) ||
+                      (k === "reconstruction_error" && v > 1.0) ||
                       (k === "distance_to_blacklisted_wallet" && v < 3);
-        const valCls = risky ? "font-mono font-bold text-red-500" : "font-mono font-bold text-slate-800";
-        return '<div class="flex justify-between items-center py-1.5 border-b border-slate-50">' +
-               '<span class="text-slate-500 text-xs">' + label + '</span>' +
+        const valCls = risky ? "font-mono font-bold text-rose-400" : "font-mono font-bold text-slate-300";
+        return '<div class="flex justify-between items-center py-1.5 border-b border-slate-800/60">' +
+               '<span class="text-slate-400 text-xs">' + label + '</span>' +
                '<span class="' + valCls + ' text-xs">' + esc(display) + '</span>' +
                '</div>';
     }).join("");
@@ -275,7 +425,7 @@ function renderTokens(transfers) {
     const box = g("token-holdings");
     if (!box) return;
     if (!transfers || !transfers.length) {
-        box.innerHTML = '<div class="text-slate-400 text-center py-4 text-xs">No token data loaded.</div>';
+        box.innerHTML = '<div class="text-slate-500 text-center py-4 text-xs">Cannot fetch token holdings for this wallet.</div>';
         return;
     }
     const agg = {};
@@ -289,14 +439,14 @@ function renderTokens(transfers) {
     });
     box.innerHTML = Object.entries(agg).map(([sym, d]) => {
         const isScam = d.scam;
-        const cardCls = isScam ? "bg-rose-50 border border-rose-200" : "bg-slate-50 border border-slate-100";
-        const nameCls = isScam ? "font-bold text-rose-700" : "font-bold text-slate-700";
-        const valCls  = isScam ? "font-mono font-bold text-rose-600" : "font-mono font-bold text-slate-800";
-        const badge   = isScam ? '<span class="tag-pill bg-rose-100 text-rose-600 ml-1">⚠ SCAM</span>' : "";
-        return '<div class="flex items-center justify-between p-2 rounded-lg ' + cardCls + '">' +
-               '<div class="flex items-center gap-1"><span class="' + nameCls + '">' + esc(sym) + '</span>' + badge + '</div>' +
+        const cardCls = isScam ? "bg-rose-950/60 border border-rose-800" : "bg-slate-900/60 border border-slate-800";
+        const nameCls = isScam ? "font-bold text-rose-300" : "font-bold text-slate-200";
+        const valCls  = isScam ? "font-mono font-bold text-rose-400" : "font-mono font-bold text-white";
+        const badge   = isScam ? '<span class="tag-pill bg-rose-900 text-rose-300 ml-1">⚠ SCAM</span>' : "";
+        return '<div class="flex items-center justify-between p-2.5 rounded-xl ' + cardCls + '">' +
+               '<div class="flex items-center gap-1.5"><span class="' + nameCls + '">' + esc(sym) + '</span>' + badge + '</div>' +
                '<div class="text-right"><p class="' + valCls + '">' + d.total.toLocaleString("en-US",{maximumFractionDigits:2}) + '</p>' +
-               '<p class="text-slate-400" style="font-size:10px">' + d.count + ' txs</p></div>' +
+               '<p class="text-slate-500 text-[10px]">' + d.count + ' txs</p></div>' +
                '</div>';
     }).join("");
 }
@@ -306,11 +456,19 @@ function renderTx(transfers, wallet, chain) {
     const tbody = g("transactions-table-body");
     if (!tbody) return;
     if (!transfers || !transfers.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-400 text-xs">No transfers found for this wallet.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-slate-500 text-xs">Cannot fetch transaction history for this wallet.</td></tr>';
         return;
     }
     const walletLow = (wallet || "").toLowerCase();
-    const base = chain === "tron" ? "https://tronscan.org/#/transaction/" : "https://etherscan.io/tx/";
+    const chainLow  = (chain || "ethereum").toLowerCase();
+    const explorerMap = {
+        tron: "https://tronscan.org/#/transaction/",
+        bsc: "https://bscscan.com/tx/",
+        polygon: "https://polygonscan.com/tx/",
+        arbitrum: "https://arbiscan.io/tx/",
+        ethereum: "https://etherscan.io/tx/"
+    };
+    const base = explorerMap[chainLow] || "https://etherscan.io/tx/";
 
     tbody.innerHTML = transfers.map(tx => {
         const hash    = tx.transaction_id || tx.hash || "";
@@ -318,39 +476,64 @@ function renderTx(transfers, wallet, chain) {
         const to      = tx.to_address     || tx.to   || "";
         const isOut   = walletLow && from.toLowerCase() === walletLow;
         const counter = isOut ? to : from;
-        const sym     = tx.token_symbol || tx.tokenSymbol || "TOKEN";
+        const sym     = tx.token_symbol || tx.tokenSymbol || (chainLow === "bsc" ? "BNB" : chainLow === "polygon" ? "MATIC" : chainLow === "tron" ? "TRX" : "ETH");
         const isScam  = (tx.scam_flag || 0) > 0 || sym.toUpperCase().includes("SCAM");
-        const amt     = parseFloat(tx.amount_usdt || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
+        const amt     = parseFloat(tx.amount_usdt || 0).toLocaleString("en-US", { maximumFractionDigits: 4 });
         const rawTs   = tx.block_timestamp || (tx.timeStamp ? Number(tx.timeStamp) * 1000 : Date.now());
         const tsMs    = rawTs > 1e12 ? rawTs : rawTs * 1000;
-        const time    = new Date(isNaN(tsMs) ? Date.now() : tsMs).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        const dt      = new Date(isNaN(tsMs) ? Date.now() : tsMs);
+        const dateStr = dt.toLocaleDateString([], { month: "short", day: "numeric", year: "2-digit" });
+        const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-        // build badge strings without quotes inside class attribute strings
-        const dirBg   = isOut ? "background:#FEF3C7;border:1px solid #FCD34D;color:#92400E" : "background:#ECFDF5;border:1px solid #6EE7B7;color:#065F46";
+        const dirBg   = isOut ? "bg-amber-950/80 text-amber-300 border border-amber-800" : "bg-emerald-950/80 text-emerald-300 border border-emerald-800";
         const dirTxt  = isOut ? "OUT" : "IN";
-        const symBg   = isScam ? "background:#FFF1F2;border:1px solid #FECDD3;color:#9F1239" : "background:#F8FAFC;border:1px solid #E2E8F0;color:#475569";
-        const riskTxt = isScam ? "⚠ SCAM" : "✓ OK";
-        const riskBg  = isScam ? "background:#FFF1F2;border:1px solid #FECDD3;color:#9F1239" : "background:#ECFDF5;border:1px solid #6EE7B7;color:#065F46";
-        const amtCls  = isScam ? "color:#DC2626" : "color:#1E293B";
+        const symBg   = isScam ? "bg-rose-950 text-rose-300 border border-rose-800" : "bg-slate-900 text-slate-300 border border-slate-800";
+        const isConfirmed = tx.confirmed !== false;
+        const riskTxt = isScam ? "⚠ SCAM" : (isConfirmed ? "✓ Success" : "✕ Failed");
+        const riskBg  = isScam ? "bg-rose-950 text-rose-300 border border-rose-800" : (isConfirmed ? "bg-emerald-950 text-emerald-300 border border-emerald-800" : "bg-rose-950 text-rose-300 border border-rose-800");
+        const amtCls  = isScam ? "text-rose-400" : "text-white";
 
-        return "<tr style='border-bottom:1px solid #F8FAFC'>" +
-          "<td style='padding:8px 12px;font-family:monospace;font-size:11px;color:#6366F1'>" +
-            "<a href='" + base + esc(hash) + "' target='_blank' style='text-decoration:none;color:inherit'>" + shorten(hash, 14) + " ↗</a>" +
+        return "<tr class='border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors'>" +
+          "<td class='py-3 pr-4 font-mono text-xs text-indigo-400'>" +
+            (hash ? "<a href='" + base + esc(hash) + "' target='_blank' class='hover:underline flex items-center gap-1'>" + shorten(hash, 12) + " ↗</a>" : "<span class='text-slate-500'>—</span>") +
           "</td>" +
-          "<td style='padding:8px 12px'>" +
-            "<span style='display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;" + dirBg + "'>" + dirTxt + "</span>" +
+          "<td class='py-3 pr-4'>" +
+            "<span class='tag-pill " + dirBg + "'>" + dirTxt + "</span>" +
           "</td>" +
-          "<td style='padding:8px 12px;font-family:monospace;font-size:11px;color:#64748B'>" + shorten(counter, 12) + "</td>" +
-          "<td style='padding:8px 12px'>" +
-            "<span style='display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:600;" + symBg + "'>" + esc(sym) + "</span>" +
+          "<td class='py-3 pr-4 font-mono text-xs text-slate-400'>" + (counter ? shorten(counter, 12) : "<span class='text-slate-600'>Contract</span>") + "</td>" +
+          "<td class='py-3 pr-4'>" +
+            "<span class='tag-pill " + symBg + "'>" + esc(sym) + "</span>" +
           "</td>" +
-          "<td style='padding:8px 12px;font-family:monospace;font-weight:700;font-size:12px;" + amtCls + "'>" + amt + "</td>" +
-          "<td style='padding:8px 12px'>" +
-            "<span style='display:inline-block;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;" + riskBg + "'>" + riskTxt + "</span>" +
+          "<td class='py-3 pr-4 font-mono font-bold text-xs " + amtCls + "'>" + amt + "</td>" +
+          "<td class='py-3 pr-4'>" +
+            "<span class='tag-pill " + riskBg + "'>" + riskTxt + "</span>" +
           "</td>" +
-          "<td style='padding:8px 12px;font-family:monospace;font-size:11px;color:#94A3B8'>" + time + "</td>" +
+          "<td class='py-3 font-mono text-xs text-slate-400'>" + dateStr + " <span class='text-slate-600 text-[10px]'>" + timeStr + "</span></td>" +
           "</tr>";
     }).join("");
+}
+
+// ── Threat Alerts Feed ────────────────────────────────────────────────────────
+function renderThreatAlerts(reasons, level) {
+    const box = g("threat-alerts-container");
+    if (!box) return;
+    if (level === "CRITICAL RISK" || level === "HIGH RISK") {
+        box.innerHTML = `
+            <div class="p-3 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 space-y-1">
+                <div class="font-bold flex items-center justify-between">
+                    <span>🚨 Active Threat Flagged</span>
+                    <span class="tag-pill bg-rose-900 text-rose-200">HIGH SEVERITY</span>
+                </div>
+                <p class="text-[11px] text-rose-200">Wallet exhibits high transaction frequency or proximity to known malicious contracts.</p>
+            </div>
+        `;
+    } else {
+        box.innerHTML = `
+            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-400 text-center">
+                No active threats detected. Wallet interactions show standard activity parameters.
+            </div>
+        `;
+    }
 }
 
 // ── Chart.js Mini Gauge ───────────────────────────────────────────────────────
@@ -360,7 +543,7 @@ function initGauge(score) {
     const c = scoreClr(score);
     miniGaugeChart = new Chart(canvas.getContext("2d"), {
         type: "doughnut",
-        data: { datasets: [{ data: [score, 100 - score], backgroundColor: [c, "rgba(226,232,240,.4)"], borderWidth: 0 }] },
+        data: { datasets: [{ data: [score, 100 - score], backgroundColor: [c, "rgba(255,255,255,0.06)"], borderWidth: 0 }] },
         options: { cutout: "76%", responsive: true, maintainAspectRatio: false,
             animation: { duration: 800, easing: "easeOutCubic" },
             plugins: { legend: { display: false }, tooltip: { enabled: false } } }
@@ -374,18 +557,18 @@ function updateGauge(score) {
     miniGaugeChart.update();
 }
 
-// ── History Sparkline ─────────────────────────────────────────────────────────
+// ── History Sparkline & Trend ─────────────────────────────────────────────────
 function initHistory() {
     const canvas = g("riskHistoryChart");
     if (!canvas || typeof Chart === "undefined") return;
     historyChart = new Chart(canvas.getContext("2d"), {
         type: "line",
         data: { labels: [], datasets: [{ label: "Risk Score", data: [],
-            borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,.1)",
+            borderColor: "#818cf8", backgroundColor: "rgba(129,140,248,0.12)",
             borderWidth: 2, pointRadius: 3, fill: true, tension: 0.4 }] },
         options: { responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false } },
-            scales: { y: { min: 0, max: 100, grid: { color: "#f1f5f9" } }, x: { grid: { display: false } } } }
+            scales: { y: { min: 0, max: 100, grid: { color: "rgba(255,255,255,0.05)" } }, x: { grid: { display: false } } } }
     });
 }
 
@@ -404,16 +587,31 @@ function renderHistory(score, level) {
     historyChart.data.datasets[0].borderColor = c;
     historyChart.data.datasets[0].backgroundColor = c.replace("rgb", "rgba").replace(")", ",.12)");
     historyChart.update();
-    const peak = Math.max(...vals), avg = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+
+    const peak = Math.max(...vals);
+    const avg  = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
     set("peak-score", peak);
     set("avg-score",  avg);
+
+    const trendPill = g("risk-trend-indicator");
+    if (trendPill) {
+        if (vals[6] > vals[0] + 5) {
+            trendPill.textContent = "Increasing ↑";
+            trendPill.className = "tag-pill bg-rose-950 text-rose-300 border border-rose-800";
+        } else if (vals[6] < vals[0] - 5) {
+            trendPill.textContent = "Decreasing ↓";
+            trendPill.className = "tag-pill bg-emerald-950 text-emerald-300 border border-emerald-800";
+        } else {
+            trendPill.textContent = "Stable →";
+            trendPill.className = "tag-pill bg-slate-800 text-slate-300 border border-slate-700";
+        }
+    }
 }
 
-// ── Utilities ─────────────────────────────────────────────────────────────────
+// ── Helper Utilities ──────────────────────────────────────────────────────────
 function g(id)       { return document.getElementById(id); }
 function set(id, v)  { const e = g(id); if (e) e.textContent = v; }
 function cls(id, c)  { const e = g(id); if (e) e.className = c; }
-function fmt(n)      { return n != null ? Number(n).toFixed(3) : "—"; }
 function fmtN(n, d)  { return n != null ? Number(n).toFixed(d) : "—"; }
 function shorten(s, len) {
     if (!s || s.length <= len) return s || "—";
@@ -425,43 +623,21 @@ function esc(s) {
         ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[m]);
 }
 function scoreClr(s) {
-    return s > 80 ? "#EF4444" : s > 60 ? "#F97316" : s > 40 ? "#F59E0B" : s > 20 ? "#06B6D4" : "#10B981";
+    return s > 80 ? "#EF4444" : s > 60 ? "#F97316" : s > 40 ? "#F59E0B" : s > 20 ? "#38BDF8" : "#10B981";
 }
 function lvlClr(l) {
-    const m = { CRITICAL: "text-2xl font-black text-red-500", HIGH: "text-2xl font-black text-orange-500",
-                MEDIUM: "text-2xl font-black text-amber-500", LOW: "text-2xl font-black text-cyan-500",
-                SAFE: "text-2xl font-black text-emerald-500" };
+    const m = { "CRITICAL RISK": "text-2xl font-black text-rose-400",
+                "HIGH RISK": "text-2xl font-black text-orange-400",
+                "MODERATE RISK": "text-2xl font-black text-amber-400",
+                "LOW RISK": "text-2xl font-black text-sky-400",
+                "VERY LOW RISK": "text-2xl font-black text-emerald-400" };
     return m[l] || "text-2xl font-black text-slate-400";
 }
 function lvlBadge(l) {
-    const m = { CRITICAL: "bg-rose-100 text-rose-700 border border-rose-300",
-                HIGH: "bg-orange-100 text-orange-700 border border-orange-300",
-                MEDIUM: "bg-amber-100 text-amber-700 border border-amber-300",
-                LOW: "bg-cyan-100 text-cyan-700 border border-cyan-300",
-                SAFE: "bg-emerald-100 text-emerald-700 border border-emerald-300" };
-    return m[l] || m.SAFE;
-}
-
-function loading(on) {
-    const btn  = g("scan-wallet-btn");
-    const text = g("scan-btn-text");
-    if (btn)  btn.disabled = on;
-    if (text) text.textContent = on ? "⏳ Scanning…" : "⚡ Scan Wallet";
-}
-function setStatus(msg, ok) {
-    const dot  = g("api-dot");
-    const txt  = g("api-status-text");
-    if (dot) dot.className = "w-2 h-2 rounded-full " + (ok ? "bg-emerald-400 pulse-dot" : "bg-red-400");
-    if (txt) txt.textContent = msg;
-}
-function err(msg) {
-    let b = g("err-banner");
-    if (!b) {
-        b = document.createElement("div");
-        b.id = "err-banner";
-        b.style.cssText = "position:fixed;top:16px;right:16px;z-index:9999;max-width:380px;padding:14px 16px;border-radius:12px;background:#DC2626;color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;align-items:flex-start;gap:10px";
-        document.body.appendChild(b);
-    }
-    b.innerHTML = "<span style='flex:1'>⚠️ " + esc(msg) + "</span><button onclick=\"document.getElementById('err-banner').remove()\" style='color:rgba(255,255,255,.7);background:none;border:none;cursor:pointer;font-size:18px;line-height:1'>✕</button>";
-    setTimeout(() => { const x = g("err-banner"); if (x) x.remove(); }, 6000);
+    const m = { "CRITICAL RISK": "bg-rose-950 text-rose-300 border border-rose-800",
+                "HIGH RISK": "bg-orange-950 text-orange-300 border border-orange-800",
+                "MODERATE RISK": "bg-amber-950 text-amber-300 border border-amber-800",
+                "LOW RISK": "bg-sky-950 text-sky-300 border border-sky-800",
+                "VERY LOW RISK": "bg-emerald-950 text-emerald-300 border border-emerald-800" };
+    return m[l] || m["VERY LOW RISK"];
 }

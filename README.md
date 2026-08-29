@@ -1,106 +1,108 @@
 # 🛡️ AI-Based Risk Prediction in Decentralized Finance (DeFi)
-### Final Year Main Project
+### Final Year Main Project — Version 2.0 (Premium Release)
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue?style=flat-square&logo=python)](https://www.python.org/)
-[![XGBoost](https://img.shields.io/badge/XGBoost-Primary%20Model-orange?style=flat-square)](https://xgboost.readthedocs.io/)
-[![SHAP](https://img.shields.io/badge/SHAP-Explainability-green?style=flat-square)](https://shap.readthedocs.io/)
-[![Streamlit](https://img.shields.io/badge/Dashboard-Streamlit-red?style=flat-square&logo=streamlit)](https://streamlit.io/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-2.0.0-green?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![XGBoost](https://img.shields.io/badge/XGBoost-Tabular%20Ensemble-orange?style=flat-square)](https://xgboost.readthedocs.io/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-GNN%20%2B%20Autoencoder-red?style=flat-square&logo=pytorch)](https://pytorch.org/)
+[![Dashboard](https://img.shields.io/badge/Dashboard-Bento%20Station%20v2-purple?style=flat-square)](#)
 
-> An AI-powered system to classify blockchain wallets and transactions as **safe** or **risky**, generate explainable risk scores using SHAP, and detect novel fraud patterns using Isolation Forest — all displayed on a real-time Streamlit dashboard.
+> An enterprise-grade AI-powered platform to classify multi-chain blockchain wallets and transactions as **safe** or **risky**, compute fused risk scores using a **Three-Tier Machine Learning Pipeline** (Tabular Ensemble + GraphSAGE GNN + MLP Autoencoder), and provide natural language explainability on an interactive **Bento Station Glassmorphic Dashboard**.
 
 ---
 
 ## 📋 Table of Contents
 
 1. [Project Overview](#1-project-overview)
-2. [System Architecture](#2-system-architecture)
-3. [Model Details](#3-model-details)
+2. [System Architecture (v2.0)](#2-system-architecture-v20)
+3. [Three-Tier Model Architecture](#3-three-tier-model-architecture)
 4. [Project Structure](#4-project-structure)
 5. [Setup & Installation](#5-setup--installation)
-6. [Running the Application](#6-running-the-application)
-7. [Deliverables](#7-deliverables)
-8. [Dataset](#8-dataset)
-9. [Results & Evaluation](#9-results--evaluation)
+6. [Running the Application (v2.0)](#6-running-the-application-v20)
+7. [Desktop Shortcut Creation](#7-desktop-shortcut-creation)
+8. [Testing & Quality Assurance](#8-testing--quality-assurance)
+9. [API Reference & cURL Usage](#9-api-reference--curl-usage)
 
 ---
 
 ## 1. Project Overview
 
 ### The Problem
-Decentralized Finance (DeFi) is permissionless and anonymous, making it a prime target for:
-- **Rug Pulls** — creators abandon a project and steal investor funds
-- **Flash Loan Exploits** — borrowing millions with no collateral to manipulate markets
-- **Money Laundering** — using mixers like Tornado Cash to hide criminal activity
+Decentralized Finance (DeFi) is permissionless and anonymous, creating systemic vulnerability to:
+- **Rug Pulls & Sybil Attacks** — fraudulent wallet networks draining pool liquidity.
+- **Flash Loan Exploits** — multi-step price manipulation schemes.
+- **Money Laundering** — privacy-preserving mixers and cross-chain laundering rings.
 
-### The Solution
-This platform acts as an **AI watchdog** that:
-1. Analyzes a wallet address's historical behaviour
-2. Computes a **Calibrated Risk Score (0–100)** using a multi-model ML pipeline
-3. Explains **why** a wallet is risky using SHAP (SHapley Additive exPlanations)
-4. Detects **novel, unseen fraud patterns** using Isolation Forest anomaly detection
-
----
-
-## 2. System Architecture
-
-```
-┌─────────────────────────────────────────────────────┐
-│               Wallet Address Input                  │
-└───────────────────────┬─────────────────────────────┘
-                        ▼
-          ┌─────────────────────────┐
-          │   Data Preprocessing   │
-          │  (SMOTE + StandardScaler)│
-          └────────────┬────────────┘
-                       ▼
-        ┌──────────────┼───────────────┐
-        ▼              ▼               ▼
-  [BASELINE]       [PRIMARY]      [ANOMALY]
-  LR / DT / RF     XGBoost       Isolation
-  (Comparison)    Classifier       Forest
-        │              │               │
-        └──────────────┼───────────────┘
-                       ▼
-          ┌─────────────────────────┐
-          │    Risk Score Fusion    │
-          │ XGBoost (70%) + IF (30%)│
-          │     → Score 0–100       │
-          └────────────┬────────────┘
-                       ▼
-          ┌─────────────────────────┐
-          │  SHAP Explainability    │
-          │  TreeExplainer + Top 5  │
-          │  Feature Contributions  │
-          └────────────┬────────────┘
-                       ▼
-          ┌─────────────────────────┐
-          │  Streamlit Dashboard   │
-          │  Real-Time Risk Alerts │
-          └─────────────────────────┘
-```
+### The Solution (Version 2.0)
+This platform serves as an automated **AI DeFi Risk Watchdog**:
+1. Multi-Chain Data Ingestion: Evaluates wallets on **Ethereum, TRON, BSC, Polygon, and Arbitrum**.
+2. Fused Risk Score (0–100): Combines Tabular ML, Graph Network Analysis, and Autoencoder Anomaly Detection.
+3. Natural Language & SHAP Explainability: Pinpoints exact risk factors (e.g. 1-hop distance to blacklist mixer, burst transaction frequency).
+4. Real-Time Bento Station Interface: Modern high-performance dashboard with risk gauge rings, token transfer tables, and interactive chain selectors.
 
 ---
 
-## 3. Model Details
+## 2. System Architecture (v2.0)
 
-| Component | Algorithm | Purpose |
-|---|---|---|
-| **Primary Classifier** | XGBoost (tuned with GridSearchCV) | Classify wallets as safe/risky and output a fraud probability |
-| **Baseline Models** | Logistic Regression, Decision Tree, Random Forest | Comparison benchmarks to justify XGBoost selection |
-| **Anomaly Detector** | Isolation Forest | Flag novel/zero-day fraud patterns not seen during training |
-| **Class Imbalance** | SMOTE (Synthetic Minority Oversampling) | Balance the heavily skewed fraud minority class |
-| **Explainability** | SHAP TreeExplainer | Identify top 3–5 features driving each individual risk score |
-
-### Risk Score Formula
 ```
-Final Score (0–100) = (XGBoost Probability × 0.70) + (Isolation Forest Score × 0.30)
+                       ┌─────────────────────────────────────┐
+                       │ Wallet Address / Tx Hash Ingestion  │
+                       └──────────────────┬──────────────────┘
+                                          │
+                                          ▼
+                       ┌─────────────────────────────────────┐
+                       │      Multi-Chain Data Adapter       │
+                       │  (TRON, ETH, BSC, Polygon, Arbitrum) │
+                       └──────────────────┬──────────────────┘
+                                          │
+                  ┌───────────────────────┼───────────────────────┐
+                  ▼                       ▼                       ▼
+       ┌─────────────────────┐ ┌─────────────────────┐ ┌─────────────────────┐
+       │   Tier 1: Tabular   │ │     Tier 2: GNN     │ │ Tier 3: Autoencoder │
+       │ Ensemble (XGB+RF)   │ │   (GraphSAGE Net)   │ │  (Anomaly Detector) │
+       └──────────┬──────────┘ └──────────┬──────────┘ └──────────┬──────────┘
+                  │                       │                       │
+                  └───────────────────────┼───────────────────────┘
+                                          ▼
+                       ┌─────────────────────────────────────┐
+                       │     Calibrated Risk Fusion Engine   │
+                       │     Score = 0.5T + 0.3G + 0.2A      │
+                       └──────────────────┬──────────────────┘
+                                          │
+                                          ▼
+                       ┌─────────────────────────────────────┐
+                       │         FastAPI REST Backend        │
+                       │        (JWT Auth + Rate-Limit)      │
+                       └──────────────────┬──────────────────┘
+                                          │
+                                          ▼
+                       ┌─────────────────────────────────────┐
+                       │    Bento Station Web Dashboard      │
+                       │     http://localhost:8000/dashboard │
+                       └─────────────────────────────────────┘
 ```
 
-| Score | Level | Action |
-|---|---|---|
-| 0 – 40 | 🟢 Safe | Normal interaction |
-| 41 – 75 | 🟡 Medium Risk | Proceed with caution |
-| 76 – 100 | 🔴 High Risk | Do NOT interact |
+---
+
+## 3. Three-Tier Model Architecture
+
+| Tier | Component | Algorithm / Framework | Purpose |
+|---|---|---|---|
+| **Tier 1** | Primary Tabular Ensemble | XGBoost + Random Forest | Wallet behavioural classification and fraud probability output |
+| **Tier 2** | Network Graph Exposure | GraphSAGE PyTorch GNN | Sybil network analysis and multi-hop graph proximity detection |
+| **Tier 3** | Anomaly Detection | MLP Autoencoder | Unsupervised reconstruction error scoring for novel/zero-day exploits |
+| **Explainability** | SHAP & NL Reasoning | SHAP TreeExplainer + Natural Language Engine | Top feature attribution and human-readable risk drivers |
+
+### Risk Score Fusion Formula
+$$\text{Score} = (0.50 \times P_{\text{tabular}} + 0.30 \times P_{\text{gnn}} + 0.20 \times P_{\text{anomaly}}) \times 100$$
+
+| Score | Level | Color | Recommended Action |
+|---|---|---|---|
+| 0 – 30 | 🟢 SAFE | Green | Normal interaction safe |
+| 31 – 50 | 🟡 LOW | Blue/Green | Low risk signals present |
+| 51 – 70 | 🟧 MEDIUM | Yellow/Orange | Elevated signals, proceed with caution |
+| 71 – 85 | 🔴 HIGH | Red | High threat risk, flag transaction |
+| 86 – 100 | 🚨 CRITICAL | Bright Red | Severe exploit risk, block immediately |
 
 ---
 
@@ -109,35 +111,35 @@ Final Score (0–100) = (XGBoost Probability × 0.70) + (Isolation Forest Score 
 ```
 final_year_project/
 │
-├── app.py                    # ← Streamlit Dashboard (run this!)
-├── generate_notebook.py      # ← Auto-generates the Jupyter Notebook
-├── requirements.txt          # ← All Python dependencies
-├── Run_Project.bat           # ← One-click launcher (Windows)
-├── Install_Setup.bat         # ← One-click installer (Windows)
+├── Run_Project.bat           # ← Primary v2.0 Launcher (FastAPI + Bento Dashboard)
+├── Create_Desktop_Shortcut.bat# ← Desktop Shortcut Generator
+├── create_shortcut.ps1        # ← PowerShell Shortcut Helper
+├── Install_Setup.bat         # ← One-Click Environment Installer
+├── Run_Tests.bat             # ← Complete Pytest Suite Executable
 │
-├── src/
-│   ├── data_preprocessing.py # Data loading, SMOTE, StandardScaler
-│   ├── feature_engineering.py# Feature derivation from raw transactions
-│   ├── train_model.py        # Train LR, DT, RF, XGBoost + comparison table
-│   ├── anomaly_detection.py  # Train Isolation Forest
-│   ├── explainability.py     # SHAP integration (TreeExplainer)
-│   └── risk_scoring.py       # Fuse classifier + anomaly scores → 0–100
+├── api/                      # FastAPI v2.0 REST Backend
+│   ├── app.py                # Server entry point (serving API + Bento UI)
+│   ├── auth.py               # JWT authentication & security
+│   ├── schemas.py            # Pydantic request/response models
+│   └── routes/               # Modular routes (wallet, transaction, health, alerts)
 │
-├── data/
-│   └── datasets/             # Raw and processed CSV datasets
+├── index.html                # Bento Station Dashboard UI
+├── app.js                    # Interactive frontend logic & chart bindings
 │
-├── models/
-│   ├── xgboost_classifier.pkl # Primary trained model
-│   ├── isolation_forest.pkl   # Anomaly detector
-│   ├── scaler.pkl             # Fitted StandardScaler
-│   └── model_comparison.csv  # Metrics table: Accuracy, F1, AUC...
+├── src/                      # Core AI Machine Learning Modules
+│   ├── train_tabular.py      # Tier 1 ML training pipeline
+│   ├── train_gnn.py          # Tier 2 Graph Neural Network training
+│   ├── train_autoencoder.py  # Tier 3 Autoencoder training
+│   ├── prediction.py         # Multi-model risk score predictor
+│   ├── risk_fusion.py        # Score calibration and weighting
+│   ├── explainability.py     # SHAP explanations engine
+│   └── nl_reasoning.py       # Natural language threat descriptor
 │
-├── notebooks/
-│   └── EDA_and_Modeling.ipynb # EDA, SMOTE, model comparison, SHAP plots
-│
-├── api/                      # FastAPI backend (advanced usage)
-├── config/                   # Model and chain configuration files
-└── presentation/             # Final Year Report Template
+├── models/                   # Saved ML weights (.pkl, .pt)
+├── config/                   # System and chain YAML configurations
+├── feature_store/            # Online (Redis/Dict) & Offline Feature Stores
+├── tests/                    # 100% passing Pytest integration test suite
+└── PROJECT_GUIDE.md          # Full operational & theoretical documentation
 ```
 
 ---
@@ -145,126 +147,58 @@ final_year_project/
 ## 5. Setup & Installation
 
 ### Requirements
-- Python 3.11+
-- Windows / Linux / macOS
+- **Python**: Version 3.11+
+- **OS**: Windows 10/11, Linux, or macOS
 
-### Option A: One-Click Installer (Windows)
-Double-click **`Install_Setup.bat`**. It will:
-1. Create a Python virtual environment
-2. Install all dependencies from `requirements.txt`
+### Automated Installation (Windows)
+Double-click **`Install_Setup.bat`**. It will create the Python virtual environment and install all required libraries.
 
-### Option B: Manual Setup
+---
+
+## 6. Running the Application (v2.0)
+
+### Option 1: Double-Click Launcher (Recommended)
+Double-click **`Run_Project.bat`**. 
+This will start the FastAPI backend server on `http://127.0.0.1:8000` and launch the **Bento Station Dashboard** in your default web browser at `http://localhost:8000/dashboard`.
+
+### Option 2: Command Line (CLI)
 ```bash
-# Clone the repository
-git clone https://github.com/mantub013/final_year_project.git
-cd final_year_project
+# Activate environment
+venv\Scripts\activate
 
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate      # Windows
-# source venv/bin/activate  # Linux/Mac
-
-# Install dependencies
-pip install -r requirements.txt
+# Start FastAPI Uvicorn Server
+python -m uvicorn api.app:app --host 127.0.0.1 --port 8000 --reload
 ```
 
 ---
 
-## 6. Running the Application
+## 7. Desktop Shortcut Creation
 
-### Step 1: Train the Models
-Run these scripts in order to generate the trained model `.pkl` files:
+To easily launch the v2 project from your Desktop at any time:
+1. Double-click **`Create_Desktop_Shortcut.bat`**.
+2. A shortcut named **`AI-DeFi Risk Intelligence v2`** will be created directly on your Desktop.
 
+---
+
+## 8. Testing & Quality Assurance
+
+To verify that all backend routes, ML models, TRON integrations, and schemas are fully functional:
+
+Double-click **`Run_Tests.bat`** or run:
 ```bash
-# Set Python path
-set PYTHONPATH=.    # Windows
-# export PYTHONPATH=.  # Linux/Mac
-
-# 1. Preprocess data and apply SMOTE
-python -m src.data_preprocessing
-
-# 2. Train XGBoost and baseline models
-python -m src.train_model
-
-# 3. Train Isolation Forest anomaly detector
-python -m src.anomaly_detection
+venv\Scripts\python.exe -m pytest tests/ -v
 ```
-
-### Step 2: Launch the Streamlit Dashboard
-```bash
-streamlit run app.py
-```
-> Or simply double-click **`Run_Project.bat`** on Windows!
-
-### Step 3: Generate Jupyter Notebook
-```bash
-python generate_notebook.py
-```
-Open `notebooks/EDA_and_Modeling.ipynb` to view the full EDA and model comparison.
+All **15 unit and integration tests** will execute and report passing status.
 
 ---
 
-## 7. Deliverables
+## 9. API Reference & cURL Usage
 
-| # | Deliverable | Location | Status |
-|---|---|---|---|
-| 1 | Trained model files | `models/*.pkl` | ✅ Done |
-| 2 | EDA + Model Comparison Notebook | `notebooks/EDA_and_Modeling.ipynb` | ✅ Done |
-| 3 | Streamlit Dashboard (`streamlit run app.py`) | `app.py` | ✅ Done |
-| 4 | SHAP Explainability Integration | `src/explainability.py` | ✅ Done |
-| 5 | Confusion Matrix & ROC Curve | `models/figures/` | ✅ Done |
-| 6 | Model Comparison Table | `models/model_comparison.csv` | ✅ Done |
-| 7 | README with setup instructions | `README.md` | ✅ Done |
+- **Swagger Documentation**: `http://localhost:8000/docs`
+- **Health Check**: `GET http://localhost:8000/api/health`
+- **Authenticate**: `POST http://localhost:8000/api/token`
+- **Scan Wallet**: `GET http://localhost:8000/api/v1/wallet/{address}?chain=tron`
 
 ---
 
-## 8. Dataset
-
-The project uses a **synthetic blockchain transaction dataset** generated to simulate real-world patterns:
-
-| Feature | Description |
-|---|---|
-| `wallet_age_days` | Days since wallet first transacted |
-| `transaction_velocity` | Average transactions per day |
-| `avg_transaction_size` | Mean ETH value sent per transaction |
-| `failed_transactions_ratio` | Fraction of transactions that errored |
-| `gas_used` | Total gas consumed |
-| `wallet_balance` | Current wallet balance |
-| `in_degree` | Number of unique senders |
-| `out_degree` | Number of unique receivers |
-| `std_dev_tx_amounts` | Variance in transaction amounts |
-| `contract_interaction_flag` | Whether the wallet calls smart contracts |
-
-**Class Distribution (before SMOTE):**
-- ✅ Safe wallets: ~9,597 (95.9%)
-- 🔴 Risky wallets: ~403 (4.1%) ← Severe imbalance handled by SMOTE
-
----
-
-## 9. Results & Evaluation
-
-| Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
-|---|---|---|---|---|---|
-| Logistic Regression | 66.6% | 67.4% | 63.5% | 65.4% | 0.725 |
-| Decision Tree | 85.9% | 83.6% | 89.1% | 86.3% | 0.859 |
-| Random Forest | 91.9% | 89.8% | 94.6% | 92.1% | 0.975 |
-| **XGBoost (Primary)** | **83.4%** | **79.9%** | **88.8%** | **84.1%** | **0.909** |
-
-> **XGBoost** was chosen as the primary model due to its industry-standard status in fraud detection, built-in SHAP compatibility, and strong AUC score for probabilistic risk scoring.
-
----
-
-## 🚀 Quick Start (TL;DR)
-
-```bash
-git clone https://github.com/mantub013/final_year_project.git
-cd final_year_project
-pip install -r requirements.txt
-set PYTHONPATH=.
-python -m src.data_preprocessing && python -m src.train_model && python -m src.anomaly_detection
-streamlit run app.py
-```
-
----
-
-*Final Year Main Project — AI-Based Risk Prediction in Decentralized Finance (DeFi)*
+*Final Year Main Project — AI-Based Risk Prediction in Decentralized Finance (DeFi) v2.0*

@@ -40,7 +40,7 @@ def is_valid_address(address: str) -> bool:
             return True
         except ValueError:
             return False
-    if address.startswith("T") and len(address) == 34:
+    if address.startswith("T") and (len(address) == 33 or len(address) == 34):
         return True
     return False
 

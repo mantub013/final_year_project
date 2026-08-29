@@ -27,7 +27,7 @@ def build_transaction_graph(address: str, txs: List[Dict[str, Any]]) -> nx.DiGra
     rng = random.Random(seed)
 
     # Add transaction edges
-    for tx in txs[:20]:  # Limit size for visualization / speed
+    for tx in txs[:30]:
         f = tx.get("from")
         t = tx.get("to")
         if f and t:
@@ -41,24 +41,6 @@ def build_transaction_graph(address: str, txs: List[Dict[str, Any]]) -> nx.DiGra
             # Weighted by value
             val = float(tx.get("value", 0)) / 1e18
             G.add_edge(f, t, value=round(val, 4), hash=tx.get("hash"))
-
-    # For training/simulation consistency: if seed % 10 < 3, inject a connection to a blacklist address
-    # This makes ~30% of test wallets have a direct or multi-hop path to a known blacklisted node.
-    if (seed % 10) < 3:
-        bad_node = rng.choice(BLACKLISTED_WALLETS)
-        if not G.has_node(bad_node):
-            G.add_node(bad_node, type="blacklisted", label="BAD ACTOR", risk_level="blacklisted")
-        
-        # Connect via a bridge node or directly
-        if (seed % 10) == 0:
-            # Direct connection
-            G.add_edge(address, bad_node, value=1.5, hash="direct-scam-tx")
-        else:
-            # 2 hops away: target -> intermediate -> bad_node
-            bridge = f"0xbridge{rng.getrandbits(80):020x}bad"
-            G.add_node(bridge, type="wallet", label=bridge[:8] + "...", risk_level="medium_risk")
-            G.add_edge(address, bridge, value=0.5, hash="hop1")
-            G.add_edge(bridge, bad_node, value=10.0, hash="hop2")
 
     return G
 

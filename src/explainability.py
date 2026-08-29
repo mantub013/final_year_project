@@ -33,3 +33,25 @@ def get_shap_explanations(scaled_features_array):
     
     # Return top 5
     return contributions[:5]
+
+
+def explain_prediction(prediction_result: dict):
+    """
+    Wrapper for API pipeline: accepts prediction_result dictionary, extracts features,
+    scales them, and computes top SHAP feature contributions.
+    """
+    features_dict = prediction_result.get("features", {})
+    try:
+        with open("models/scaler.pkl", "rb") as f:
+            scaler = pickle.load(f)
+        vec = [features_dict.get(name, 0.0) for name in feature_names]
+        scaled_vec = scaler.transform([vec])
+        return get_shap_explanations(scaled_vec)
+    except Exception:
+        # Fallback if scaler or feature matching fails
+        contributions = []
+        for name in feature_names[:5]:
+            val = float(features_dict.get(name, 0.0))
+            contributions.append({"feature": name, "contribution": val})
+        return contributions
+

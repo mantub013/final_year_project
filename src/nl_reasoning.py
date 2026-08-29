@@ -46,7 +46,8 @@ def generate_natural_language_reasons(
         )
 
     centrality = features.get("graph_centrality", 0.0)
-    if centrality > 0.5:
+    tx_count = features.get("total_transactions", 0)
+    if centrality > 0.5 and tx_count >= 10:
         reasons.append(
             f"⚡ High graph centrality ({centrality:.2f}): Wallet acts as a major hub in the "
             "transaction network — consistent with mixing, bridging, or orchestration roles."
@@ -67,14 +68,14 @@ def generate_natural_language_reasons(
         )
 
     age = features.get("wallet_age", 99.0)
-    if age < 1.0:
+    if age < 1.0 and tx_count > 5:
         reasons.append(
-            f"🔴 Wallet is only {age:.1f} days old — burner/throwaway wallet pattern. "
+            f"🔴 Wallet is only {age:.1f} days old with high initial volume — burner/throwaway wallet pattern. "
             "Attackers routinely create fresh wallets per exploit to avoid tracking."
         )
-    elif age < 7.0:
+    elif age < 3.0 and tx_count > 10:
         reasons.append(
-            f"🟠 Wallet age is {age:.1f} days — very new account. Low transaction history "
+            f"🟠 Wallet age is {age:.1f} days — new high-activity account. Low transaction history "
             "limits trust baseline for this wallet."
         )
 
@@ -91,19 +92,19 @@ def generate_natural_language_reasons(
         )
 
     burst = features.get("burst_activity_score", 0.0)
-    if burst > 0.7:
+    if burst > 0.7 and tx_count >= 5:
         reasons.append(
             f"🔴 Burst activity score {burst:.2f}: {int(burst*100)}% of transactions sent "
             "within extremely short windows — strong indicator of bot automation or coordinated attack."
         )
-    elif burst > 0.4:
+    elif burst > 0.4 and tx_count >= 5:
         reasons.append(
             f"🟡 Moderate burst activity ({int(burst*100)}%): Unusual transaction clustering "
             "detected — possible MEV bot or high-frequency arbitrage."
         )
 
     freq = features.get("transaction_frequency", 0.0)
-    if freq > 20:
+    if freq > 20 and tx_count >= 10:
         reasons.append(
             f"⚡ Transaction frequency: {freq:.1f} txs/day — far above the typical wallet "
             "average (~3/day). Consistent with automated trading bot or drain script."
@@ -111,15 +112,16 @@ def generate_natural_language_reasons(
 
     # ── 3. Anomaly detection signal ────────────────────────────────────────────
     recon = features.get("reconstruction_error", 0.0)
-    if recon > 0.12:
+    anom_score = breakdown.get("anomaly_score", 0.0)
+    if anom_score > 0.7:
         reasons.append(
             f"🔴 Autoencoder reconstruction error: {recon:.4f} — places this wallet in the "
-            "top 1% most anomalous patterns vs. the training baseline. Novel or zero-day behaviour."
+            "top anomalous pattern tier vs. the baseline. Novel or zero-day behaviour."
         )
-    elif recon > 0.07:
+    elif anom_score > 0.4:
         reasons.append(
             f"🟡 Anomaly score elevated (recon error {recon:.4f}): Behavioural patterns "
-            "deviate from 'normal' wallet baseline — warrants monitoring."
+            "deviate from normal wallet baseline — warrants monitoring."
         )
 
     # ── 4. GNN-specific signal ─────────────────────────────────────────────────

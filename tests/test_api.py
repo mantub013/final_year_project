@@ -58,7 +58,7 @@ def test_tron_wallet_path_endpoint():
     token = login_response.json()["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
 
-    res = client.get("/api/v1/wallet/TNPeeaaTK7v3QGiBBWnWNFUzhMHucEjm84?chain=tron", headers=headers)
+    res = client.get("/api/v1/wallet/TNPeeaaTK7v3QGiBBWnWNFUzhMHucEjm84?chain=tron&no_cache=true", headers=headers)
     assert res.status_code == 200
     data = res.json()
     assert data["address"] == "TNPeeaaTK7v3QGiBBWnWNFUzhMHucEjm84"

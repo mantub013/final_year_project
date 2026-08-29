@@ -19,7 +19,7 @@ class WalletRiskResponse(BaseModel):
     risk_score: float = Field(..., ge=0, le=100, description="Fused risk score 0–100")
     risk_level: str = Field(..., description="SAFE | LOW | MEDIUM | HIGH | CRITICAL")
     breakdown: Dict[str, float]
-    explanations: Dict[str, Any]
+    explanations: Any = Field(default_factory=dict, description="SHAP feature explanations")
     reasons: List[str]
     recommendation: str
     cached: bool = False

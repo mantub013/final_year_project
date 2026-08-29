@@ -60,8 +60,7 @@ class Autoencoder(nn.Module):
         self.decoder = nn.Sequential(
             nn.Linear(latent_dim, 8),
             nn.ReLU(),
-            nn.Linear(8, input_dim),
-            nn.Sigmoid()
+            nn.Linear(8, input_dim)
         )
         
     def forward(self, x: torch.Tensor) -> torch.Tensor:

@@ -65,6 +65,61 @@ def _evaluate_wallet(address: str, chain: str, use_cache: bool = True) -> Dict[s
     return payload
 
 
+def _format_transfers(address: str, chain: str, chains_config: dict) -> list:
+    if chain == "tron":
+        from src.blockchain_api_tron import TronDataFetcher
+        fetcher = TronDataFetcher(chains_config)
+        return fetcher.get_recent_transfers(address, limit=30)
+
+    from src.blockchain_api import BlockchainAPIAdapter
+    adapter = BlockchainAPIAdapter(chain, chains_config.get(chain, {}))
+    raw_txs = adapter.get_transactions(address, limit=30)
+    raw_token_txs = adapter.get_token_transfers(address, limit=30)
+
+    transfers = []
+    native_sym = {"ethereum": "ETH", "bsc": "BNB", "polygon": "MATIC", "arbitrum": "ETH"}.get(chain, "ETH")
+
+    # 1. Native transactions
+    for tx in raw_txs:
+        raw_v = float(tx.get("value", 0)) / 1e18
+        ts = int(tx.get("timeStamp", 0))
+        ts_ms = ts * 1000 if ts < 1e11 else ts
+        transfers.append({
+            "transaction_id": tx.get("hash", ""),
+            "block_timestamp": ts_ms,
+            "from_address": tx.get("from", ""),
+            "to_address": tx.get("to", ""),
+            "amount_usdt": round(raw_v, 4),
+            "raw_value": str(tx.get("value", "0")),
+            "token_symbol": native_sym,
+            "contract_address": "",
+            "confirmed": tx.get("isError", "0") != "1",
+        })
+
+    # 2. Token transfers
+    for tx in raw_token_txs:
+        dec = int(tx.get("tokenDecimal", 18))
+        raw_v = int(tx.get("value", 0)) if str(tx.get("value", "0")).isdigit() else 0
+        amt = float(tx.get("amount_usdt", 0.0)) or (raw_v / (10 ** dec))
+        ts = int(tx.get("timeStamp", 0))
+        ts_ms = ts * 1000 if ts < 1e11 else ts
+        transfers.append({
+            "transaction_id": tx.get("hash", ""),
+            "block_timestamp": ts_ms,
+            "from_address": tx.get("from", tx.get("from_address", "")),
+            "to_address": tx.get("to", tx.get("to_address", "")),
+            "amount_usdt": round(amt, 2),
+            "raw_value": str(raw_v),
+            "token_symbol": tx.get("tokenSymbol", tx.get("token_symbol", "TOKEN")),
+            "contract_address": tx.get("contractAddress", ""),
+            "confirmed": True,
+        })
+
+    # Sort descending by block_timestamp so newest are at the top
+    transfers.sort(key=lambda x: int(x.get("block_timestamp", 0)), reverse=True)
+    return transfers
+
+
 # ── Single wallet check ────────────────────────────────────────────────────────
 @router.get(
     "/check",
@@ -96,31 +151,21 @@ async def check_wallet(
 
     try:
         payload = _evaluate_wallet(address, chain, use_cache=not no_cache)
-        if chain == "tron":
-            from src.blockchain_api_tron import TronDataFetcher
-            fetcher = TronDataFetcher(chains_config)
-            payload["recent_transfers"] = fetcher.get_recent_transfers(address, limit=10)
-        else:
-            from src.blockchain_api import BlockchainAPIAdapter
-            adapter = BlockchainAPIAdapter(chain, chains_config.get(chain, {}))
-            raw_txs = adapter.get_token_transfers(address, limit=10)
-            transfers = []
-            for tx in raw_txs:
-                decimal = int(tx.get("tokenDecimal", 18))
-                raw_v = int(tx.get("value", 0))
-                transfers.append({
-                    "transaction_id": tx.get("hash", ""),
-                    "block_timestamp": int(tx.get("timeStamp", 0)) * 1000 if int(tx.get("timeStamp", 0)) < 1e11 else int(tx.get("timeStamp", 0)),
-                    "from_address": tx.get("from", ""),
-                    "to_address": tx.get("to", ""),
-                    "amount_usdt": round(float(raw_v / (10 ** decimal)), 2),
-                    "raw_value": str(raw_v),
-                    "token_symbol": tx.get("tokenSymbol", "USDT"),
-                    "contract_address": tx.get("contractAddress", ""),
-                    "confirmed": True,
-                })
-            payload["recent_transfers"] = transfers
+
+        # If features show zero activity, this wallet has no on-chain history
+        feats = payload.get("features", {})
+        total_txs = feats.get("total_transactions", 0)
+        balance   = feats.get("wallet_balance", 0.0)
+        if total_txs == 0 and balance == 0.0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Cannot fetch on-chain data for '{address}' on {chain.upper()}. No transaction history found.",
+            )
+
+        payload["recent_transfers"] = _format_transfers(address, chain, chains_config)
         return payload
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -154,31 +199,21 @@ async def check_wallet_path(
 
     try:
         payload = _evaluate_wallet(address, chain, use_cache=not no_cache)
-        if chain == "tron":
-            from src.blockchain_api_tron import TronDataFetcher
-            fetcher = TronDataFetcher(chains_config)
-            payload["recent_transfers"] = fetcher.get_recent_transfers(address, limit=10)
-        else:
-            from src.blockchain_api import BlockchainAPIAdapter
-            adapter = BlockchainAPIAdapter(chain, chains_config.get(chain, {}))
-            raw_txs = adapter.get_token_transfers(address, limit=10)
-            transfers = []
-            for tx in raw_txs:
-                decimal = int(tx.get("tokenDecimal", 18))
-                raw_v = int(tx.get("value", 0))
-                transfers.append({
-                    "transaction_id": tx.get("hash", ""),
-                    "block_timestamp": int(tx.get("timeStamp", 0)) * 1000 if int(tx.get("timeStamp", 0)) < 1e11 else int(tx.get("timeStamp", 0)),
-                    "from_address": tx.get("from", ""),
-                    "to_address": tx.get("to", ""),
-                    "amount_usdt": round(float(raw_v / (10 ** decimal)), 2),
-                    "raw_value": str(raw_v),
-                    "token_symbol": tx.get("tokenSymbol", "USDT"),
-                    "contract_address": tx.get("contractAddress", ""),
-                    "confirmed": True,
-                })
-            payload["recent_transfers"] = transfers
+
+        # If features show zero activity, this wallet has no on-chain history
+        feats = payload.get("features", {})
+        total_txs = feats.get("total_transactions", 0)
+        balance   = feats.get("wallet_balance", 0.0)
+        if total_txs == 0 and balance == 0.0:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Cannot fetch on-chain data for '{address}' on {chain.upper()}. No transaction history found.",
+            )
+
+        payload["recent_transfers"] = _format_transfers(address, chain, chains_config)
         return payload
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

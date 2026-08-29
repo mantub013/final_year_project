@@ -7,7 +7,7 @@ import os
 import time
 from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
@@ -102,37 +102,43 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return TokenResponse(access_token=token)
 
 
-# ── Static Dashboard Files ─────────────────────────────────────────────────────
+# ── Static Dashboard & Explorer Files ────────────────────────────────────────
 @app.get("/app.js", include_in_schema=False)
 def serve_app_js():
     js_path = os.path.join(BASE_DIR, "app.js")
-    if os.path.exists(js_path):
-        return FileResponse(js_path, media_type="application/javascript")
-    raise HTTPException(status_code=404, detail="app.js not found")
+    if not os.path.exists(js_path):
+        raise HTTPException(status_code=404, detail="app.js not found")
+    return FileResponse(js_path, media_type="application/javascript", headers={
+        "Cache-Control": "no-cache"
+    })
 
-@app.get("/dashboard", include_in_schema=False)
+
+def _serve_index():
+    html_path = os.path.join(BASE_DIR, "index.html")
+    if not os.path.exists(html_path):
+        raise HTTPException(status_code=404, detail="index.html not found")
+    return FileResponse(html_path, media_type="text/html")
+
+
+# All of these paths serve the same Wallet Explorer landing page
+@app.get("/dashboard",  include_in_schema=False)
+@app.get("/explorer",   include_in_schema=False)
 @app.get("/index.html", include_in_schema=False)
 def serve_dashboard():
-    html_path = os.path.join(BASE_DIR, "index.html")
-    if os.path.exists(html_path):
-        return FileResponse(html_path, media_type="text/html")
-    raise HTTPException(status_code=404, detail="index.html not found")
+    return _serve_index()
 
-# ── Root ───────────────────────────────────────────────────────────────────────
-@app.get("/", tags=["General"], include_in_schema=False)
+
+@app.get("/favicon.ico", include_in_schema=False)
+def serve_favicon():
+    ico_path = os.path.join(BASE_DIR, "favicon.ico")
+    if os.path.exists(ico_path):
+        return FileResponse(ico_path, media_type="image/x-icon")
+    # Return 204 so browsers don't keep retrying with a 404 in the console
+    from fastapi.responses import Response
+    return Response(status_code=204)
+
+# ── Root — redirect to Wallet Explorer landing page ───────────────────────────
+@app.get("/", include_in_schema=False)
 def root():
-    return {
-        "name":        "DeFi Risk Intelligence API",
-        "version":     "2.0.0",
-        "docs":        "/docs",
-        "dashboard":   "/dashboard",
-        "health":      "/api/health",
-        "token":       "POST /api/token",
-        "endpoints": {
-            "wallet_check":   "GET  /api/v1/wallet/{wallet_address}?chain=tron",
-            "wallet_batch":   "POST /api/wallet/batch",
-            "wallet_history": "GET  /api/wallet/history/{address}",
-            "tx_check":       "GET  /api/transaction/check?tx_hash=...&from_address=...&to_address=...",
-            "alerts":         "GET  /api/alerts",
-        }
-    }
+    """Browser root always redirects to the Wallet Address Explorer."""
+    return RedirectResponse(url="/dashboard", status_code=302)

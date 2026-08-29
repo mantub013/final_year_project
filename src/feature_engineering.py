@@ -19,11 +19,12 @@ def generate_all_features(address: str, chain: str, chains_config: Dict[str, Any
     
     # Fetch transactional data
     balance = adapter.get_wallet_balance(address)
+    stats = adapter.get_account_stats(address)
     txs = adapter.get_transactions(address)
     token_txs = adapter.get_token_transfers(address)
     
     # Compute base tabular features
-    features = calculate_base_features(address, txs, token_txs, balance)
+    features = calculate_base_features(address, txs, token_txs, balance, stats=stats)
     
     # Build wallet graph and compute network features
     G = build_transaction_graph(address, txs)

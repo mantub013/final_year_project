@@ -131,7 +131,21 @@ Simply double-click:
 ```
 Run_Project.bat
 ```
-This batch file executes the virtual environment, spins up Uvicorn, and automatically opens the Bento Station Dashboard in your default browser.
+This batch file executes the virtual environment, spins up Uvicorn on port 8000, and automatically opens the Bento Station Dashboard in your default browser at `http://localhost:8000/dashboard`.
+
+### Desktop Shortcut Creation
+Double-click:
+```
+Create_Desktop_Shortcut.bat
+```
+This script creates a 1-click desktop shortcut titled **`AI-DeFi Risk Intelligence v2`** directly on your Windows Desktop pointing to `Run_Project.bat`.
+
+### Running Tests
+Double-click:
+```
+Run_Tests.bat
+```
+This executes the 15-test Pytest suite to verify API, GNN, Autoencoder, TRON adapter, and schema validation integrity.
 
 ### The Manual Way (CLI)
 1.  **Activate Environment**:
