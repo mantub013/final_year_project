@@ -132,9 +132,9 @@ class TronDataFetcher:
         config = config or {}
         tron_cfg = config.get("tron", {})
 
-        # API Keys priority: explicit parameter > env var > config > placeholder
+        # API Keys priority: explicit parameter > env var > config > default key
         raw_trongrid = trongrid_api_key or os.getenv("TRONGRID_API_KEY") or tron_cfg.get("trongrid_api_key", "")
-        self.trongrid_api_key = "" if raw_trongrid == "TRONGRID_API_KEY" else raw_trongrid
+        self.trongrid_api_key = "e53160ed-54c9-47c4-8d34-c80eb0433c70" if (not raw_trongrid or raw_trongrid == "TRONGRID_API_KEY") else raw_trongrid
 
         raw_bitquery = bitquery_bearer_token or os.getenv("BITQUERY_BEARER_TOKEN") or tron_cfg.get("bitquery_bearer_token", "")
         self.bitquery_bearer_token = "" if raw_bitquery == "BITQUERY_BEARER_TOKEN" else raw_bitquery

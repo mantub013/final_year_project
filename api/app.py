@@ -79,6 +79,33 @@ app.include_router(wallet.router,      prefix="/api/v1/wallet",    tags=["Wallet
 app.include_router(transaction.router, prefix="/api/transaction",  tags=["Transaction Risk Analysis"])
 app.include_router(alerts.router,      prefix="/api/alerts",       tags=["Live Alerts"])
 
+# ── Direct Endpoints as required by SRS ────────────────────────────────────────
+@app.get("/predict", tags=["Wallet Risk Analysis"], summary="Predict wallet risk with SHAP explanations")
+async def predict_endpoint(
+    address: str = "0xd8da6bf26964af9d7eed9e03e53415d37aa96045",
+    chain: str = "ethereum"
+):
+    """Direct alias for wallet risk prediction with SHAP values & explainability."""
+    from api.routes.wallet import _evaluate_wallet, _format_transfers, chains_config
+    payload = _evaluate_wallet(address, chain, use_cache=False)
+    payload["recent_transfers"] = _format_transfers(address, chain, chains_config)
+    return payload
+
+@app.get("/live-feed", tags=["Live Alerts"], summary="Live streaming blockchain transaction feed")
+async def live_feed_endpoint(chain: str = "ethereum"):
+    """Returns streaming recent transactions and active threat alerts."""
+    from api.routes.alerts import threat_store
+    from src.ingestion.live_poller import LiveBlockchainPoller
+    poller = LiveBlockchainPoller(chain=chain)
+    txs = poller.fetch_recent_transactions("0xd8da6bf26964af9d7eed9e03e53415d37aa96045", limit=10)
+    alerts = threat_store.get_active_alerts(limit=10)
+    return {
+        "chain": chain,
+        "live_transactions": txs,
+        "active_alerts": alerts,
+        "timestamp": time.time()
+    }
+
 # ── Auth endpoint ──────────────────────────────────────────────────────────────
 @app.post(
     "/api/token",

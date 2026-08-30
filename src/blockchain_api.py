@@ -62,9 +62,24 @@ def _seed(address: str, salt: int = 0) -> int:
     return int(hashlib.md5(raw.encode()).hexdigest(), 16) % (2 ** 32)
 
 
+import os
 import urllib.request, json
 
+ETHERSCAN_API_KEY = os.getenv("ETHERSCAN_API_KEY", "4TNC63YESA1EHV7N1EGFQX6K51KETRHN6I")
+
 def _fetch_live_balance(address: str):
+    # 1. Primary Etherscan V2 API
+    try:
+        url = f"https://api.etherscan.io/v2/api?chainid=1&module=account&action=balance&address={address.lower()}&tag=latest&apikey={ETHERSCAN_API_KEY}"
+        req = urllib.request.Request(url, headers={'Content-Type': 'application/json', 'User-Agent': 'AI-DeFi-Risk-Engine/2.0'})
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            data = json.loads(resp.read().decode())
+            if data.get("status") == "1" and data.get("result"):
+                return round(int(data["result"]) / 1e18, 6)
+    except Exception:
+        pass
+
+    # 2. Public RPC fallback
     rpcs = [
         "https://ethereum-rpc.publicnode.com",
         "https://cloudflare-eth.com",

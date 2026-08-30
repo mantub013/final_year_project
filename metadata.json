@@ -1,0 +1,8 @@
+{
+  "name": "AI-DeFi Risk Intelligence",
+  "description": "Multi-Chain Blockchain Wallet Explorer & Security Risk Intelligence Platform powered by XGBoost, GraphSAGE GNN, and Autoencoder Anomaly Detection",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

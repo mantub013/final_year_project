@@ -1,30 +1,10 @@
 ethereum:
   name: "Ethereum Mainnet"
   chain_id: 1
-  rpc_url: "https://eth-mainnet.g.alchemy.com/v2/mock-api-key"
-  scan_api_url: "https://api.etherscan.io/api"
+  rpc_url: "https://ethereum-rpc.publicnode.com"
+  scan_api_url: "https://api.etherscan.io/v2/api"
   explorer_url: "https://etherscan.io"
-
-bsc:
-  name: "BNB Smart Chain"
-  chain_id: 56
-  rpc_url: "https://bsc-dataseed.binance.org"
-  scan_api_url: "https://api.bscscan.com/api"
-  explorer_url: "https://bscscan.com"
-
-polygon:
-  name: "Polygon PoS"
-  chain_id: 137
-  rpc_url: "https://polygon-mainnet.g.alchemy.com/v2/mock-api-key"
-  scan_api_url: "https://api.polygonscan.com/api"
-  explorer_url: "https://polygonscan.com"
-
-arbitrum:
-  name: "Arbitrum One"
-  chain_id: 42161
-  rpc_url: "https://arb-mainnet.g.alchemy.com/v2/mock-api-key"
-  scan_api_url: "https://api.arbiscan.io/api"
-  explorer_url: "https://arbiscan.io"
+  etherscan_api_key: "4TNC63YESA1EHV7N1EGFQX6K51KETRHN6I"
 
 tron:
   name: "Tron Mainnet"
@@ -33,6 +13,22 @@ tron:
   scan_api_url: "https://api.trongrid.io/v1"
   explorer_url: "https://tronscan.org"
   usdt_contract: "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
-  trongrid_api_key: "TRONGRID_API_KEY"
-  bitquery_bearer_token: "BITQUERY_BEARER_TOKEN"
+  trongrid_api_key: "e53160ed-54c9-47c4-8d34-c80eb0433c70"
+
+polygon:
+  name: "Polygon PoS"
+  chain_id: 137
+  rpc_url: "https://polygon-rpc.com"
+  scan_api_url: "https://api.etherscan.io/v2/api"
+  explorer_url: "https://polygonscan.com"
+  etherscan_api_key: "4TNC63YESA1EHV7N1EGFQX6K51KETRHN6I"
+
+arbitrum:
+  name: "Arbitrum One"
+  chain_id: 42161
+  rpc_url: "https://arb1.arbitrum.io/rpc"
+  scan_api_url: "https://api.etherscan.io/v2/api"
+  explorer_url: "https://arbiscan.io"
+  etherscan_api_key: "4TNC63YESA1EHV7N1EGFQX6K51KETRHN6I"
+
 

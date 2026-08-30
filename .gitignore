@@ -1,3 +1,10 @@
+# Node / Web
+node_modules/
+dist/
+.env
+.env.local
+npm-debug.log*
+
 # Python
 __pycache__/
 *.py[cod]
@@ -8,7 +15,6 @@ __pycache__/
 venv/
 env/
 ENV/
-.env
 
 # Jupyter Notebook
 .ipynb_checkpoints

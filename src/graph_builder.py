@@ -58,6 +58,14 @@ def calculate_network_metrics(address: str, G: nx.DiGraph) -> Tuple[float, float
     deg_centrality = nx.degree_centrality(G)
     target_centrality = float(deg_centrality.get(address, 0.0))
 
+    # Clustering Coefficient
+    clustering_coeff = 0.0
+    try:
+        clustering_dict = nx.clustering(undirected_G)
+        clustering_coeff = float(clustering_dict.get(address, 0.0))
+    except Exception:
+        clustering_coeff = 0.0
+
     # 2. Distance to blacklisted node
     shortest_path = 99
     undirected_G = G.to_undirected()

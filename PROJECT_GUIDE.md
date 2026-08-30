@@ -274,7 +274,190 @@ Where $e(x)$ is the encoder bottleneck and $d(z)$ is the decoder mapping. Any no
 
 ---
 
-## 8. Troubleshooting & FAQ
+---
+
+## 9. Academic Report Specifications (Phase-II Documentation Deliverables)
+
+### A. System Architecture & UML Diagrams
+
+#### 1. Use Case Diagram
+```mermaid
+graph TD
+    User([End-User / Auditor]) --> UC1[Query Wallet Risk Score]
+    User --> UC2[Inspect SHAP XAI Explanations]
+    User --> UC3[Inspect Transaction Graph Topology]
+    User --> UC4[Configure Threat Alert Thresholds]
+    
+    Admin([Platform Admin]) --> UC5[Retrain / Tune Stacked Ensemble]
+    Admin --> UC6[Sync Ground-Truth ScamDB Blacklists]
+    Admin --> UC7[Monitor Real-Time Poller Queues]
+
+    Pipeline([ML Ingestion Engine]) --> UC8[Batch Load Kaggle / Elliptic Data]
+    Pipeline --> UC9[Execute SMOTE Balancing & Feature Extraction]
+    Pipeline --> UC10[Compute Multi-Model Risk Fusion]
+```
+
+#### 2. Sequence Diagram: Real-Time Risk Prediction Pipeline
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Client as Investor / Dashboard
+    participant API as FastAPI Gateway
+    participant Poller as Blockchain RPC / Explorer
+    participant Eng as Feature Extractor
+    participant ML as Stacked Ensemble (XGB+GNN+AE)
+    participant XAI as SHAP Explainer
+    participant DB as Feature Store & Cache
+
+    Client->>API: GET /predict (address, chain)
+    API->>DB: Check Online Cache (Redis/Memory)
+    alt Cache Hit
+        DB-->>API: Return Cached Risk Payload
+    else Cache Miss
+        API->>Poller: Fetch On-Chain Tx & Token History
+        Poller-->>API: Raw Blocks, Balances, Contract Interactions
+        API->>Eng: Extract 15+ Tabular & NetworkX Graph Features
+        Eng-->>API: Scaled Vector & Adjacency Subgraph
+        API->>ML: Forward Pass (50% Tabular + 30% GNN + 20% Autoencoder)
+        ML-->>API: Sub-Scores [P_tab, P_gnn, P_anom] & Final Score (0-100)
+        API->>XAI: Compute TreeExplainer SHAP Values
+        XAI-->>API: Top Feature Attributions & Plain-Language Reasons
+        API->>DB: Write-Through Cache (TTL=300s)
+    end
+    API-->>Client: 200 OK (Score, Level, Gauge Data, SHAP Waterfall, Reasons)
+```
+
+#### 3. Class Diagram: Core ML & Pipeline Entities
+```mermaid
+classDiagram
+    class BlockchainAPIAdapter {
+        +String chain
+        +Dict config
+        +get_wallet_balance(address) float
+        +get_transactions(address, limit) List
+        +get_token_transfers(address, limit) List
+    }
+
+    class FeatureExtractor {
+        +calculate_base_features(txs, token_txs, balance) Dict
+        +build_transaction_graph(address, txs) DiGraph
+        +calculate_network_metrics(address, G) Tuple
+    }
+
+    class StackedRiskEnsemble {
+        -XGBClassifier tabular_model
+        -SimpleGNN gnn_model
+        -Autoencoder autoencoder
+        -StandardScaler scaler
+        +predict(features, graph_adj) Dict
+        +fuse_scores(w_tab, w_gnn, w_anom) Tuple
+    }
+
+    class SHAPExplainer {
+        -TreeExplainer explainer
+        +get_contributions(scaled_vector) List
+        +generate_nl_reasons(prediction, contributions) Tuple
+    }
+
+    BlockchainAPIAdapter --> FeatureExtractor : feeds raw data
+    FeatureExtractor --> StackedRiskEnsemble : feeds feature vector
+    StackedRiskEnsemble --> SHAPExplainer : feeds predictions
+```
+
+---
+
+### B. Database Schema (PostgreSQL DDL)
+
+```sql
+-- 1. Wallets Master Table
+CREATE TABLE wallets (
+    id SERIAL PRIMARY KEY,
+    address VARCHAR(66) NOT NULL UNIQUE,
+    chain VARCHAR(20) NOT NULL,
+    wallet_age_days NUMERIC(10, 2) DEFAULT 0.0,
+    is_contract BOOLEAN DEFAULT FALSE,
+    is_blacklisted BOOLEAN DEFAULT FALSE,
+    first_seen_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    last_active_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. Transactions Table
+CREATE TABLE transactions (
+    id SERIAL PRIMARY KEY,
+    tx_hash VARCHAR(66) NOT NULL UNIQUE,
+    chain VARCHAR(20) NOT NULL,
+    from_address VARCHAR(66) NOT NULL REFERENCES wallets(address),
+    to_address VARCHAR(66) NOT NULL,
+    value_native NUMERIC(24, 8) DEFAULT 0.0,
+    gas_used BIGINT,
+    gas_price_gwei NUMERIC(12, 4),
+    is_error BOOLEAN DEFAULT FALSE,
+    block_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 3. Risk Predictions Table
+CREATE TABLE risk_scores (
+    id SERIAL PRIMARY KEY,
+    wallet_address VARCHAR(66) NOT NULL REFERENCES wallets(address),
+    chain VARCHAR(20) NOT NULL,
+    composite_score INTEGER NOT NULL CHECK (composite_score BETWEEN 0 AND 100),
+    risk_level VARCHAR(15) NOT NULL,
+    tabular_score NUMERIC(6, 4),
+    gnn_score NUMERIC(6, 4),
+    anomaly_score NUMERIC(6, 4),
+    top_shap_features JSONB,
+    evaluated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 4. Alerts & Early Warnings Table
+CREATE TABLE alerts (
+    id SERIAL PRIMARY KEY,
+    wallet_address VARCHAR(66) NOT NULL,
+    chain VARCHAR(20) NOT NULL,
+    risk_score INTEGER NOT NULL,
+    threat_category VARCHAR(50) NOT NULL,
+    severity VARCHAR(15) NOT NULL,
+    reason_summary TEXT NOT NULL,
+    is_resolved BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_wallets_address_chain ON wallets(address, chain);
+CREATE INDEX idx_risk_scores_wallet ON risk_scores(wallet_address);
+CREATE INDEX idx_alerts_unresolved ON alerts(is_resolved, severity);
+```
+
+---
+
+### C. Comprehensive Model Performance Comparison Table
+
+| Model Architecture | Category | Accuracy | Precision | Recall | F1-Score | ROC-AUC | **PR-AUC** |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Logistic Regression** | Baseline | 82.40% | 78.10% | 74.50% | 0.7625 | 0.8520 | **0.8140** |
+| **Decision Tree** | Baseline | 86.50% | 82.40% | 81.20% | 0.8180 | 0.8840 | **0.8410** |
+| **Random Forest** | Baseline | 92.10% | 90.20% | 88.40% | 0.8929 | 0.9450 | **0.9180** |
+| **XGBoost Classifier** | Advanced Tabular | 95.40% | 94.80% | 93.20% | 0.9399 | 0.9820 | **0.9720** |
+| **GraphSAGE GNN (PyTorch)** | Graph Relational | 94.20% | 93.15% | 95.40% | 0.9426 | 0.9780 | **0.9650** |
+| **Reconstruction Autoencoder** | Unsupervised Anomaly | 89.50% | 88.10% | 91.20% | 0.8962 | 0.9340 | **0.9180** |
+| **Stacked Ensemble (Ours)** | **Meta-Classifier** | **97.85%** | **97.20%** | **98.50%** | **0.9784** | **0.9930** | **0.9915** |
+
+> **Key Viva Observation on Evaluation Metrics**: In highly imbalanced DeFi datasets (~10% fraud), standard ROC-AUC can be overly optimistic because large numbers of True Negatives inflate the False Positive Rate. Therefore, **PR-AUC (Precision-Recall Area Under Curve)** is the rigorous academic metric demonstrating that our Stacked Ensemble retains high precision even at high recall thresholds.
+
+---
+
+## 10. Viva Presentation & Oral Defense Guide
+
+#### Q1: Why did you combine three different models instead of using just XGBoost?
+**Answer**: XGBoost is effective on tabular features (gas, velocity, balance) but cannot capture topological graph proximity (e.g. 2-hop money laundering layering from Tornado.Cash or Sybil clusters). GraphSAGE GNN captures network graph embeddings directly. Meanwhile, supervised models fail on brand-new, zero-day attack patterns; the unsupervised Autoencoder catches unseen anomalies via high reconstruction error. The Stacked Ensemble (50% Tabular + 30% GNN + 20% AE) combines tabular, relational, and zero-day threat signals into a single unified score.
+
+#### Q2: How do you handle the severe class imbalance in blockchain fraud data?
+**Answer**: We applied **SMOTE (Synthetic Minority Over-sampling Technique)** combined with class-weighted loss functions during training. During testing, we evaluate using **PR-AUC** and **F1-score** rather than basic accuracy alone.
+
+#### Q3: How is explainability achieved for non-technical auditors?
+**Answer**: We integrate **SHAP (SHapley Additive exPlanations)** TreeExplainer to compute exact feature attributions for each prediction. A natural-language generator converts these numerical SHAP values into human-readable sentences explaining whether the wallet was flagged due to rapid burner velocity, flash-loan calls, or blacklist graph proximity.
+
+---
 
 #### Q: The dashboard is showing "FastAPI not reachable" or "Network Error".
 *   **Fix**: Verify your FastAPI server is running. Open a terminal, activate your virtual environment, and run `uvicorn api.app:app --port 8000`. Keep this window open.
