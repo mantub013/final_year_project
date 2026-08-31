@@ -31,4 +31,12 @@ arbitrum:
   explorer_url: "https://arbiscan.io"
   etherscan_api_key: "4TNC63YESA1EHV7N1EGFQX6K51KETRHN6I"
 
+bsc:
+  name: "BNB Smart Chain"
+  chain_id: 56
+  rpc_url: "https://bsc-dataseed.binance.org"
+  scan_api_url: "https://api.etherscan.io/v2/api"
+  explorer_url: "https://bscscan.com"
+  etherscan_api_key: "4TNC63YESA1EHV7N1EGFQX6K51KETRHN6I"
+
 
