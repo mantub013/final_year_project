@@ -288,6 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (dashInput) {
         dashInput.addEventListener("input", () => {
+            hideExplorerError();
             const val = dashInput.value.trim();
             if (val.startsWith("T") && state.currentChain !== "tron") {
                 setActiveNetwork("tron", false);
@@ -295,6 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 setActiveNetwork("ethereum", false);
             }
         });
+        dashInput.addEventListener("focus", () => hideExplorerError());
         dashInput.addEventListener("keypress", e => e.key === "Enter" && handleDashboardScan());
     }
     if (dashPasteBtn) {
@@ -303,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const text = await navigator.clipboard.readText();
                 if (text && dashInput) {
                     dashInput.value = text.trim();
+                    hideExplorerError();
                     if (text.trim().startsWith("T")) setActiveNetwork("tron", false);
                     else if (text.trim().startsWith("0x") && state.currentChain === "tron") setActiveNetwork("ethereum", false);
                 }
@@ -314,6 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (dashClearBtn) {
         dashClearBtn.addEventListener("click", () => {
             if (dashInput) dashInput.value = "";
+            hideExplorerError();
         });
     }
     if (dashCopyBtn) {
@@ -385,6 +389,29 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // Sidebar Navigation Buttons
+    const sidebarScanTab = g("sidebar-scan-tab");
+    const sidebarDashTab = g("sidebar-dash-tab");
+    const sidebarApiHubTab = g("sidebar-apihub-tab");
+    const sidebarReportTab = g("sidebar-report-tab");
+
+    if (sidebarScanTab) sidebarScanTab.addEventListener("click", showLandingView);
+    if (sidebarDashTab) sidebarDashTab.addEventListener("click", () => {
+        if (state.currentAddress) {
+            showDashboardView();
+        } else {
+            showToast("Scan a wallet address first to view dashboard telemetry.", "info");
+        }
+    });
+    if (sidebarApiHubTab) sidebarApiHubTab.addEventListener("click", showApiHub);
+    if (sidebarReportTab) sidebarReportTab.addEventListener("click", () => {
+        if (state.currentData) {
+            openExecutiveReport(state.currentData, state.currentChain);
+        } else {
+            showToast("Scan a wallet address first to view audit report.", "info");
+        }
+    });
+
     // Back to Scanner (Page 1) Navigation Buttons
     const backToScanBtn = g("back-to-scan-btn");
     const bottomBackToScanBtn = g("bottom-back-to-scan-btn");
@@ -397,6 +424,13 @@ document.addEventListener("DOMContentLoaded", () => {
         clearRecentBtn.addEventListener("click", clearAllRecentScans);
     }
 
+    // Theme Toggle Button
+    const themeToggleBtn = g("theme-toggle-btn");
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener("click", toggleTheme);
+    }
+
+    initTheme();
     initGauge(0);
     initHistory();
     checkApiStatus();
@@ -405,6 +439,47 @@ document.addEventListener("DOMContentLoaded", () => {
     // Default startup state: Show Page 1 (Search & Scanner Portal)
     showLandingView();
 });
+
+// ── Theme Management ────────────────────────────────────────────────────────
+function initTheme() {
+    const isDark = document.documentElement.classList.contains("dark");
+    updateThemeToggleUI(isDark);
+}
+
+function toggleTheme() {
+    const isCurrentlyDark = document.documentElement.classList.contains("dark");
+    const willBeDark = !isCurrentlyDark;
+    
+    document.documentElement.classList.toggle("dark", willBeDark);
+    
+    try {
+        localStorage.setItem("defi_shield_theme", willBeDark ? "dark" : "light");
+    } catch (e) {}
+    
+    updateThemeToggleUI(willBeDark);
+    updateChartsTheme();
+}
+
+function updateThemeToggleUI(isDark) {
+    const icon = g("theme-icon");
+    const text = g("theme-text");
+    const btn = g("theme-toggle-btn");
+    
+    if (icon) icon.textContent = isDark ? "☀️" : "🌙";
+    if (text) text.textContent = isDark ? "Light" : "Dark";
+    if (btn) btn.title = isDark ? "Switch to Light Mode" : "Switch to Dark Mode";
+}
+
+function updateChartsTheme() {
+    if (miniGaugeChart && miniGaugeChart.data && miniGaugeChart.data.datasets && miniGaugeChart.data.datasets[0]) {
+        miniGaugeChart.data.datasets[0].backgroundColor[1] = document.documentElement.classList.contains("dark") ? "#1E293B" : "#EEF2F6";
+        miniGaugeChart.update();
+    }
+    if (historyChart && historyChart.options && historyChart.options.scales && historyChart.options.scales.y) {
+        historyChart.options.scales.y.grid.color = document.documentElement.classList.contains("dark") ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.04)";
+        historyChart.update();
+    }
+}
 
 // ── Network Switching Logic ──────────────────────────────────────────────────
 function setActiveNetwork(chain, triggerReScan = false) {
@@ -415,18 +490,18 @@ function setActiveNetwork(chain, triggerReScan = false) {
     // Update Landing Tabs Styling
     document.querySelectorAll(".landing-chain-tab").forEach(tab => {
         if (tab.dataset.chain === chain) {
-            tab.className = "landing-chain-tab py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all border bg-indigo-950/80 border-indigo-500 text-white shadow-md shadow-indigo-950/50";
+            tab.className = "landing-chain-tab py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all border bg-gold-500/15 border-gold-500/40 text-gold-900 dark:text-gold-300 shadow-xs cursor-pointer font-heading";
         } else {
-            tab.className = "landing-chain-tab py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all border bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700";
+            tab.className = "landing-chain-tab py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all border bg-ivory-100 dark:bg-onyx-850 border-ivory-300 dark:border-onyx-700 text-ivory-700 dark:text-ivory-300 hover:bg-ivory-200 dark:hover:bg-onyx-800 hover:text-ivory-900 dark:hover:text-ivory-100 cursor-pointer";
         }
     });
 
     // Update Dashboard Tabs Styling
     document.querySelectorAll(".dash-chain-tab").forEach(tab => {
         if (tab.dataset.chain === chain) {
-            tab.className = "dash-chain-tab py-2 px-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition-all border bg-indigo-950/90 border-indigo-500 text-white shadow-sm cursor-pointer";
+            tab.className = "dash-chain-tab py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1 transition-all border bg-gold-500/15 border-gold-500/40 text-gold-900 dark:text-gold-300 shadow-xs cursor-pointer font-heading";
         } else {
-            tab.className = "dash-chain-tab py-2 px-2 rounded-xl font-bold text-xs flex items-center justify-center gap-1 transition-all border bg-slate-900 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 cursor-pointer";
+            tab.className = "dash-chain-tab py-2 px-3 rounded-lg font-bold text-xs flex items-center justify-center gap-1 transition-all border bg-ivory-100 dark:bg-onyx-850 border-ivory-300 dark:border-onyx-700 text-ivory-700 dark:text-ivory-300 hover:bg-ivory-200 dark:hover:bg-onyx-800 hover:text-ivory-900 dark:hover:text-ivory-100 cursor-pointer";
         }
     });
 
@@ -434,11 +509,11 @@ function setActiveNetwork(chain, triggerReScan = false) {
     const apiInd = g("active-api-indicator");
     if (apiInd) {
         if (chain === "tron") {
-            apiInd.textContent = "⚡ TronGrid Pro API (Key Active)";
-            apiInd.className = "text-xs text-emerald-400 font-mono";
+            apiInd.textContent = "⚡ TronGrid Pro API Ready";
+            apiInd.className = "text-xs text-emerald-600 font-semibold";
         } else {
             apiInd.textContent = "⚡ Etherscan V2 API Ready";
-            apiInd.className = "text-xs text-emerald-400 font-mono";
+            apiInd.className = "text-xs text-emerald-600 font-semibold";
         }
     }
 
@@ -564,26 +639,26 @@ function renderRecentScansBar() {
             : addr;
 
         // Risk badge styling
-        let badgeBg = "bg-slate-800 text-slate-300 border-slate-700";
+        let badgeBg = "bg-ivory-200 dark:bg-onyx-800 text-ivory-700 dark:text-ivory-300 border-ivory-300 dark:border-onyx-700";
         let scoreText = "";
         if (scan.riskScore != null) {
             const sc = scan.riskScore;
-            if (sc >= 80) badgeBg = "bg-rose-950/90 text-rose-300 border-rose-800/80";
-            else if (sc >= 60) badgeBg = "bg-orange-950/90 text-orange-300 border-orange-800/80";
-            else if (sc >= 35) badgeBg = "bg-amber-950/90 text-amber-300 border-amber-800/80";
-            else badgeBg = "bg-emerald-950/90 text-emerald-300 border-emerald-800/80";
+            if (sc >= 80) badgeBg = "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20";
+            else if (sc >= 60) badgeBg = "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20";
+            else if (sc >= 35) badgeBg = "bg-gold-500/10 text-gold-700 dark:text-gold-400 border-gold-500/20";
+            else badgeBg = "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20";
             scoreText = `${sc}/100`;
         }
 
         const chip = document.createElement("div");
-        chip.className = "flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/70 transition-all cursor-pointer group shadow-sm select-none";
+        chip.className = "flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-ivory-100 dark:bg-onyx-850 hover:bg-white dark:hover:bg-onyx-800 border border-ivory-300/80 dark:border-onyx-700 hover:border-gold-500/40 transition-all cursor-pointer group shadow-xs select-none";
         chip.title = `Address: ${addr}\nNetwork: ${chainName}\nRisk: ${scan.riskScore != null ? scan.riskScore + '/100 (' + scan.riskLevel + ')' : 'Scanned'}\nClick to re-scan`;
 
         chip.innerHTML = `
             <span class="text-xs">${chainIcon}</span>
-            <span class="font-mono text-[11px] text-slate-200 group-hover:text-white font-medium">${esc(shortAddr)}</span>
-            ${scoreText ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded border ${badgeBg}">${scoreText}</span>` : ""}
-            <button type="button" class="ml-0.5 text-slate-500 hover:text-rose-400 text-[11px] p-0.5 transition-colors cursor-pointer" title="Remove from recent">✕</button>
+            <span class="font-mono text-[11px] text-ivory-800 dark:text-ivory-200 group-hover:text-gold-600 dark:group-hover:text-gold-400 font-semibold">${esc(shortAddr)}</span>
+            ${scoreText ? `<span class="text-[10px] font-bold px-1.5 py-0.5 rounded-md border ${badgeBg}">${scoreText}</span>` : ""}
+            <button type="button" class="ml-0.5 text-ivory-400 hover:text-rose-600 text-[11px] p-0.5 transition-colors cursor-pointer" title="Remove from recent">✕</button>
         `;
 
         // Click on chip loads address and triggers scan
@@ -629,7 +704,7 @@ async function runApiLatencyTest() {
     if (icon) icon.textContent = "⏳";
     if (txt) txt.textContent = "Testing...";
 
-    grid.innerHTML = '<div class="col-span-full p-4 text-center text-xs text-slate-400 font-mono">Pinging live production API gateways...</div>';
+    grid.innerHTML = '<div class="col-span-full p-4 text-center text-xs text-slate-500 font-mono">Pinging live production API gateways...</div>';
 
     try {
         const res = await fetch(`${API_BASE}/api/ping-apis`).then(r => r.json());
@@ -637,26 +712,26 @@ async function runApiLatencyTest() {
             grid.innerHTML = res.results.map(r => {
                 const isOnline = r.status === "ONLINE";
                 const isRate = r.status === "RATE_LIMITED";
-                const borderCls = isOnline ? "border-emerald-800/80 bg-emerald-950/40" : (isRate ? "border-amber-800/80 bg-amber-950/40" : "border-rose-800/80 bg-rose-950/40");
-                const badgeCls = isOnline ? "bg-emerald-900 text-emerald-300 border-emerald-700" : (isRate ? "bg-amber-900 text-amber-300 border-amber-700" : "bg-rose-900 text-rose-300 border-rose-700");
-                const dotCls = isOnline ? "bg-emerald-400" : (isRate ? "bg-amber-400" : "bg-rose-400");
-                return '<div class="p-3 rounded-xl border ' + borderCls + ' space-y-1.5">' +
+                const borderCls = isOnline ? "border-emerald-500/30 bg-emerald-500/10" : (isRate ? "border-amber-500/30 bg-amber-500/10" : "border-rose-500/30 bg-rose-500/10");
+                const badgeCls = isOnline ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/20" : (isRate ? "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/20" : "bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/20");
+                const dotCls = isOnline ? "bg-emerald-500" : (isRate ? "bg-amber-500" : "bg-rose-500");
+                return '<div class="p-3.5 rounded-xl border ' + borderCls + ' space-y-1.5 shadow-xs">' +
                     '<div class="flex items-center justify-between">' +
-                        '<span class="text-xs font-bold text-white truncate max-w-[140px]">' + esc(r.service) + '</span>' +
+                        '<span class="text-xs font-bold text-ivory-900 dark:text-ivory-100 truncate max-w-[140px] font-heading">' + esc(r.service) + '</span>' +
                         '<span class="tag-pill ' + badgeCls + ' text-[10px]">' + esc(r.status) + '</span>' +
                     '</div>' +
                     '<div class="flex items-center justify-between text-[11px] font-mono">' +
-                        '<span class="text-slate-400">Latency</span>' +
-                        '<span class="font-bold text-white flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full ' + dotCls + '"></span>' + (r.latency_ms != null ? r.latency_ms + 'ms' : '—') + '</span>' +
+                        '<span class="text-ivory-500">Latency</span>' +
+                        '<span class="font-bold text-ivory-900 dark:text-ivory-100 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full ' + dotCls + '"></span>' + (r.latency_ms != null ? r.latency_ms + 'ms' : '—') + '</span>' +
                     '</div>' +
-                    '<div class="text-[10px] text-slate-400 truncate font-mono">' + esc(r.auth || r.endpoint || "") + '</div>' +
+                    '<div class="text-[10px] text-ivory-500 truncate font-mono">' + esc(r.auth || r.endpoint || "") + '</div>' +
                 '</div>';
             }).join("");
         } else {
-            grid.innerHTML = '<div class="col-span-full p-4 text-center text-xs text-rose-400">Failed to ping APIs.</div>';
+            grid.innerHTML = '<div class="col-span-full p-4 text-center text-xs text-rose-600 dark:text-rose-400">Failed to ping APIs.</div>';
         }
     } catch(e) {
-        grid.innerHTML = '<div class="col-span-full p-4 text-center text-xs text-rose-400">Error connecting to ping endpoint: ' + esc(e.message) + '</div>';
+        grid.innerHTML = '<div class="col-span-full p-4 text-center text-xs text-rose-600 dark:text-rose-400">Error connecting to ping endpoint: ' + esc(e.message) + '</div>';
     } finally {
         if (btn) btn.disabled = false;
         if (icon) icon.textContent = "⚡";
@@ -672,10 +747,10 @@ async function checkApiStatus() {
     try {
         const r = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(4000) });
         const ok = r.ok;
-        [dot1, dot2].forEach(d => { if (d) d.className = "w-2 h-2 rounded-full " + (ok ? "bg-emerald-400 pulse-dot" : "bg-red-400"); });
+        [dot1, dot2].forEach(d => { if (d) d.className = "w-2 h-2 rounded-full " + (ok ? "bg-emerald-500 pulse-dot" : "bg-rose-500"); });
         [txt1, txt2].forEach(t => { if (t) t.textContent = ok ? "API Online" : "API Error"; });
     } catch {
-        [dot1, dot2].forEach(d => { if (d) d.className = "w-2 h-2 rounded-full bg-amber-400"; });
+        [dot1, dot2].forEach(d => { if (d) d.className = "w-2 h-2 rounded-full bg-amber-500"; });
         [txt1, txt2].forEach(t => { if (t) t.textContent = "API Offline"; });
     }
 }
@@ -686,6 +761,19 @@ function showLandingView() {
     const dashboard = g("dashboard-view");
     if (landing)   landing.classList.remove("hidden");
     if (dashboard) dashboard.classList.add("hidden");
+
+    // Update Topbar
+    const topTitle = g("topbar-title");
+    const topBadge = g("topbar-mode-badge");
+    if (topTitle) topTitle.textContent = "Web3 Wallet Risk & Forensic Intelligence";
+    if (topBadge) topBadge.textContent = "Multi-Chain Security";
+
+    // Update Sidebar active state
+    const scanTab = g("sidebar-scan-tab");
+    const dashTab = g("sidebar-dash-tab");
+    if (scanTab) scanTab.className = "sidebar-tab-btn flex-shrink-0 flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-700 transition-all text-left w-full cursor-pointer shadow-xs";
+    if (dashTab) dashTab.className = "sidebar-tab-btn flex-shrink-0 flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all text-left w-full cursor-pointer";
+
     hideExplorerError();
     renderRecentScansBar();
     const dashInput = g("dash-address-input");
@@ -701,6 +789,18 @@ function showDashboardView() {
     if (landing)   landing.classList.add("hidden");
     if (dashboard) dashboard.classList.remove("hidden");
     
+    // Update Topbar
+    const topTitle = g("topbar-title");
+    const topBadge = g("topbar-mode-badge");
+    if (topTitle) topTitle.textContent = "Executive Risk & Forensic Audit";
+    if (topBadge) topBadge.textContent = "Live Assessment";
+
+    // Update Sidebar active state
+    const scanTab = g("sidebar-scan-tab");
+    const dashTab = g("sidebar-dash-tab");
+    if (dashTab) dashTab.className = "sidebar-tab-btn flex-shrink-0 flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-50 text-indigo-700 transition-all text-left w-full cursor-pointer shadow-xs";
+    if (scanTab) scanTab.className = "sidebar-tab-btn flex-shrink-0 flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all text-left w-full cursor-pointer";
+
     const navAddr = g("nav-target-address");
     const navChain = g("nav-chain-badge");
     if (navAddr && state.currentAddress) navAddr.textContent = state.currentAddress;
@@ -712,41 +812,65 @@ function showDashboardView() {
 function showExplorerError(msg) {
     const box = g("explorer-error-alert");
     const txt = g("explorer-error-msg");
+    const input = g("dash-address-input");
     if (txt) txt.textContent = msg;
     if (box) box.classList.remove("hidden");
+    if (input) {
+        input.classList.add("border-rose-500", "focus:border-rose-500", "focus:ring-rose-500/25");
+    }
     if (box) box.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 function hideExplorerError() {
     const box = g("explorer-error-alert");
+    const input = g("dash-address-input");
     if (box) box.classList.add("hidden");
+    if (input) {
+        input.classList.remove("border-rose-500", "focus:border-rose-500", "focus:ring-rose-500/25");
+    }
+}
+
+// Helper: Strict address validation
+function validateWalletInput(addr) {
+    if (!addr || !addr.trim()) {
+        return { valid: false, error: "Please enter a wallet address to analyze." };
+    }
+    const cleanAddr = addr.trim();
+    const isEvm  = /^0x[a-fA-F0-9]{40}$/.test(cleanAddr);
+    const isTron = /^T[a-zA-Z0-9]{32,33}$/.test(cleanAddr);
+
+    if (!isEvm && !isTron) {
+        if (cleanAddr.startsWith("0x")) {
+            if (cleanAddr.length !== 42) {
+                return { valid: false, error: `Invalid EVM address — must be 42 characters (0x + 40 hex characters). Current length: ${cleanAddr.length}.` };
+            }
+            return { valid: false, error: "Invalid EVM address — contains non-hexadecimal characters. Valid hex: 0-9, a-f." };
+        } else if (cleanAddr.startsWith("T")) {
+            if (cleanAddr.length !== 34) {
+                return { valid: false, error: `Invalid TRON address — must be exactly 34 characters starting with 'T'. Current length: ${cleanAddr.length}.` };
+            }
+            return { valid: false, error: "Invalid TRON address — contains invalid Base58 characters." };
+        } else {
+            return { valid: false, error: "Invalid address format — please enter a valid Ethereum (0x... 42 chars) or TRON (T... 34 chars) address." };
+        }
+    }
+    return { valid: true, cleanAddr, isEvm, isTron };
 }
 
 // ── Analysis Handler (Landing) ────────────────────────────────────────────────
 async function handleExplorerScan() {
     const input  = g("explorer-address-input");
     const netSel = g("explorer-network-select");
-    const addr   = input ? input.value.trim() : "";
+    const rawAddr = input ? input.value : "";
     const chain  = netSel ? netSel.value : state.currentChain || "ethereum";
 
-    if (!addr) {
-        showExplorerError("Please enter a wallet address to analyze.");
+    const check = validateWalletInput(rawAddr);
+    if (!check.valid) {
+        showExplorerError(check.error);
         return;
     }
 
-    const isEvm  = /^0x[a-fA-F0-9]{40}$/.test(addr);
-    const isTron = /^T[a-zA-Z0-9]{32,33}$/.test(addr);
-
-    if (!isEvm && !isTron) {
-        if (addr.startsWith("0x")) {
-            showExplorerError(`Invalid EVM address — must be 42 characters (0x + 40 hex). Current length: ${addr.length}.`);
-        } else if (addr.startsWith("T")) {
-            showExplorerError(`Invalid TRON address — must be 34 characters. Current length: ${addr.length}.`);
-        } else {
-            showExplorerError("Invalid address format. EVM addresses start with 0x (42 chars). TRON addresses start with T (34 chars).");
-        }
-        return;
-    }
+    const { cleanAddr, isEvm, isTron } = check;
     if (isTron && chain !== "tron") {
         setActiveNetwork("tron", false);
     }
@@ -756,32 +880,21 @@ async function handleExplorerScan() {
 
     const effectiveChain = isTron ? "tron" : (chain === "tron" ? "ethereum" : chain);
     hideExplorerError();
-    await runAnalysisPipeline(addr, effectiveChain);
+    await runAnalysisPipeline(cleanAddr, effectiveChain);
 }
 
 // ── Analysis Handler (Dashboard) ──────────────────────────────────────────────
 async function handleDashboardScan() {
     const input = g("dash-address-input");
-    const addr = input ? input.value.trim() : "";
-    if (!addr) {
-        showExplorerError("Please enter a wallet address to analyze.");
+    const rawAddr = input ? input.value : "";
+
+    const check = validateWalletInput(rawAddr);
+    if (!check.valid) {
+        showExplorerError(check.error);
         return;
     }
 
-    const isEvm  = /^0x[a-fA-F0-9]{40}$/.test(addr);
-    const isTron = /^T[a-zA-Z0-9]{32,33}$/.test(addr);
-
-    if (!isEvm && !isTron) {
-        if (addr.startsWith("0x")) {
-            showExplorerError(`Invalid EVM address — must be 42 characters (0x + 40 hex). Current length: ${addr.length}.`);
-        } else if (addr.startsWith("T")) {
-            showExplorerError(`Invalid TRON address — must be 34 characters. Current length: ${addr.length}.`);
-        } else {
-            showExplorerError("Invalid address format. EVM addresses start with 0x (42 chars). TRON addresses start with T (34 chars).");
-        }
-        return;
-    }
-
+    const { cleanAddr, isEvm, isTron } = check;
     let chain = state.currentChain;
     if (isTron && chain !== "tron") {
         chain = "tron";
@@ -792,7 +905,7 @@ async function handleDashboardScan() {
     }
 
     hideExplorerError();
-    await runAnalysisPipeline(addr, chain);
+    await runAnalysisPipeline(cleanAddr, chain);
 }
 
 
@@ -888,16 +1001,31 @@ async function runAnalysisPipeline(address, chain) {
 
         if (r.status === 401) { localStorage.removeItem(TOKEN_KEY); return runAnalysisPipeline(address, chain); }
         if (r.status === 429) { showExplorerError("Rate limit reached — please wait a moment and try again."); hideLoadingModal(); return; }
-        if (r.status === 400) { const j = await r.json(); showExplorerError("Validation error: " + (j.detail || "Bad request")); hideLoadingModal(); return; }
-        if (r.status === 404) { showExplorerError("Cannot fetch on-chain data for this address on " + chain.toUpperCase() + ". No transaction history found."); hideLoadingModal(); return; }
-        if (!r.ok) { showExplorerError("Cannot fetch data from server (HTTP " + r.status + "). Please try again."); hideLoadingModal(); return; }
+        if (r.status === 400) {
+            const j = await r.json().catch(() => null);
+            showExplorerError(j && j.detail ? j.detail : "Invalid wallet address: The entered address is malformed.");
+            hideLoadingModal();
+            return;
+        }
+        if (r.status === 404) {
+            const j = await r.json().catch(() => null);
+            showExplorerError(j && j.detail ? j.detail : `Address does not exist: No on-chain transaction history or balance found for this address on ${chain.toUpperCase()}.`);
+            hideLoadingModal();
+            return;
+        }
+        if (!r.ok) {
+            const j = await r.json().catch(() => null);
+            showExplorerError(j && j.detail ? j.detail : `Error analyzing address on ${chain.toUpperCase()} (HTTP ${r.status}).`);
+            hideLoadingModal();
+            return;
+        }
 
         updateLoadingStep(5, "active", "⟳ Computing risk score & generating AI explanations...");
         const data = await r.json();
 
         // Check if the response contains meaningful data
         if (!data || data.risk_score == null) {
-            showExplorerError("Cannot fetch data for this address on " + chain.toUpperCase() + ". Data unavailable.");
+            showExplorerError(`Address does not exist or data is unavailable on ${chain.toUpperCase()}.`);
             hideLoadingModal();
             return;
         }
@@ -971,13 +1099,13 @@ function updateLoadingStep(stepNum, status, text) {
     const step = g(`step-${stepNum}`);
     if (!step) return;
     if (status === "done") {
-        step.className = "flex items-center gap-2 text-emerald-400 font-semibold";
+        step.className = "flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-semibold";
         step.innerHTML = `<span>✓</span><span>${text}</span>`;
     } else if (status === "active") {
-        step.className = "flex items-center gap-2 text-indigo-400 font-semibold";
+        step.className = "flex items-center gap-2 text-gold-600 dark:text-gold-400 font-semibold";
         step.innerHTML = `<span class="animate-spin">⟳</span><span>${text}</span>`;
     } else {
-        step.className = "flex items-center gap-2 text-slate-500";
+        step.className = "flex items-center gap-2 text-ivory-500";
         step.innerHTML = `<span>○</span><span>${text}</span>`;
     }
 }
@@ -1019,9 +1147,9 @@ function fillDashboard(data, chain) {
     set("dash-full-address", data.address || "—");
     set("dash-chain-pill", chainUpper);
     if (isTron) {
-        cls("dash-chain-pill", "tag-pill bg-emerald-950 text-emerald-300 border border-emerald-700");
+        cls("dash-chain-pill", "tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-mono text-[10px]");
     } else {
-        cls("dash-chain-pill", "tag-pill bg-indigo-950 text-indigo-300 border border-indigo-800");
+        cls("dash-chain-pill", "tag-pill bg-gold-500/10 text-gold-800 dark:text-gold-300 border border-gold-500/30 font-mono text-[10px]");
     }
 
     // Dynamic API Source text in dashboard header
@@ -1048,19 +1176,19 @@ function fillDashboard(data, chain) {
 
     set("dash-entity-name", data.entity_label || (feats.is_smart_contract ? (isTron ? "TRON Smart Contract" : "Smart Contract") : (isTron ? "TRON Account Wallet" : "EOA Account Wallet")));
     set("dash-entity-badge", data.entity_category || (feats.is_smart_contract ? "Verified Contract" : (isTron ? "TRON Base58 EOA" : "Standard EOA")));
-    cls("dash-entity-badge", "tag-pill " + (isSanctioned ? "bg-rose-950 text-rose-300 border border-rose-800" : isVerified ? "bg-emerald-950 text-emerald-300 border border-emerald-800" : "bg-slate-800 text-slate-300 border border-slate-700"));
+    cls("dash-entity-badge", "tag-pill " + (isSanctioned ? "bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20" : isVerified ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20" : "bg-ivory-200 dark:bg-onyx-800 text-ivory-700 dark:text-ivory-300 border border-ivory-300 dark:border-onyx-700"));
 
     const liveBadge = g("dash-live-badge");
     if (liveBadge) {
         if (isTron) {
             liveBadge.textContent = "⚡ TronGrid Pro API Synced";
-            liveBadge.className = "tag-pill bg-emerald-950 text-emerald-300 border border-emerald-700";
+            liveBadge.className = "tag-pill bg-emerald-50 text-emerald-700 border border-emerald-200";
         } else if (data.live_onchain_synced || feats.is_live_data) {
             liveBadge.textContent = "⚡ Live RPC Synced";
-            liveBadge.className = "tag-pill bg-emerald-950 text-emerald-400 border border-emerald-800";
+            liveBadge.className = "tag-pill bg-emerald-50 text-emerald-700 border border-emerald-200";
         } else {
             liveBadge.textContent = "✓ Neural Benchmark Calibrated";
-            liveBadge.className = "tag-pill bg-indigo-950 text-indigo-300 border border-indigo-800";
+            liveBadge.className = "tag-pill bg-indigo-50 text-indigo-700 border border-indigo-200";
         }
     }
 
@@ -1100,7 +1228,7 @@ function fillDashboard(data, chain) {
     const hops = feats.distance_to_blacklisted_wallet;
     const hopsStr = (hops == null || hops === 99) ? "Safe" : String(hops);
     set("hops-text", hopsStr);
-    cls("hops-text", "text-2xl font-black " + (hops < 3 ? "text-rose-400" : hops < 5 ? "text-amber-400" : "text-emerald-400"));
+    cls("hops-text", "text-2xl font-black " + (hops < 3 ? "text-rose-600" : hops < 5 ? "text-amber-600" : "text-emerald-600"));
 
     const suffix = g("risk-score-suffix");
     if (suffix) { suffix.textContent = "/ 100 · " + level; suffix.className = "tag-pill mt-2 inline-block " + lvlBadge(level); }
@@ -1111,7 +1239,7 @@ function fillDashboard(data, chain) {
     updateDonut(score, level);
 
     const lvlBadgeEl = g("risk-level-badge");
-    if (lvlBadgeEl) { lvlBadgeEl.textContent = level; lvlBadgeEl.className = "tag-pill text-sm px-4 py-1 " + lvlBadge(level); }
+    if (lvlBadgeEl) { lvlBadgeEl.textContent = level; lvlBadgeEl.className = "tag-pill text-xs px-3.5 py-1 " + lvlBadge(level); }
 
     /* ── Breakdown Bars ── */
     const tab  = Math.round((bd.tabular_ensemble || 0) * 100);
@@ -1188,9 +1316,9 @@ function renderFeats(feats, chain) {
                       (k === "flash_loan_usage" && v > 0) ||
                       (k === "burst_activity_score" && v > 0.6) ||
                       (k === "distance_to_blacklisted_wallet" && v < 2);
-        const valCls = risky ? "font-mono font-bold text-rose-400" : "font-mono font-bold text-slate-300";
-        return '<div class="flex justify-between items-center py-2 border-b border-slate-800/60">' +
-               '<span class="text-slate-400 text-xs">' + esc(label) + '</span>' +
+        const valCls = risky ? "font-mono font-bold text-rose-600 dark:text-rose-400" : "font-mono font-bold text-ivory-900 dark:text-ivory-100";
+        return '<div class="flex justify-between items-center py-2.5 border-b border-ivory-200 dark:border-onyx-700">' +
+               '<span class="text-ivory-500 text-xs">' + esc(label) + '</span>' +
                '<span class="' + valCls + ' text-xs">' + esc(display) + '</span>' +
                '</div>';
     }).join("");
@@ -1205,20 +1333,20 @@ function renderTokens(transfers, chain, feats) {
     if (!transfers || !transfers.length) {
         if (isTron && feats && feats.wallet_balance != null) {
             box.innerHTML = `
-                <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <div class="flex items-center gap-1.5">
-                        <span class="font-bold text-slate-200">TRX</span>
-                        <span class="tag-pill bg-emerald-950 text-emerald-300 border border-emerald-700">Native</span>
+                <div class="flex items-center justify-between p-3 rounded-xl bg-ivory-100 dark:bg-onyx-800 border border-ivory-300 dark:border-onyx-700">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-ivory-900 dark:text-ivory-100 text-sm font-heading">TRX</span>
+                        <span class="tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">Native</span>
                     </div>
                     <div class="text-right">
-                        <p class="font-mono font-bold text-white">${Number(feats.wallet_balance).toLocaleString("en-US", { maximumFractionDigits: 4 })}</p>
-                        <p class="text-slate-500 text-[10px]">TRON Native</p>
+                        <p class="font-mono font-bold text-ivory-900 dark:text-ivory-100">${Number(feats.wallet_balance).toLocaleString("en-US", { maximumFractionDigits: 4 })}</p>
+                        <p class="text-ivory-500 text-[10px]">TRON Native Asset</p>
                     </div>
                 </div>
             `;
             return;
         }
-        box.innerHTML = '<div class="text-slate-500 text-center py-4 text-xs">Cannot fetch token holdings for this wallet.</div>';
+        box.innerHTML = '<div class="text-ivory-500 text-center py-4 text-xs font-mono">Cannot fetch token holdings for this wallet.</div>';
         return;
     }
     const agg = {};
@@ -1235,17 +1363,17 @@ function renderTokens(transfers, chain, feats) {
 
     box.innerHTML = Object.entries(agg).map(([sym, d]) => {
         const isScam = d.scam;
-        const cardCls = isScam ? "bg-rose-950/60 border border-rose-800" : "bg-slate-900/60 border border-slate-800";
-        const nameCls = isScam ? "font-bold text-rose-300" : "font-bold text-slate-200";
-        const valCls  = isScam ? "font-mono font-bold text-rose-400" : "font-mono font-bold text-white";
-        const badge   = isScam ? '<span class="tag-pill bg-rose-900 text-rose-300 ml-1">⚠ SCAM</span>' :
-                        (isTron ? `<span class="tag-pill ${d.standard === 'Native' ? 'bg-indigo-950 text-indigo-300 border border-indigo-800' : 'bg-emerald-950 text-emerald-300 border border-emerald-700'} ml-1">${esc(d.standard)}</span>` : "");
-        const tokenLink = isTron && d.contract ? `<a href="${TronService.getTronScanUrl('token', d.contract)}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-indigo-400 hover:underline block font-mono">Contract ↗</a>` : "";
+        const cardCls = isScam ? "bg-rose-500/10 border border-rose-500/25" : "bg-ivory-100 dark:bg-onyx-800 border border-ivory-300 dark:border-onyx-700";
+        const nameCls = isScam ? "font-bold text-rose-700 dark:text-rose-400 font-heading" : "font-bold text-ivory-900 dark:text-ivory-100 font-heading";
+        const valCls  = isScam ? "font-mono font-bold text-rose-600 dark:text-rose-400" : "font-mono font-bold text-ivory-900 dark:text-ivory-100";
+        const badge   = isScam ? '<span class="tag-pill bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-500/30 ml-1">⚠ SCAM</span>' :
+                        (isTron ? `<span class="tag-pill ${d.standard === 'Native' ? 'bg-gold-500/10 text-gold-800 dark:text-gold-300 border border-gold-500/30' : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20'} ml-1">${esc(d.standard)}</span>` : "");
+        const tokenLink = isTron && d.contract ? `<a href="${TronService.getTronScanUrl('token', d.contract)}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-gold-600 dark:text-gold-400 hover:underline block font-mono mt-0.5">Contract ↗</a>` : "";
 
-        return '<div class="flex items-center justify-between p-2.5 rounded-xl ' + cardCls + '">' +
+        return '<div class="flex items-center justify-between p-3 rounded-xl ' + cardCls + '">' +
                '<div><div class="flex items-center gap-1.5"><span class="' + nameCls + '">' + esc(sym) + '</span>' + badge + '</div>' + tokenLink + '</div>' +
                '<div class="text-right"><p class="' + valCls + '">' + d.total.toLocaleString("en-US",{maximumFractionDigits:2}) + '</p>' +
-               '<p class="text-slate-500 text-[10px]">' + d.count + ' transfer events</p></div>' +
+               '<p class="text-ivory-500 text-[10px]">' + d.count + ' transfer events</p></div>' +
                '</div>';
     }).join("");
 }
@@ -1260,19 +1388,19 @@ function renderTx(transfers, wallet, chain, isReal) {
         if (transfers && transfers.length > 0) {
             if (isTron) {
                 txBadge.textContent = "⚡ TronGrid Pro Real-Time TRC-20 & TRX History (" + transfers.length + ")";
-                txBadge.className = "tag-pill bg-emerald-950 text-emerald-300 border border-emerald-700";
+                txBadge.className = "tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20";
             } else {
                 txBadge.textContent = "⚡ Real On-Chain History (" + transfers.length + ")";
-                txBadge.className = "tag-pill bg-emerald-950 text-emerald-300 border border-emerald-800";
+                txBadge.className = "tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20";
             }
         } else {
             txBadge.textContent = "No On-Chain Activity Found";
-            txBadge.className = "tag-pill bg-slate-800 text-slate-400 border border-slate-700";
+            txBadge.className = "tag-pill bg-ivory-200 dark:bg-onyx-800 text-ivory-600 dark:text-ivory-400 border border-ivory-300 dark:border-onyx-700";
         }
     }
 
     if (!transfers || !transfers.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-slate-400 text-xs font-mono">No on-chain transaction history found for this wallet on ' + esc((isTron ? "TRON" : (chain || "ETH")).toUpperCase()) + '.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="py-8 text-center text-ivory-500 text-xs font-mono">No on-chain transaction history found for this wallet on ' + esc((isTron ? "TRON" : (chain || "ETH")).toUpperCase()) + '.</td></tr>';
         return;
     }
     const walletLow = (wallet || "").toLowerCase();
@@ -1300,19 +1428,19 @@ function renderTx(transfers, wallet, chain, isReal) {
         const dateStr = dt.toLocaleDateString([], { month: "short", day: "numeric", year: "2-digit" });
         const timeStr = dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-        const dirBg   = isOut ? "bg-amber-950/80 text-amber-300 border border-amber-800" : "bg-emerald-950/80 text-emerald-300 border border-emerald-800";
+        const dirBg   = isOut ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20" : "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20";
         const dirTxt  = isOut ? "OUT" : "IN";
-        const symBg   = isScam ? "bg-rose-950 text-rose-300 border border-rose-800" : (isTron ? "bg-emerald-950/70 text-emerald-300 border border-emerald-700" : "bg-slate-900 text-slate-300 border border-slate-800");
+        const symBg   = isScam ? "bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20" : (isTron ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20" : "bg-ivory-200 dark:bg-onyx-800 text-ivory-700 dark:text-ivory-300 border border-ivory-300 dark:border-onyx-700");
         const isConfirmed = tx.confirmed !== false;
         const riskTxt = isScam ? "⚠ SCAM" : (isConfirmed ? (isTron ? "✓ Confirmed" : "✓ Success") : "✕ Failed");
-        const riskBg  = isScam ? "bg-rose-950 text-rose-300 border border-rose-800" : (isConfirmed ? "bg-emerald-950 text-emerald-300 border border-emerald-800" : "bg-rose-950 text-rose-300 border border-rose-800");
-        const amtCls  = isScam ? "text-rose-400" : "text-white";
+        const riskBg  = isScam ? "bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20" : (isConfirmed ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20" : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20");
+        const amtCls  = isScam ? "text-rose-600 dark:text-rose-400" : "text-ivory-900 dark:text-ivory-100";
 
-        const counterLink = counter ? `<a href="${addrBase}${esc(counter)}" target="_blank" rel="noopener noreferrer" class="hover:underline font-mono text-slate-300 hover:text-indigo-400">${shorten(counter, 12)} ↗</a>` : "<span class='text-slate-600'>Contract</span>";
+        const counterLink = counter ? `<a href="${addrBase}${esc(counter)}" target="_blank" rel="noopener noreferrer" class="hover:underline font-mono text-ivory-700 dark:text-ivory-300 hover:text-gold-600 dark:hover:text-gold-400">${shorten(counter, 12)} ↗</a>` : "<span class='text-ivory-500'>Contract</span>";
 
-        return "<tr class='border-b border-slate-800/60 hover:bg-slate-900/40 transition-colors'>" +
-          "<td class='py-3 pr-4 font-mono text-xs text-indigo-400'>" +
-            (hash ? "<a href='" + base + esc(hash) + "' target='_blank' rel='noopener noreferrer' class='hover:underline flex items-center gap-1 font-mono'>" + shorten(hash, 12) + " ↗</a>" : "<span class='text-slate-500'>—</span>") +
+        return "<tr class='border-b border-ivory-200 dark:border-onyx-700 hover:bg-ivory-100/50 dark:hover:bg-onyx-800/50 transition-colors'>" +
+          "<td class='py-3 pr-4 font-mono text-xs text-gold-600 dark:text-gold-400 font-semibold'>" +
+            (hash ? "<a href='" + base + esc(hash) + "' target='_blank' rel='noopener noreferrer' class='hover:underline flex items-center gap-1 font-mono'>" + shorten(hash, 12) + " ↗</a>" : "<span class='text-ivory-500'>—</span>") +
           "</td>" +
           "<td class='py-3 pr-4'>" +
             "<span class='tag-pill " + dirBg + "'>" + dirTxt + "</span>" +
@@ -1325,7 +1453,7 @@ function renderTx(transfers, wallet, chain, isReal) {
           "<td class='py-3 pr-4'>" +
             "<span class='tag-pill " + riskBg + "'>" + riskTxt + "</span>" +
           "</td>" +
-          "<td class='py-3 font-mono text-xs text-slate-400'>" + dateStr + " <span class='text-slate-600 text-[10px]'>" + timeStr + "</span></td>" +
+          "<td class='py-3 font-mono text-xs text-ivory-500'>" + dateStr + " <span class='text-ivory-400 text-[10px]'>" + timeStr + "</span></td>" +
           "</tr>";
     }).join("");
 }
@@ -1404,25 +1532,25 @@ function renderReasons(data, level) {
             const isCaution = sev === "caution";
             const isSafe = sev === "safe";
 
-            const borderCls = isCrit ? "border-rose-800 bg-rose-950/40" 
-                            : isCaution ? "border-amber-800 bg-amber-950/40" 
-                            : isSafe ? "border-emerald-800/80 bg-emerald-950/30" 
-                            : "border-slate-800 bg-slate-900/60";
+            const borderCls = isCrit ? "border-rose-500/30 bg-rose-500/10" 
+                            : isCaution ? "border-amber-500/30 bg-amber-500/10" 
+                            : isSafe ? "border-emerald-500/30 bg-emerald-500/10" 
+                            : "border-ivory-300 dark:border-onyx-700 bg-ivory-100 dark:bg-onyx-850";
 
-            const titleCls = isCrit ? "text-rose-300 font-bold" 
-                           : isCaution ? "text-amber-300 font-bold" 
-                           : isSafe ? "text-emerald-300 font-bold" 
-                           : "text-indigo-200 font-bold";
+            const titleCls = isCrit ? "text-rose-700 dark:text-rose-400 font-bold font-heading" 
+                           : isCaution ? "text-amber-700 dark:text-amber-400 font-bold font-heading" 
+                           : isSafe ? "text-emerald-700 dark:text-emerald-400 font-bold font-heading" 
+                           : "text-ivory-900 dark:text-ivory-100 font-bold font-heading";
 
-            const badgeBg = isCrit ? "bg-rose-900/80 text-rose-200 border-rose-700" 
-                          : isCaution ? "bg-amber-900/80 text-amber-200 border-amber-700" 
-                          : isSafe ? "bg-emerald-900/80 text-emerald-200 border-emerald-700" 
-                          : "bg-slate-800 text-slate-300 border-slate-700";
+            const badgeBg = isCrit ? "bg-rose-500/20 text-rose-800 dark:text-rose-300 border-rose-500/30" 
+                          : isCaution ? "bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-500/30" 
+                          : isSafe ? "bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border-emerald-500/30" 
+                          : "bg-ivory-200 dark:bg-onyx-800 text-ivory-700 dark:text-ivory-300 border-ivory-300 dark:border-onyx-700";
 
             const impactTxt = d.impact ? `<span class="tag-pill ${badgeBg} text-[10px] font-mono">${esc(d.impact)}</span>` : "";
 
             return `
-                <div class="p-3 rounded-xl border ${borderCls} text-xs flex flex-col gap-1.5 transition-all">
+                <div class="p-3.5 rounded-xl border ${borderCls} text-xs flex flex-col gap-1.5 transition-all shadow-xs">
                     <div class="flex items-center justify-between gap-2 flex-wrap">
                         <div class="flex items-center gap-1.5">
                             <span class="text-sm">${d.icon || "📌"}</span>
@@ -1430,29 +1558,29 @@ function renderReasons(data, level) {
                         </div>
                         ${impactTxt}
                     </div>
-                    <p class="text-slate-200 leading-relaxed text-xs">${esc(d.simple_explanation)}</p>
-                    ${d.evidence ? `<div class="mt-0.5 pt-1.5 border-t border-slate-800/60 text-[11px] text-slate-400 font-mono flex items-center gap-1">
-                        <span class="text-slate-500">🔍 Evidence:</span>
-                        <span class="text-slate-300">${esc(d.evidence)}</span>
+                    <p class="text-ivory-800 dark:text-ivory-200 leading-relaxed text-xs">${esc(d.simple_explanation)}</p>
+                    ${d.evidence ? `<div class="mt-0.5 pt-1.5 border-t border-ivory-300/60 dark:border-onyx-700/60 text-[11px] text-ivory-500 font-mono flex items-center gap-1">
+                        <span class="text-ivory-500">🔍 Evidence:</span>
+                        <span class="text-ivory-800 dark:text-ivory-200">${esc(d.evidence)}</span>
                     </div>` : ""}
                 </div>
             `;
         }).join("");
     } else if (!reasons || !reasons.length) {
-        box.innerHTML = '<div class="p-3 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs">No active risk triggers detected for this wallet.</div>';
+        box.innerHTML = '<div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs">No active risk triggers detected for this wallet.</div>';
     } else {
         // Fallback simple list
         box.innerHTML = reasons.map(r => {
             const isCrit = r.includes("CRITICAL") || r.includes("🔴");
             const isHigh = r.includes("HIGH") || r.includes("🟠") || r.includes("⚡");
-            const bg = isCrit ? "bg-rose-950/60 border-rose-800 text-rose-200"
-                     : isHigh ? "bg-amber-950/60 border-amber-800 text-amber-200"
-                     : "bg-slate-900/60 border-slate-800 text-slate-300";
-            return '<div class="p-2.5 rounded-xl border text-xs ' + bg + '">' + esc(r) + '</div>';
+            const bg = isCrit ? "bg-rose-500/10 border-rose-500/20 text-rose-700 dark:text-rose-400"
+                     : isHigh ? "bg-amber-500/10 border-amber-500/20 text-amber-700 dark:text-amber-400"
+                     : "bg-ivory-100 dark:bg-onyx-850 border-ivory-300 dark:border-onyx-700 text-ivory-800 dark:text-ivory-200";
+            return '<div class="p-3 rounded-xl border text-xs ' + bg + '">' + esc(r) + '</div>';
         }).join("");
     }
 
-    if (recBox) recBox.className = "p-3 rounded-xl border text-xs mt-auto " + recBg(level);
+    if (recBox) recBox.className = "p-3.5 rounded-2xl border text-xs mt-auto " + recBg(level);
     if (recText && rec) recText.textContent = rec;
 }
 
@@ -1472,7 +1600,7 @@ async function askAiQuestion(question) {
     if (responseBox) responseBox.classList.remove("hidden");
     if (spinner) spinner.classList.remove("hidden");
     if (responseContent) {
-        responseContent.innerHTML = `<div class="flex items-center gap-2 text-indigo-300 font-mono py-2">
+        responseContent.innerHTML = `<div class="flex items-center gap-2 text-gold-600 dark:text-gold-400 font-mono py-2">
             <span class="animate-spin text-base">⚙️</span>
             <span>Querying Gemini 3.7 Flash with all wallet telemetry (Balance: ${state.currentData?.features?.wallet_balance || 0}, Score: ${state.currentData?.risk_score || 0}/100)...</span>
         </div>`;
@@ -1497,8 +1625,8 @@ async function askAiQuestion(question) {
             if (responseContent) {
                 // Convert markdown bullet points to clean visual HTML
                 let formatted = esc(json.ai_response.answer)
-                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>')
-                    .replace(/^• (.*?)$/gm, '<div class="py-1 flex items-start gap-1.5"><span class="text-indigo-400 mt-0.5">•</span><span>$1</span></div>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong class="text-ivory-900 dark:text-ivory-100 font-bold">$1</strong>')
+                    .replace(/^• (.*?)$/gm, '<div class="py-1 flex items-start gap-1.5"><span class="text-gold-600 dark:text-gold-400 mt-0.5 font-bold">•</span><span class="text-ivory-800 dark:text-ivory-200">$1</span></div>')
                     .replace(/\n\n/g, '<div class="h-2"></div>');
 
                 responseContent.innerHTML = formatted;
@@ -1574,11 +1702,11 @@ function openExecutiveReport(data, chain) {
     const verdictSummary = g("rep-verdict-summary");
 
     if (verdictCard) {
-        verdictCard.className = `p-5 rounded-2xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${
-            isCrit ? "bg-rose-950/70 border-rose-800 text-rose-200"
-            : isHigh ? "bg-amber-950/70 border-amber-800 text-amber-200"
-            : isSafe ? "bg-emerald-950/70 border-emerald-800 text-emerald-200"
-            : "bg-slate-950 border-slate-800 text-slate-200"
+        verdictCard.className = `p-5 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+            isCrit ? "bg-rose-500/10 border-rose-500/30 text-rose-900 dark:text-rose-200"
+            : isHigh ? "bg-amber-500/10 border-amber-500/30 text-amber-900 dark:text-amber-200"
+            : isSafe ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-900 dark:text-emerald-200"
+            : "bg-ivory-100 dark:bg-onyx-800 border-ivory-300 dark:border-onyx-700 text-ivory-900 dark:text-ivory-100"
         }`;
     }
 
@@ -1587,8 +1715,8 @@ function openExecutiveReport(data, chain) {
     }
 
     if (verdictLevel) {
-        verdictLevel.className = `text-xl font-extrabold ${
-            isCrit ? "text-rose-300" : isHigh ? "text-amber-300" : isSafe ? "text-emerald-300" : "text-sky-300"
+        verdictLevel.className = `text-xl font-extrabold font-heading ${
+            isCrit ? "text-rose-700 dark:text-rose-400" : isHigh ? "text-amber-700 dark:text-amber-400" : isSafe ? "text-emerald-700 dark:text-emerald-400" : "text-gold-700 dark:text-gold-400"
         }`;
     }
 
@@ -1616,31 +1744,31 @@ function openExecutiveReport(data, chain) {
                 const isItemCaution = sev === "caution";
                 const isItemSafe = sev === "safe";
 
-                const bgCls = isItemCrit ? "bg-rose-950/40 border-rose-800/80 text-rose-200"
-                            : isItemCaution ? "bg-amber-950/40 border-amber-800/80 text-amber-200"
-                            : isItemSafe ? "bg-emerald-950/40 border-emerald-800/80 text-emerald-200"
-                            : "bg-slate-950/70 border-slate-800 text-slate-300";
+                const bgCls = isItemCrit ? "bg-rose-500/10 border-rose-500/25 text-rose-900 dark:text-rose-200"
+                            : isItemCaution ? "bg-amber-500/10 border-amber-500/25 text-amber-900 dark:text-amber-200"
+                            : isItemSafe ? "bg-emerald-500/10 border-emerald-500/25 text-emerald-900 dark:text-emerald-200"
+                            : "bg-ivory-100 dark:bg-onyx-800 border-ivory-300 dark:border-onyx-700 text-ivory-900 dark:text-ivory-100";
 
                 return `
-                    <div class="p-3 rounded-xl border ${bgCls} text-xs flex flex-col gap-1">
+                    <div class="p-3.5 rounded-xl border ${bgCls} text-xs flex flex-col gap-1 shadow-xs">
                         <div class="flex items-center justify-between">
-                            <span class="font-bold flex items-center gap-1.5 text-white">
+                            <span class="font-bold flex items-center gap-1.5 text-ivory-900 dark:text-ivory-100 font-heading">
                                 <span>${d.icon || "📌"}</span>
                                 <span>${esc(d.title)}</span>
                             </span>
-                            ${d.impact ? `<span class="tag-pill bg-slate-900 border border-slate-700 text-[10px]">${esc(d.impact)}</span>` : ""}
+                            ${d.impact ? `<span class="tag-pill bg-ivory-200 dark:bg-onyx-700 border border-ivory-300 dark:border-onyx-600 text-ivory-800 dark:text-ivory-200 text-[10px]">${esc(d.impact)}</span>` : ""}
                         </div>
-                        <p class="text-slate-300 leading-relaxed text-xs">${esc(d.simple_explanation)}</p>
+                        <p class="text-ivory-700 dark:text-ivory-300 leading-relaxed text-xs">${esc(d.simple_explanation)}</p>
                     </div>
                 `;
             }).join("");
         } else {
             driversBox.innerHTML = `
-                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-slate-300 text-xs space-y-1.5">
-                    <div class="flex items-center gap-2 font-semibold text-emerald-400"><span>🛡️</span><span>Sanction & Blacklist Screening</span></div>
-                    <p class="text-slate-400">Zero proximity or transfer links detected to OFAC SDN, Tornado Cash, or illicit mixers.</p>
-                    <div class="flex items-center gap-2 font-semibold text-emerald-400 pt-1"><span>⏱️</span><span>Account Maturity & Longevity</span></div>
-                    <p class="text-slate-400">Active history established with steady non-automated spacing between transactions.</p>
+                <div class="p-4 rounded-xl bg-ivory-100 dark:bg-onyx-800 border border-ivory-300 dark:border-onyx-700 text-ivory-800 dark:text-ivory-200 text-xs space-y-2">
+                    <div class="flex items-center gap-2 font-semibold text-emerald-700 dark:text-emerald-400 font-heading"><span>🛡️</span><span>Sanction & Blacklist Screening</span></div>
+                    <p class="text-ivory-600 dark:text-ivory-400">Zero proximity or transfer links detected to OFAC SDN, Tornado Cash, or illicit mixers.</p>
+                    <div class="flex items-center gap-2 font-semibold text-emerald-700 dark:text-emerald-400 font-heading pt-1"><span>⏱️</span><span>Account Maturity & Longevity</span></div>
+                    <p class="text-ivory-600 dark:text-ivory-400">Active history established with steady non-automated spacing between transactions.</p>
                 </div>
             `;
         }
@@ -1674,7 +1802,7 @@ Blockchain: ${(d.chain || "ethereum").toUpperCase()}
 Risk Score: ${score} / 100 (${level})
 Executive Verdict: ${d.simple_summary || "Forensic scan completed"}
 Recommended Action: ${d.recommendation || "Safe to proceed with standard transactions."}
-Platform: AI-DeFi Risk Intelligence (v2.0)
+Platform: AI-Based Risk Prediction in Decentralized Finance (v2.0)
 ======================================================`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1694,11 +1822,11 @@ window.closeExecutiveReport = closeExecutiveReport;
 window.copyReportSummary = copyReportSummary;
 
 function recBg(level) {
-    const m = { "CRITICAL RISK":"bg-rose-950/80 border-rose-800 text-rose-200",
-                "HIGH RISK":"bg-orange-950/80 border-orange-800 text-orange-200",
-                "MODERATE RISK":"bg-amber-950/80 border-amber-800 text-amber-200",
-                "LOW RISK":"bg-sky-950/80 border-sky-800 text-sky-200",
-                "VERY LOW RISK":"bg-emerald-950/80 border-emerald-800 text-emerald-200" };
+    const m = { "CRITICAL RISK":"bg-rose-50 border-rose-200 text-rose-800",
+                "HIGH RISK":"bg-orange-50 border-orange-200 text-orange-800",
+                "MODERATE RISK":"bg-amber-50 border-amber-200 text-amber-800",
+                "LOW RISK":"bg-sky-50 border-sky-200 text-sky-800",
+                "VERY LOW RISK":"bg-emerald-50 border-emerald-200 text-emerald-800" };
     return m[level] || m["VERY LOW RISK"];
 }
 
@@ -1708,17 +1836,17 @@ function renderThreatAlerts(reasons, level) {
     if (!box) return;
     if (level === "CRITICAL RISK" || level === "HIGH RISK") {
         box.innerHTML = `
-            <div class="p-3 rounded-xl bg-rose-950/80 border border-rose-800 text-rose-300 space-y-1">
-                <div class="font-bold flex items-center justify-between">
+            <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/25 text-rose-800 dark:text-rose-300 space-y-1 shadow-xs">
+                <div class="font-bold flex items-center justify-between font-heading">
                     <span>🚨 Active Threat Flagged</span>
-                    <span class="tag-pill bg-rose-900 text-rose-200">HIGH SEVERITY</span>
+                    <span class="tag-pill bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-500/30">HIGH SEVERITY</span>
                 </div>
-                <p class="text-[11px] text-rose-200">Wallet exhibits high transaction frequency or proximity to known malicious contracts.</p>
+                <p class="text-[11px] text-rose-700 dark:text-rose-400">Wallet exhibits high transaction frequency or proximity to known malicious contracts.</p>
             </div>
         `;
     } else {
         box.innerHTML = `
-            <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-400 text-center">
+            <div class="p-3.5 rounded-xl bg-ivory-100 dark:bg-onyx-800 border border-ivory-300 dark:border-onyx-700 text-ivory-600 dark:text-ivory-400 text-center text-xs">
                 No active threats detected. Wallet interactions show standard activity parameters.
             </div>
         `;
@@ -1730,9 +1858,10 @@ function initGauge(score) {
     const canvas = g("miniGaugeChart");
     if (!canvas || typeof Chart === "undefined") return;
     const c = scoreClr(score);
+    const trackColor = document.documentElement.classList.contains("dark") ? "#151515" : "#E2DFD6";
     miniGaugeChart = new Chart(canvas.getContext("2d"), {
         type: "doughnut",
-        data: { datasets: [{ data: [score, 100 - score], backgroundColor: [c, "rgba(255,255,255,0.06)"], borderWidth: 0 }] },
+        data: { datasets: [{ data: [score, 100 - score], backgroundColor: [c, trackColor], borderWidth: 0 }] },
         options: { cutout: "76%", responsive: true, maintainAspectRatio: false,
             animation: { duration: 800, easing: "easeOutCubic" },
             plugins: { legend: { display: false }, tooltip: { enabled: false } } }
@@ -1741,8 +1870,10 @@ function initGauge(score) {
 
 function updateGauge(score) {
     if (!miniGaugeChart) { initGauge(score); return; }
+    const trackColor = document.documentElement.classList.contains("dark") ? "#151515" : "#E2DFD6";
     miniGaugeChart.data.datasets[0].data = [score, 100 - score];
     miniGaugeChart.data.datasets[0].backgroundColor[0] = scoreClr(score);
+    miniGaugeChart.data.datasets[0].backgroundColor[1] = trackColor;
     miniGaugeChart.update();
 }
 
@@ -1750,14 +1881,15 @@ function updateGauge(score) {
 function initHistory() {
     const canvas = g("riskHistoryChart");
     if (!canvas || typeof Chart === "undefined") return;
+    const gridColor = document.documentElement.classList.contains("dark") ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.04)";
     historyChart = new Chart(canvas.getContext("2d"), {
         type: "line",
         data: { labels: [], datasets: [{ label: "Risk Score", data: [],
-            borderColor: "#818cf8", backgroundColor: "rgba(129,140,248,0.12)",
+            borderColor: "#C9A227", backgroundColor: "rgba(201, 162, 39, 0.08)",
             borderWidth: 2, pointRadius: 3, fill: true, tension: 0.4 }] },
         options: { responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false } },
-            scales: { y: { min: 0, max: 100, grid: { color: "rgba(255,255,255,0.05)" } }, x: { grid: { display: false } } } }
+            scales: { y: { min: 0, max: 100, grid: { color: gridColor } }, x: { grid: { display: false } } } }
     });
 }
 
@@ -1786,13 +1918,13 @@ function renderHistory(score, level) {
     if (trendPill) {
         if (vals[6] > vals[0] + 5) {
             trendPill.textContent = "Increasing ↑";
-            trendPill.className = "tag-pill bg-rose-950 text-rose-300 border border-rose-800";
+            trendPill.className = "tag-pill bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20";
         } else if (vals[6] < vals[0] - 5) {
             trendPill.textContent = "Decreasing ↓";
-            trendPill.className = "tag-pill bg-emerald-950 text-emerald-300 border border-emerald-800";
+            trendPill.className = "tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20";
         } else {
             trendPill.textContent = "Stable →";
-            trendPill.className = "tag-pill bg-slate-800 text-slate-300 border border-slate-700";
+            trendPill.className = "tag-pill bg-ivory-200 dark:bg-onyx-800 text-ivory-700 dark:text-ivory-300 border border-ivory-300 dark:border-onyx-700";
         }
     }
 }
@@ -1812,21 +1944,88 @@ function esc(s) {
         ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[m]);
 }
 function scoreClr(s) {
-    return s > 80 ? "#EF4444" : s > 60 ? "#F97316" : s > 40 ? "#F59E0B" : s > 20 ? "#38BDF8" : "#10B981";
+    return s > 80 ? "#EF4444" : s > 60 ? "#F97316" : s > 40 ? "#C9A227" : s > 20 ? "#0EA5E9" : "#10B981";
 }
 function lvlClr(l) {
-    const m = { "CRITICAL RISK": "text-2xl font-black text-rose-400",
-                "HIGH RISK": "text-2xl font-black text-orange-400",
-                "MODERATE RISK": "text-2xl font-black text-amber-400",
-                "LOW RISK": "text-2xl font-black text-sky-400",
-                "VERY LOW RISK": "text-2xl font-black text-emerald-400" };
-    return m[l] || "text-2xl font-black text-slate-400";
+    const m = { "CRITICAL RISK": "text-2xl font-black font-heading text-rose-600 dark:text-rose-400",
+                "HIGH RISK": "text-2xl font-black font-heading text-orange-600 dark:text-orange-400",
+                "MODERATE RISK": "text-2xl font-black font-heading text-gold-600 dark:text-gold-400",
+                "LOW RISK": "text-2xl font-black font-heading text-sky-600 dark:text-sky-400",
+                "VERY LOW RISK": "text-2xl font-black font-heading text-emerald-600 dark:text-emerald-400" };
+    return m[l] || "text-2xl font-black font-heading text-ivory-800 dark:text-ivory-200";
 }
 function lvlBadge(l) {
-    const m = { "CRITICAL RISK": "bg-rose-950 text-rose-300 border border-rose-800",
-                "HIGH RISK": "bg-orange-950 text-orange-300 border border-orange-800",
-                "MODERATE RISK": "bg-amber-950 text-amber-300 border border-amber-800",
-                "LOW RISK": "bg-sky-950 text-sky-300 border border-sky-800",
-                "VERY LOW RISK": "bg-emerald-950 text-emerald-300 border border-emerald-800" };
+    const m = { "CRITICAL RISK": "bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20",
+                "HIGH RISK": "bg-orange-500/10 text-orange-700 dark:text-orange-400 border border-orange-500/20",
+                "MODERATE RISK": "bg-gold-500/10 text-gold-800 dark:text-gold-300 border border-gold-500/30",
+                "LOW RISK": "bg-sky-500/10 text-sky-700 dark:text-sky-400 border border-sky-500/20",
+                "VERY LOW RISK": "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20" };
     return m[l] || m["VERY LOW RISK"];
 }
+
+// ── Toast Notification System ────────────────────────────────────────────────
+function showToast(message, type = "info", duration = 3500) {
+    let container = g("toast-notification-container");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "toast-notification-container";
+        container.className = "fixed top-5 right-5 z-[9999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0";
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement("div");
+    const isSuccess = type === "success";
+    const isError   = type === "error" || type === "danger" || type === "critical";
+    const isWarning = type === "warning";
+
+    let borderBg = "bg-ivory-50 dark:bg-onyx-850 border-gold-500/40 text-ivory-900 dark:text-ivory-100 shadow-lg";
+    let icon = "✨";
+    let iconColor = "text-gold-600 dark:text-gold-400";
+
+    if (isSuccess) {
+        borderBg = "bg-emerald-50 dark:bg-onyx-850 border-emerald-500/40 text-emerald-950 dark:text-emerald-200 shadow-lg";
+        icon = "✓";
+        iconColor = "text-emerald-600 dark:text-emerald-400";
+    } else if (isError) {
+        borderBg = "bg-rose-50 dark:bg-onyx-850 border-rose-500/40 text-rose-950 dark:text-rose-200 shadow-lg";
+        icon = "⚠";
+        iconColor = "text-rose-600 dark:text-rose-400";
+    } else if (isWarning) {
+        borderBg = "bg-amber-50 dark:bg-onyx-850 border-amber-500/40 text-amber-950 dark:text-amber-200 shadow-lg";
+        icon = "⚡";
+        iconColor = "text-amber-600 dark:text-amber-400";
+    }
+
+    toast.className = `pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-xl border text-xs font-medium backdrop-blur-md transition-all duration-300 transform translate-y-[-10px] opacity-0 cursor-pointer ${borderBg}`;
+    toast.innerHTML = `
+        <div class="flex items-center gap-2.5">
+            <span class="font-bold text-sm ${iconColor}">${icon}</span>
+            <span class="leading-snug">${esc(message)}</span>
+        </div>
+        <button type="button" class="text-ivory-400 hover:text-ivory-700 dark:hover:text-ivory-200 text-sm font-bold pl-2">✕</button>
+    `;
+
+    const dismiss = () => {
+        toast.classList.add("opacity-0", "translate-y-[-10px]");
+        setTimeout(() => {
+            if (toast.parentNode) toast.parentNode.removeChild(toast);
+        }, 300);
+    };
+
+    toast.onclick = dismiss;
+    container.appendChild(toast);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        toast.classList.remove("opacity-0", "translate-y-[-10px]");
+        toast.classList.add("opacity-100", "translate-y-0");
+    });
+
+    if (duration > 0) {
+        setTimeout(dismiss, duration);
+    }
+}
+
+// Global exposure
+window.showToast = showToast;
+

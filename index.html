@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI-DeFi Risk Intelligence — Web3 Wallet Explorer & Risk Platform</title>
-    <meta name="description" content="Multi-Chain Blockchain Wallet Explorer & Security Risk Intelligence Platform powered by XGBoost, GraphSAGE GNN, and Autoencoder Anomaly Detection">
+    <title>AI-Based Risk Prediction in Decentralized Finance — Web3 Wallet Explorer & Risk Platform</title>
+    <meta name="description" content="AI-Based Risk Prediction in Decentralized Finance: Multi-Chain Blockchain Wallet Explorer & Security Risk Intelligence Platform powered by XGBoost, GraphSAGE GNN, and Autoencoder Anomaly Detection">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -16,47 +16,142 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Playfair Display', 'Georgia', 'serif'],
                         mono: ['JetBrains Mono', 'monospace']
+                    },
+                    colors: {
+                        gold: {
+                            50: '#FDFBF7',
+                            100: '#F8F3E6',
+                            200: '#EFE2C2',
+                            300: '#E5D099',
+                            400: '#E2C15A',
+                            500: '#D4AF37',
+                            600: '#C9A227',
+                            700: '#A6841B',
+                            800: '#836814',
+                            900: '#5F4B0D',
+                            950: '#3D2F06'
+                        },
+                        onyx: {
+                            950: '#080808',
+                            900: '#0C0C0C',
+                            850: '#111111',
+                            800: '#151515',
+                            750: '#181818',
+                            700: '#1D1D1D',
+                            600: '#262626',
+                            500: '#383838'
+                        },
+                        ivory: {
+                            50: '#FAFAF8',
+                            100: '#F7F6F2',
+                            200: '#F1F0EC',
+                            300: '#E6E4DD',
+                            400: '#D4D0C5',
+                            500: '#A7A39B',
+                            600: '#6F6B64',
+                            700: '#4D4A44',
+                            800: '#2E2D2A',
+                            900: '#171717'
+                        }
                     }
                 }
             }
         }
     </script>
+    <script>
+        // Immediate theme detection - default to clean Light theme unless user explicitly picked dark
+        (function() {
+            try {
+                const saved = localStorage.getItem("defi_shield_theme");
+                if (saved === "dark") {
+                    document.documentElement.classList.add("dark");
+                } else {
+                    document.documentElement.classList.remove("dark");
+                }
+            } catch (e) {}
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --bg-canvas: #F7F6F2;
+            --bg-surface: #FFFFFF;
+            --bg-secondary: #F1F0EC;
+            --text-primary: #171717;
+            --text-secondary: #66635D;
+            --text-muted: #96928A;
+            --gold-accent: #C9A227;
+            --gold-subtle: rgba(201, 162, 39, 0.12);
+            --gold-border: rgba(201, 162, 39, 0.28);
+            --card-border: rgba(0, 0, 0, 0.07);
+        }
+
+        html.dark {
+            --bg-canvas: #080808;
+            --bg-surface: #111111;
+            --bg-secondary: #181818;
+            --text-primary: #F5F3EE;
+            --text-secondary: #A7A39B;
+            --text-muted: #6F6B64;
+            --gold-accent: #D4AF37;
+            --gold-subtle: rgba(212, 175, 55, 0.12);
+            --gold-border: rgba(212, 175, 55, 0.24);
+            --card-border: rgba(255, 255, 255, 0.08);
+        }
+
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #090D16;
-            color: #F8FAFC;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #F7F6F2;
+            background-image: 
+                radial-gradient(at 15% 10%, rgba(201, 162, 39, 0.04) 0px, transparent 40%),
+                radial-gradient(at 85% 90%, rgba(201, 162, 39, 0.03) 0px, transparent 45%);
+            color: #171717;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.25s ease;
         }
+
+        /* ── Modern Black + Gold Card Aesthetic ── */
         .card-panel {
-            background-color: #111827;
-            border: 1px solid #1F2937;
+            background-color: #FFFFFF;
+            border: 1px solid rgba(0, 0, 0, 0.07);
             border-radius: 1rem;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 20px -2px rgba(23, 23, 23, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+            transition: box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, transform 0.2s ease, background-color 0.25s ease;
         }
-        .card-panel:hover {
-            border-color: #374151;
+        .card-panel-hover:hover {
+            box-shadow: 0 12px 28px -4px rgba(201, 162, 39, 0.08), 0 2px 8px -1px rgba(0, 0, 0, 0.04);
+            border-color: rgba(201, 162, 39, 0.35);
+            transform: translateY(-1px);
         }
+
+        /* ── Minimalist Luxury Pills & Badges ── */
         .tag-pill {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 3px 10px;
+            gap: 5px;
+            padding: 3px 9px;
             border-radius: 9999px;
-            font-size: 0.7rem;
-            font-weight: 700;
+            font-size: 0.72rem;
+            font-weight: 600;
             white-space: nowrap;
+            letter-spacing: -0.01em;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
+
         .pulse-dot {
-            animation: pulse-glow 2s infinite;
+            animation: pulse-glow 2.2s infinite;
         }
         @keyframes pulse-glow {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.9); }
+            50% { opacity: 0.35; transform: scale(0.85); }
         }
+
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -64,578 +159,880 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        /* ── Donut Gauge ── */
         #risk-donut-svg circle.track {
             fill: none;
-            stroke: #1F2937;
-            stroke-width: 10;
+            stroke: #EAE8E1;
+            stroke-width: 8;
+            transition: stroke 0.3s ease;
         }
         #risk-donut-svg circle.fill {
             fill: none;
-            stroke-width: 10;
+            stroke-width: 8;
             stroke-linecap: round;
             transform: rotate(-90deg);
             transform-origin: 50% 50%;
-            transition: stroke-dashoffset 0.8s ease, stroke 0.4s;
+            transition: stroke-dashoffset 0.9s cubic-bezier(0.34, 1.56, 0.64, 1), stroke 0.4s ease;
         }
-        /* Custom scrollbars */
+
+        /* ── Premium Scrollbars ── */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: #0B0F19; }
-        ::-webkit-scrollbar-thumb { background: #232D3F; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #D4D0C5; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #C9A227; }
+
         @keyframes spin { to { transform: rotate(360deg); } }
         .animate-spin { animation: spin 1s linear infinite; }
 
-        /* Print stylesheet: clean professional audit report */
+        /* ── LUXURY DARK THEME: DEEP BLACK + METALLIC GOLD ── */
+        html.dark body {
+            background-color: #080808;
+            background-image: 
+                radial-gradient(at 10% 5%, rgba(212, 175, 55, 0.05) 0px, transparent 45%),
+                radial-gradient(at 90% 95%, rgba(212, 175, 55, 0.03) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(24, 24, 24, 0.6) 0px, transparent 100%);
+            color: #F5F3EE;
+        }
+
+        html.dark #main-app-shell {
+            background-color: #0C0C0C;
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 80px -20px rgba(0, 0, 0, 0.9), 0 0 40px -10px rgba(212, 175, 55, 0.04);
+        }
+
+        html.dark #sidebar-nav {
+            background-color: #111111;
+            border-color: rgba(255, 255, 255, 0.07);
+        }
+
+        html.dark header {
+            background-color: rgba(17, 17, 17, 0.85);
+            border-color: rgba(255, 255, 255, 0.07);
+        }
+
+        html.dark footer {
+            background-color: #111111;
+            border-color: rgba(255, 255, 255, 0.07);
+            color: #6F6B64;
+        }
+
+        html.dark .main-canvas-bg {
+            background-color: #0C0C0C;
+        }
+
+        html.dark .card-panel {
+            background-color: #151515;
+            border-color: rgba(255, 255, 255, 0.07);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5), 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+            color: #F5F3EE;
+        }
+
+        html.dark .card-panel-hover:hover {
+            box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.8), 0 0 20px -2px rgba(212, 175, 55, 0.12);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        html.dark #risk-donut-svg circle.track {
+            stroke: #222222;
+        }
+
+        html.dark ::-webkit-scrollbar-thumb {
+            background: #2E2D2A;
+        }
+        html.dark ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+
+        /* Typography overrides for seamless scaling */
+        html.dark .text-slate-900 { color: #F5F3EE !important; }
+        html.dark .text-slate-800 { color: #E6E4DD !important; }
+        html.dark .text-slate-700 { color: #D4D0C5 !important; }
+        html.dark .text-slate-600 { color: #A7A39B !important; }
+        html.dark .text-slate-500 { color: #858077 !important; }
+        html.dark .text-slate-400 { color: #6F6B64 !important; }
+
+        html.dark .border-slate-100 { border-color: rgba(255, 255, 255, 0.06) !important; }
+        html.dark .border-slate-200 { border-color: rgba(255, 255, 255, 0.08) !important; }
+        html.dark .border-slate-200\/80 { border-color: rgba(255, 255, 255, 0.07) !important; }
+        html.dark .border-slate-200\/70 { border-color: rgba(255, 255, 255, 0.06) !important; }
+        html.dark .border-slate-200\/60 { border-color: rgba(255, 255, 255, 0.05) !important; }
+
+        /* Secondary surface backgrounds in dark mode */
+        html.dark .bg-slate-50,
+        html.dark .bg-slate-50\/70,
+        html.dark .bg-slate-50\/80,
+        html.dark .bg-slate-50\/90 {
+            background-color: #181818 !important;
+            border-color: rgba(255, 255, 255, 0.07) !important;
+        }
+
+        html.dark input#dash-address-input,
+        html.dark input#ai-custom-input {
+            background-color: #111111 !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: #F5F3EE !important;
+        }
+        html.dark input#dash-address-input:hover,
+        html.dark input#dash-address-input:focus,
+        html.dark input#ai-custom-input:hover,
+        html.dark input#ai-custom-input:focus {
+            background-color: #151515 !important;
+            border-color: #D4AF37 !important;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15) !important;
+        }
+
+        /* Buttons & controls in dark mode */
+        html.dark #dash-paste-btn,
+        html.dark #dash-clear-btn,
+        html.dark #back-to-scan-btn,
+        html.dark #close-report-btn,
+        html.dark #close-api-hub-btn,
+        html.dark #copy-summary-report-btn,
+        html.dark #export-report-btn,
+        html.dark #bottom-export-report-btn,
+        html.dark #theme-toggle-btn {
+            background-color: #1A1A1A !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+            color: #D4D0C5 !important;
+        }
+        html.dark #dash-paste-btn:hover,
+        html.dark #dash-clear-btn:hover,
+        html.dark #back-to-scan-btn:hover,
+        html.dark #close-report-btn:hover,
+        html.dark #close-api-hub-btn:hover,
+        html.dark #copy-summary-report-btn:hover,
+        html.dark #export-report-btn:hover,
+        html.dark #bottom-export-report-btn:hover,
+        html.dark #theme-toggle-btn:hover {
+            background-color: #242424 !important;
+            border-color: rgba(212, 175, 55, 0.4) !important;
+            color: #F5F3EE !important;
+        }
+
+        /* Gold highlight / brand chips in dark mode */
+        html.dark .bg-indigo-50,
+        html.dark .bg-indigo-50\/60,
+        html.dark .bg-indigo-50\/70,
+        html.dark .bg-indigo-50\/90 {
+            background-color: rgba(212, 175, 55, 0.1) !important;
+            border-color: rgba(212, 175, 55, 0.25) !important;
+            color: #E2C15A !important;
+        }
+        html.dark .text-indigo-900,
+        html.dark .text-indigo-950,
+        html.dark .text-indigo-950\/80,
+        html.dark .text-indigo-700,
+        html.dark .text-indigo-600 {
+            color: #E2C15A !important;
+        }
+
+        html.dark .bg-emerald-50,
+        html.dark .bg-emerald-50\/60,
+        html.dark .bg-emerald-50\/70 {
+            background-color: rgba(16, 185, 129, 0.12) !important;
+            border-color: rgba(16, 185, 129, 0.25) !important;
+            color: #6EE7B7 !important;
+        }
+
+        html.dark .bg-rose-50,
+        html.dark .bg-rose-50\/70 {
+            background-color: rgba(239, 68, 68, 0.12) !important;
+            border-color: rgba(239, 68, 68, 0.25) !important;
+            color: #FCA5A5 !important;
+        }
+
+        html.dark .bg-amber-50,
+        html.dark .bg-amber-50\/70 {
+            background-color: rgba(245, 158, 11, 0.12) !important;
+            border-color: rgba(245, 158, 11, 0.25) !important;
+            color: #FCD34D !important;
+        }
+
+        html.dark .bg-purple-50 {
+            background-color: rgba(168, 85, 247, 0.12) !important;
+            border-color: rgba(168, 85, 247, 0.25) !important;
+            color: #D8B4FE !important;
+        }
+
+        html.dark .bg-sky-50 {
+            background-color: rgba(14, 165, 233, 0.12) !important;
+            border-color: rgba(14, 165, 233, 0.25) !important;
+            color: #7DD3FC !important;
+        }
+
+        html.dark .bg-teal-50 {
+            background-color: rgba(20, 184, 166, 0.12) !important;
+            border-color: rgba(20, 184, 166, 0.25) !important;
+            color: #5EEAD4 !important;
+        }
+
+        html.dark .bg-slate-100 {
+            background-color: #222222 !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            color: #D4D0C5 !important;
+        }
+
+        /* Dark mode tables */
+        html.dark table thead tr {
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        html.dark table tbody tr {
+            border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+        html.dark table tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+        }
+
+        /* Modals in dark mode */
+        html.dark #analysis-loading-modal .card-panel,
+        html.dark #executive-report-modal .card-panel,
+        html.dark #api-hub-modal .card-panel {
+            background-color: #121212 !important;
+            border-color: rgba(212, 175, 55, 0.25) !important;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 30px -5px rgba(212, 175, 55, 0.08) !important;
+        }
+
+        /* Print stylesheet */
         @media print {
-            body { background: #FFFFFF !important; color: #0F172A !important; padding: 0 !important; }
-            header, #search-section, #api-hub-modal, #report-action-buttons, footer, .no-print { display: none !important; }
-            .card-panel { background: #FFFFFF !important; border: 1px solid #E2E8F0 !important; box-shadow: none !important; color: #0F172A !important; }
-            .text-white { color: #0F172A !important; }
-            .text-slate-400, .text-slate-500 { color: #64748B !important; }
-            .text-slate-300 { color: #334155 !important; }
+            body { background: #FFFFFF !important; color: #171717 !important; padding: 0 !important; }
+            #sidebar-nav, header, #search-section, #api-hub-modal, #report-action-buttons, footer, .no-print { display: none !important; }
+            .card-panel { background: #FFFFFF !important; border: 1px solid #E6E4DD !important; box-shadow: none !important; color: #171717 !important; }
             #executive-report-modal { display: block !important; position: static !important; background: transparent !important; padding: 0 !important; }
             #executive-report-modal .card-panel { max-height: none !important; border: none !important; padding: 0 !important; }
         }
     </style>
 </head>
-<body class="p-3 sm:p-5 lg:p-6 max-w-7xl mx-auto space-y-6">
+<body class="p-2 sm:p-4 lg:p-6 flex items-center justify-center">
 
-    <!-- ═══════════════════════════════════════════ TOP NAVIGATION HEADER ══════════════════════ -->
-    <header class="card-panel p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-lg shadow-md shadow-indigo-600/30 flex-shrink-0">
-                🛡️
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="text-base font-extrabold text-white tracking-tight">AI-DeFi Risk Intelligence</span>
-                    <span class="tag-pill bg-indigo-950 text-indigo-300 border border-indigo-800 text-[10px]">v2.0 Platform</span>
-                </div>
-                <p class="text-xs text-slate-400">Multi-Chain Web3 Security & Forensic AI Risk Explorer</p>
-            </div>
-        </div>
+    <!-- ═══════════════════════════════════════════ MAIN APPLICATION SHELL CONTAINER ══════════════════════ -->
+    <div id="main-app-shell" class="w-full max-w-[1440px] min-h-[94vh] bg-[#FAFBFD] rounded-3xl lg:rounded-[32px] shadow-[0_25px_70px_-15px_rgba(15,23,42,0.08)] border border-slate-200/80 overflow-hidden flex flex-col lg:flex-row">
 
-        <div class="flex items-center gap-2.5 flex-wrap">
-            <!-- Active APIs Button -->
-            <button id="open-api-hub-btn-dash" type="button" class="flex items-center gap-1.5 text-xs font-semibold text-emerald-300 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-800 px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
-                <span>Active APIs (EVM & TRON)</span>
-            </button>
-            <button id="open-api-hub-btn-landing" class="hidden"></button>
-
-            <!-- Export Audit Report -->
-            <button id="export-report-btn" type="button" class="flex items-center gap-1.5 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer">
-                <span>📄</span>
-                <span>Audit Report</span>
-            </button>
-
-            <!-- Backend Status Indicator -->
-            <div class="flex items-center gap-1.5 text-xs font-medium text-slate-300 bg-slate-900 border border-slate-800 px-2.5 py-1.5 rounded-lg">
-                <span id="api-dot" class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
-                <span id="api-status-text">API Online</span>
-                <span id="landing-api-dot" class="hidden"></span>
-                <span id="landing-api-status" class="hidden"></span>
-            </div>
-        </div>
-    </header>
-
-    <!-- ═══════════════════════════════════════════ PAGE 1: SEARCH & ADDRESS INPUT PORTAL ══════════════════════ -->
-    <main id="landing-view" class="space-y-6">
-        
-        <!-- Hero Intro Section -->
-        <section class="card-panel p-6 sm:p-8 text-center space-y-4 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-slate-800 shadow-2xl relative overflow-hidden">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950/80 border border-indigo-700/60 text-indigo-300 text-xs font-semibold">
-                <span>🛡️</span>
-                <span>Production Web3 Security Engine · v2.0 Platform</span>
-            </div>
+        <!-- ─────────────────────────────────────────── FIXED VERTICAL SIDEBAR ─────────────────────────────────── -->
+        <aside id="sidebar-nav" class="w-full lg:w-64 bg-white border-b lg:border-b-0 lg:border-r border-slate-100/90 flex flex-col justify-between p-4 lg:p-6 z-20 flex-shrink-0">
             
-            <div class="max-w-2xl mx-auto space-y-2">
-                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
-                    Web3 Wallet Risk & Forensic Intelligence
-                </h1>
-                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    Inspect any Ethereum or TRON address for fraud patterns, sanction proximity, exploit histories, and multi-model machine learning risk scores.
-                </p>
-            </div>
-
-            <!-- Page 1 Search & Network Controller Card -->
-            <div class="card-panel p-5 sm:p-6 text-left space-y-4 bg-slate-950/90 border-slate-800 max-w-3xl mx-auto shadow-xl">
-                
-                <!-- Network Selector Tabs -->
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">1. Select Target Network</span>
-                    <span id="active-api-indicator" class="text-xs text-emerald-400 font-mono">⚡ Etherscan V2 API Ready</span>
+            <!-- Sidebar Top: Brand & Navigation -->
+            <div class="space-y-6">
+                <!-- Brand Header -->
+                <div class="flex items-center justify-between lg:justify-start gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-600 dark:text-gold-400 text-lg shadow-xs font-bold flex-shrink-0">
+                            🛡️
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-sm font-extrabold text-ivory-900 dark:text-ivory-50 tracking-tight font-heading">AI Risk Prediction</span>
+                                <span class="tag-pill bg-gold-500/10 text-gold-700 dark:text-gold-400 border border-gold-500/25 text-[10px] px-2 py-0.5 font-mono font-bold">PRO</span>
+                            </div>
+                            <p class="text-[11px] text-ivory-500 font-medium truncate">Decentralized Finance</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3" id="landing-network-tabs">
-                    <button type="button" data-chain="ethereum" class="landing-chain-tab py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all border bg-indigo-950/80 border-indigo-500 text-white shadow-md shadow-indigo-950/50 cursor-pointer">
-                        <span>🔷</span><span>Ethereum (ETH)</span>
+                <!-- Navigation List -->
+                <nav class="flex lg:flex-col gap-1.5 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0 no-scrollbar">
+                    
+                    <!-- 1. Scanner Tab -->
+                    <button id="sidebar-scan-tab" type="button" class="sidebar-tab-btn flex-shrink-0 flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-gold-500/15 text-gold-800 dark:text-gold-300 border border-gold-500/30 transition-all text-left w-full cursor-pointer">
+                        <span class="text-sm">🔍</span>
+                        <span>Wallet Explorer</span>
                     </button>
-                    <button type="button" data-chain="tron" class="landing-chain-tab py-3 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all border bg-slate-900/80 border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 cursor-pointer">
-                        <span>🟢</span><span>TRON (TRX)</span>
+
+                    <!-- 2. Dashboard View Tab -->
+                    <button id="sidebar-dash-tab" type="button" class="sidebar-tab-btn flex-shrink-0 flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs font-medium text-ivory-600 dark:text-ivory-400 hover:text-ivory-900 dark:hover:text-ivory-100 hover:bg-ivory-200/60 dark:hover:bg-onyx-800 transition-all text-left w-full cursor-pointer">
+                        <span class="text-sm">📊</span>
+                        <span>Risk Dashboard</span>
                     </button>
-                </div>
 
-                <!-- Hidden compatibility select & dashboard tabs sync -->
-                <select id="explorer-network-select" class="hidden">
-                    <option value="ethereum" selected>Ethereum</option>
-                    <option value="tron">TRON</option>
-                </select>
-                <div id="dash-network-tabs" class="hidden"></div>
+                </nav>
+            </div>
 
-                <!-- Address Input Box -->
-                <div class="space-y-2">
-                    <div class="flex items-center justify-between text-xs">
-                        <label for="dash-address-input" class="font-bold text-slate-300">2. Enter Target Wallet or Contract Address</label>
-                        <span class="text-slate-500 font-mono text-[11px]">EVM (0x...) or TRON (T...)</span>
+            <!-- Sidebar Bottom: Status Card -->
+            <div class="hidden lg:block space-y-3 pt-6 border-t border-ivory-300/60 dark:border-onyx-700/60">
+                <div class="p-3.5 rounded-xl bg-ivory-100 dark:bg-onyx-850 border border-ivory-300/50 dark:border-onyx-700/70 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-ivory-600 dark:text-ivory-400 uppercase tracking-widest">Network RPCs</span>
+                        <span class="tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px]">Active</span>
                     </div>
-
-                    <div class="relative">
-                        <input id="dash-address-input" type="text" autocomplete="off" spellcheck="false"
-                            value="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045"
-                            placeholder="e.g. 0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045 or TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7"
-                            class="w-full bg-slate-900 border border-slate-700 hover:border-slate-600 rounded-xl py-3 pl-10 pr-24 text-xs sm:text-sm font-mono text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all shadow-inner"
-                        />
-                        <input id="explorer-address-input" type="hidden" value="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045">
-                        <span class="absolute left-3.5 top-3.5 text-slate-400 text-sm pointer-events-none">🔍</span>
-                        
-                        <div class="absolute right-2 top-2 flex items-center gap-1.5">
-                            <button id="dash-paste-btn" type="button" title="Paste from clipboard" class="text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-600 transition-colors cursor-pointer">
-                                Paste
-                            </button>
-                            <button id="dash-clear-btn" type="button" title="Clear input" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-2.5 py-1.5 rounded-lg border border-slate-600 transition-colors cursor-pointer">
-                                ✕
-                            </button>
-                            <button id="paste-btn" class="hidden"></button>
-                            <button id="clear-btn" class="hidden"></button>
+                    <div class="space-y-1 text-[11px] text-ivory-500">
+                        <div class="flex items-center justify-between">
+                            <span>Ethereum (EVM)</span>
+                            <span class="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">Online</span>
                         </div>
-                    </div>
-
-                    <!-- Recent Scans Horizontal Scrollable Bar (Last 5) -->
-                    <div id="recent-scans-container" class="hidden pt-1 space-y-1.5 border-t border-slate-800/60">
-                        <div class="flex items-center justify-between text-[11px]">
-                            <span class="text-slate-400 font-semibold flex items-center gap-1.5">
-                                <span>🕒</span><span>Recent Scans</span>
-                                <span class="text-slate-500 text-[10px] font-normal">(Last 5 · Click to re-scan)</span>
-                            </span>
-                            <button id="clear-recent-scans-btn" type="button" class="text-slate-400 hover:text-rose-300 text-[10px] font-medium transition-colors cursor-pointer bg-slate-900 hover:bg-slate-800 px-2 py-0.5 rounded border border-slate-800">
-                                Clear History
-                            </button>
-                        </div>
-                        <div id="recent-scans-list" class="flex items-center gap-2 overflow-x-auto pb-1.5 pt-0.5 no-scrollbar scroll-smooth">
-                            <!-- Populated dynamically via JS -->
+                        <div class="flex items-center justify-between">
+                            <span>TRON (TRC-20)</span>
+                            <span class="font-mono text-emerald-600 dark:text-emerald-400 font-semibold">Online</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Primary Scan CTA Button -->
-                <button id="dash-analyze-btn" type="button" class="w-full bg-indigo-600 hover:bg-indigo-500 active:scale-[0.99] text-white font-extrabold text-sm sm:text-base py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                    <span>⚡</span><span>Analyze & Generate Risk Report →</span>
-                </button>
-                <button id="explorer-analyze-btn" class="hidden"></button>
-
-                <!-- Error Alert -->
-                <div id="explorer-error-alert" class="hidden p-3.5 rounded-xl bg-rose-950/90 border border-rose-800 text-rose-200 text-xs font-medium flex items-center justify-between gap-2">
-                    <div class="flex items-center gap-2">
-                        <span>⚠️</span>
-                        <span id="explorer-error-msg">Invalid address entered</span>
-                    </div>
-                    <button type="button" onclick="document.getElementById('explorer-error-alert').classList.add('hidden')" class="text-rose-400 hover:text-white">✕</button>
+                <div class="flex items-center gap-2 px-1 text-[11px] text-ivory-500">
+                    <span class="w-2 h-2 rounded-full bg-gold-500 pulse-dot"></span>
+                    <span class="truncate">Live Neural Consensus v2.0</span>
                 </div>
-
-                <!-- 1-Click Benchmark Wallets -->
-                <div class="space-y-2 pt-2 border-t border-slate-800 text-xs">
-                    <span class="text-slate-400 font-semibold block">⚡ 1-Click Preset Benchmark Wallets:</span>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-800/60 transition-colors cursor-pointer" data-address="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" data-chain="ethereum">🟢 vitalik.eth (Safe EOA)</button>
-                        <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-indigo-300 border border-indigo-800/60 transition-colors cursor-pointer" data-address="0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D" data-chain="ethereum">🦄 Uniswap V2 Router</button>
-                        <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-rose-300 border border-rose-900/60 transition-colors cursor-pointer" data-address="0x8589427373D6D84E98730D7795D8f6f8731FDA16" data-chain="ethereum">🚨 Tornado.Cash (OFAC Sanctioned)</button>
-                        <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-rose-300 border border-rose-900/60 transition-colors cursor-pointer" data-address="0x098B716B8Aaf21512996dC57EB0615e2383E2f96" data-chain="ethereum">🔴 Ronin Hacker (Lazarus)</button>
-                        <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-cyan-300 border border-cyan-800/60 transition-colors cursor-pointer" data-address="TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7" data-chain="tron">⚡ TRON Active Wallet</button>
-                    </div>
-                </div>
-
             </div>
 
-        </section>
+        </aside>
 
-        <!-- Platform Architectural Features Showcase Grid -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="card-panel p-4 space-y-2 bg-slate-900/90 border-slate-800">
-                <div class="flex items-center gap-2">
-                    <span class="text-lg">📊</span>
-                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Tabular ML Ensemble</h3>
-                </div>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    XGBoost and Random Forest algorithms trained on 50,000+ labeled Kaggle fraud accounts evaluating revert velocity and burst signatures.
-                </p>
-            </div>
-
-            <div class="card-panel p-4 space-y-2 bg-slate-900/90 border-slate-800">
-                <div class="flex items-center gap-2">
-                    <span class="text-lg">🕸️</span>
-                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">GraphSAGE GNN Topology</h3>
-                </div>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    Graph Neural Network benchmarked on 203,769 Elliptic AML nodes mapping multi-hop distance to money laundering clusters.
-                </p>
-            </div>
-
-            <div class="card-panel p-4 space-y-2 bg-slate-900/90 border-slate-800">
-                <div class="flex items-center gap-2">
-                    <span class="text-lg">🔍</span>
-                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Autoencoder Anomaly</h3>
-                </div>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    Unsupervised deep reconstruction neural network flagging statistical deviations from normal peer-to-peer baselines.
-                </p>
-            </div>
-
-            <div class="card-panel p-4 space-y-2 bg-slate-900/90 border-slate-800">
-                <div class="flex items-center gap-2">
-                    <span class="text-lg">💬</span>
-                    <h3 class="text-xs font-bold text-white uppercase tracking-wider">Gemini 2.5 Explainable AI</h3>
-                </div>
-                <p class="text-xs text-slate-400 leading-relaxed">
-                    Plain-English point-by-point risk explanations and interactive on-demand blockchain security consultant.
-                </p>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- ═══════════════════════════════════════════ PAGE 2: EXECUTIVE REPORT VIEW ══════════════════════ -->
-    <main id="dashboard-view" class="space-y-6 hidden">
-
-        <!-- Top Navigation Bar for Page 2 -->
-        <div class="card-panel p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900 border-indigo-900/50">
-            <button id="back-to-scan-btn" type="button" class="flex items-center gap-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 active:scale-95 px-4 py-2 rounded-xl shadow-md transition-all cursor-pointer self-start sm:self-auto">
-                <span>←</span>
-                <span>Scan Another Wallet</span>
-            </button>
-            <button id="back-to-explorer-btn" class="hidden"></button>
-
-            <div class="flex items-center gap-2 flex-wrap text-xs">
-                <span class="text-slate-400">Viewing Report For:</span>
-                <span id="nav-target-address" class="font-mono font-bold text-white bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 max-w-[180px] sm:max-w-xs truncate">—</span>
-                <span id="nav-chain-badge" class="tag-pill bg-indigo-950 text-indigo-300 border border-indigo-800 text-[10px]">ETHEREUM</span>
-            </div>
-        </div>
-
-        <!-- ── HERO CARD: EXECUTIVE WALLET RISK & PROFILE ── -->
-        <section class="card-panel p-5 md:p-6 space-y-5 shadow-xl">
+        <!-- ─────────────────────────────────────────── MAIN WORKSPACE CANVAS ──────────────────────────────────── -->
+        <div class="flex-1 flex flex-col min-w-0 bg-ivory-50 dark:bg-onyx-900 main-canvas-bg">
             
-            <!-- Address Header Strip -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-4 border-b border-slate-800">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div id="dash-entity-icon" class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-lg flex-shrink-0">
-                        👤
-                    </div>
-                    <div class="min-w-0 space-y-0.5">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span id="dash-entity-name" class="font-extrabold text-sm sm:text-base text-white">Target Wallet</span>
-                            <span id="dash-chain-pill" class="tag-pill bg-indigo-950 text-indigo-300 border border-indigo-800 font-mono text-[10px]">ETHEREUM</span>
-                            <span id="dash-entity-badge" class="tag-pill bg-slate-800 text-slate-300 border border-slate-700 text-[10px]">Standard EOA</span>
-                            <span id="dash-live-badge" class="tag-pill bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px]">⚡ Live RPC Synced</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs">
-                            <span class="text-slate-400">Address:</span>
-                            <span id="dash-full-address" class="font-mono text-slate-200 font-semibold truncate max-w-xs sm:max-w-md">—</span>
-                            <button id="dash-copy-addr-btn" type="button" title="Copy Address" class="text-slate-400 hover:text-white transition-colors cursor-pointer">📋</button>
-                            <a id="dash-explorer-link" href="https://etherscan.io" target="_blank" rel="noopener noreferrer" class="text-indigo-400 hover:text-indigo-300 font-medium flex items-center gap-0.5">
-                                <span>Explorer</span><span>↗</span>
-                            </a>
-                        </div>
-                    </div>
+            <!-- Top App Bar -->
+            <header class="bg-white/80 dark:bg-onyx-900/85 backdrop-blur-md border-b border-ivory-300/60 dark:border-onyx-700/70 px-5 lg:px-8 py-3.5 flex items-center justify-between gap-4 sticky top-0 z-10">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span id="topbar-mode-badge" class="tag-pill bg-gold-500/10 text-gold-800 dark:text-gold-300 border border-gold-500/25 text-[11px]">
+                        Multi-Chain Security
+                    </span>
+                    <h1 id="topbar-title" class="text-sm font-bold text-ivory-900 dark:text-ivory-50 truncate font-heading">
+                        AI-Based Risk Prediction in Decentralized Finance
+                    </h1>
                 </div>
 
-                <div class="flex items-center gap-2 self-start md:self-auto flex-wrap text-xs">
-                    <div class="bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block text-[10px] uppercase font-bold">Native Balance</span>
-                        <span id="dash-native-balance" class="font-mono font-bold text-white text-sm">—</span>
-                    </div>
-                    <div class="bg-slate-950 px-3 py-2 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block text-[10px] uppercase font-bold">Est. Portfolio</span>
-                        <span id="dash-portfolio-val" class="font-mono font-bold text-emerald-400 text-sm">—</span>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <!-- Active APIs Trigger -->
+                    <button id="open-api-hub-btn-dash" type="button" class="flex items-center gap-1.5 text-xs font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 px-3 py-1.5 rounded-full transition-colors cursor-pointer shadow-xs">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>
+                        <span class="hidden sm:inline">Active APIs</span>
+                        <span class="sm:hidden">APIs</span>
+                    </button>
+                    <button id="open-api-hub-btn-landing" class="hidden"></button>
+
+                    <!-- Export Audit Report -->
+                    <button id="export-report-btn" type="button" class="flex items-center gap-1.5 text-xs font-semibold text-ivory-800 dark:text-ivory-200 bg-white dark:bg-onyx-800 hover:bg-ivory-100 dark:hover:bg-onyx-750 border border-ivory-300 dark:border-onyx-600 px-3.5 py-1.5 rounded-full transition-colors cursor-pointer shadow-xs">
+                        <span>📄</span>
+                        <span class="hidden sm:inline">Audit Report</span>
+                    </button>
+
+                    <!-- Theme Toggle Button -->
+                    <button id="theme-toggle-btn" type="button" aria-label="Toggle Theme" title="Toggle dark / light mode" class="flex items-center gap-1.5 text-xs font-semibold text-ivory-800 dark:text-ivory-200 bg-white dark:bg-onyx-800 hover:bg-ivory-100 dark:hover:bg-onyx-750 border border-ivory-300 dark:border-onyx-600 px-3 py-1.5 rounded-full transition-all cursor-pointer shadow-xs">
+                        <span id="theme-icon">🌙</span>
+                        <span id="theme-text" class="hidden sm:inline font-medium">Dark</span>
+                    </button>
+
+                    <!-- Backend Status Indicator -->
+                    <div class="flex items-center gap-1.5 text-xs font-medium text-ivory-600 dark:text-ivory-400 bg-ivory-100 dark:bg-onyx-800 border border-ivory-300/80 dark:border-onyx-700 px-2.5 py-1.5 rounded-full">
+                        <span id="api-dot" class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+                        <span id="api-status-text">Online</span>
+                        <span id="landing-api-dot" class="hidden"></span>
+                        <span id="landing-api-status" class="hidden"></span>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            <!-- Risk Score & Executive Stats Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+            <!-- Main Scrollable Canvas Area -->
+            <div class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
                 
-                <!-- Risk Donut & Calibrated Score -->
-                <div class="lg:col-span-4 flex items-center justify-center p-4 bg-slate-950/70 rounded-2xl border border-slate-800">
-                    <div class="flex items-center gap-5">
-                        <div class="relative w-28 h-28 flex-shrink-0">
-                            <svg id="risk-donut-svg" viewBox="0 0 100 100" class="w-full h-full">
-                                <circle class="track" cx="50" cy="50" r="40"/>
-                                <circle id="donut-fill" class="fill" cx="50" cy="50" r="40" stroke="#10B981" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
-                            </svg>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <span id="donut-score" class="text-2xl font-black text-white">0</span>
-                                <span class="text-[9px] font-bold text-slate-400 uppercase">/ 100</span>
-                            </div>
+                <!-- ═══════════════════════════════════════════ PAGE 1: SEARCH & EXPLORER LANDING ══════════════════════ -->
+                <main id="landing-view" class="space-y-6 max-w-5xl mx-auto">
+                    
+                    <!-- Clean Hero Header -->
+                    <section class="text-center space-y-3.5 pt-3 pb-1">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gold-500/10 border border-gold-500/25 text-gold-800 dark:text-gold-300 text-xs font-semibold shadow-xs">
+                            <span class="text-sm">🛡️</span>
+                            <span>AI-Based Risk Prediction in Decentralized Finance</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-gold-500 pulse-dot"></span>
                         </div>
-
-                        <div class="space-y-1.5">
-                            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 block">Risk Evaluation</span>
-                            <div id="risk-level-badge" class="tag-pill bg-emerald-950 text-emerald-300 border border-emerald-800 text-xs px-3 py-1">
-                                VERY LOW RISK
-                            </div>
-                            <span id="calibrated-risk-score" class="hidden">0</span>
-                            <span id="risk-level-text" class="hidden">VERY LOW RISK</span>
-                            <span id="risk-score-suffix" class="hidden"></span>
-                            <p id="target-address" class="text-[11px] text-slate-400 font-mono">Clean Reputation</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4 Key Forensic Stats Cards -->
-                <div class="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                    <div class="p-3.5 bg-slate-950/70 rounded-xl border border-slate-800 space-y-1">
-                        <span class="text-slate-500 uppercase font-bold text-[10px] block">Account Age</span>
-                        <p id="wallet-age-text" class="text-xl font-bold text-white">—</p>
-                        <span id="wallet-age-subtext" class="text-[11px] text-slate-400">Active History</span>
-                    </div>
-                    <div class="p-3.5 bg-slate-950/70 rounded-xl border border-slate-800 space-y-1">
-                        <span class="text-slate-500 uppercase font-bold text-[10px] block">Total Operations</span>
-                        <p id="tx-count-text" class="text-xl font-bold text-white">—</p>
-                        <span id="failed-tx-text" class="text-[11px] text-slate-400">0 reverted</span>
-                    </div>
-                    <div class="p-3.5 bg-slate-950/70 rounded-xl border border-slate-800 space-y-1">
-                        <span class="text-slate-500 uppercase font-bold text-[10px] block">Blacklist Hops</span>
-                        <p id="hops-text" class="text-xl font-bold text-emerald-400">Safe</p>
-                        <span class="text-[11px] text-slate-400">OFAC Separation</span>
-                    </div>
-                    <div class="p-3.5 bg-slate-950/70 rounded-xl border border-slate-800 space-y-1">
-                        <span class="text-slate-500 uppercase font-bold text-[10px] block">Risk Trend</span>
-                        <p id="risk-trend-indicator" class="text-sm font-bold text-slate-300 mt-1">Stable →</p>
-                        <span class="text-[11px] text-slate-400">Historical Check</span>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- 1-Sentence Executive Verdict Summary -->
-            <div id="ai-summary-box" class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs flex items-start gap-3">
-                <span class="text-lg flex-shrink-0">🤖</span>
-                <div class="space-y-1">
-                    <span class="font-bold text-white block">Executive Verdict (Plain English)</span>
-                    <p id="ai-summary-text" class="text-slate-300 leading-relaxed">
-                        Scanning wallet telemetry to compute calibrated multi-model risk intelligence...
-                    </p>
-                </div>
-            </div>
-
-        </section>
-
-        <!-- ── 2-COLUMN MAIN CONTENT GRID ── -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            <!-- LEFT COLUMN: Key Risk Drivers & Interactive Gemini AI (lg:col-span-7) -->
-            <div class="lg:col-span-7 space-y-6">
-
-                <!-- Pointwise Risk Drivers Card -->
-                <section class="card-panel p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">📌</span>
-                            <h2 class="text-sm font-bold text-white">Forensic Risk & Safety Drivers</h2>
-                        </div>
-                        <span id="driver-count-badge" class="tag-pill bg-slate-900 border border-slate-800 text-[10px] text-slate-400 font-mono">
-                            5 Pointwise Factors
-                        </span>
-                    </div>
-
-                    <div id="pointwise-drivers-container" class="space-y-3">
-                        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 text-xs">
-                            Awaiting wallet scan reasons...
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Interactive Gemini AI Assistant Card -->
-                <section class="card-panel p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">💬</span>
-                            <h2 class="text-sm font-bold text-white">Ask Gemini AI About This Wallet</h2>
-                        </div>
-                        <span id="ai-loading-spinner" class="hidden text-xs text-indigo-400 animate-pulse font-mono">Thinking with Gemini...</span>
-                    </div>
-
-                    <!-- Quick Prompt Chips -->
-                    <div class="flex flex-wrap gap-1.5">
-                        <button type="button" onclick="askAiQuestion('Explain why this wallet is scored this way in very simple 5th-grade words')" class="tag-pill bg-slate-900 hover:bg-indigo-950 text-slate-300 hover:text-indigo-200 border border-slate-800 hover:border-indigo-700 transition-all cursor-pointer text-[11px] py-1">
-                            👶 Simple Words
-                        </button>
-                        <button type="button" onclick="askAiQuestion('What is the single biggest risk factor or vulnerability for this wallet?')" class="tag-pill bg-slate-900 hover:bg-indigo-950 text-slate-300 hover:text-indigo-200 border border-slate-800 hover:border-indigo-700 transition-all cursor-pointer text-[11px] py-1">
-                            🎯 Biggest Risk Factor
-                        </button>
-                        <button type="button" onclick="askAiQuestion('Is it safe to transfer crypto to or from this address? Give a clear verdict.')" class="tag-pill bg-slate-900 hover:bg-indigo-950 text-slate-300 hover:text-indigo-200 border border-slate-800 hover:border-indigo-700 transition-all cursor-pointer text-[11px] py-1">
-                            🛡️ Safety Verdict
-                        </button>
-                        <button type="button" onclick="askAiQuestion('Analyze this wallet\'s distance to OFAC sanctions, mixers, and blacklisted entities.')" class="tag-pill bg-slate-900 hover:bg-indigo-950 text-slate-300 hover:text-indigo-200 border border-slate-800 hover:border-indigo-700 transition-all cursor-pointer text-[11px] py-1">
-                            🕸️ Sanctions & AML
-                        </button>
-                    </div>
-
-                    <!-- Custom Prompt Input -->
-                    <div class="flex gap-2">
-                        <input id="ai-custom-input" type="text" placeholder="Ask AI anything about this wallet (e.g. Is this a bot or human?)..." 
-                            class="flex-1 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none transition-colors"
-                            onkeydown="if(event.key === 'Enter') submitCustomAiQuestion()">
-                        <button id="ai-ask-btn" type="button" onclick="submitCustomAiQuestion()" 
-                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white font-bold text-xs rounded-xl shadow transition-all cursor-pointer flex items-center gap-1">
-                            <span>Ask</span>
-                            <span>✨</span>
-                        </button>
-                    </div>
-
-                    <!-- Live AI Q&A Response Bubble -->
-                    <div id="ai-response-box" class="hidden p-4 rounded-xl bg-slate-950 border border-indigo-800/80 text-xs text-slate-200 space-y-2 shadow-lg">
-                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                            <span class="font-bold text-indigo-300 flex items-center gap-1.5">
-                                <span>🧠 Gemini AI Deep Analysis</span>
-                                <span id="ai-model-tag" class="tag-pill bg-indigo-950 text-indigo-300 border border-indigo-800 text-[9px]">gemini-3.7-flash</span>
-                            </span>
-                            <button onclick="document.getElementById('ai-response-box').classList.add('hidden')" class="text-slate-500 hover:text-white text-xs cursor-pointer">✕ Close</button>
-                        </div>
-                        <div id="ai-response-content" class="text-slate-200 leading-relaxed whitespace-pre-wrap font-sans">
-                            AI response will appear here...
-                        </div>
-                    </div>
-
-                    <!-- Actionable Security Guidance -->
-                    <div id="recommendation-box" class="p-3.5 rounded-xl bg-indigo-950/50 border border-indigo-800/60 text-xs space-y-1">
-                        <span class="font-bold text-indigo-300 block">Actionable Security Advice</span>
-                        <p id="recommendation-text" class="text-indigo-200 leading-relaxed">
-                            Safe to proceed with standard interactions. Continue regular monitoring.
+                        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-ivory-900 dark:text-ivory-50 tracking-tight font-heading">
+                            AI-Based Risk Prediction in Decentralized Finance
+                        </h2>
+                        <p class="text-xs sm:text-sm text-ivory-600 dark:text-ivory-400 max-w-2xl mx-auto leading-relaxed">
+                            Analyze any Ethereum or TRON wallet address against 50,000+ fraud vectors, GraphSAGE money-laundering clusters, and OFAC sanctions with real-time AI explanations.
                         </p>
+
+                        <!-- Live Security Telemetry Ribbon -->
+                        <div class="flex items-center justify-center gap-2 sm:gap-4 flex-wrap text-[11px] font-medium text-ivory-600 dark:text-ivory-400 pt-1">
+                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-onyx-850 px-3 py-1 rounded-full border border-ivory-300/80 dark:border-onyx-700/80 shadow-2xs">
+                                <span class="text-gold-500">📊</span> 50,000+ Fraud Signatures
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-onyx-850 px-3 py-1 rounded-full border border-ivory-300/80 dark:border-onyx-700/80 shadow-2xs">
+                                <span class="text-emerald-500">⚡</span> Sub-800ms RPC Analysis
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-onyx-850 px-3 py-1 rounded-full border border-ivory-300/80 dark:border-onyx-700/80 shadow-2xs">
+                                <span class="text-purple-400">🕸️</span> Elliptic AML Topology
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 bg-white dark:bg-onyx-850 px-3 py-1 rounded-full border border-ivory-300/80 dark:border-onyx-700/80 shadow-2xs font-sans">
+                                <span class="text-sky-400">🧠</span> Gemini 3.7 Flash AI
+                            </span>
+                        </div>
+                    </section>
+
+                    <!-- Primary Search Floating Card -->
+                    <section class="card-panel p-5 sm:p-7 space-y-5">
+                        
+                        <!-- Step 1: Network Selection -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <label class="font-bold text-ivory-700 dark:text-ivory-300 uppercase tracking-widest text-[11px] flex items-center gap-1.5">
+                                    <span class="w-4 h-4 rounded-full bg-gold-500/20 text-gold-700 dark:text-gold-300 flex items-center justify-center text-[10px] font-extrabold font-mono">1</span>
+                                    <span>Select Blockchain Network</span>
+                                </label>
+                                <span id="active-api-indicator" class="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span>
+                                    <span>Etherscan V2 & TronGrid Pro Ready</span>
+                                </span>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3" id="landing-network-tabs">
+                                <button type="button" data-chain="ethereum" class="landing-chain-tab py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all border bg-gold-500/10 border-gold-500/40 text-gold-900 dark:text-gold-300 shadow-xs cursor-pointer ring-2 ring-gold-500/20">
+                                    <span class="text-base">🔷</span><span>Ethereum Mainnet (EVM)</span>
+                                </button>
+                                <button type="button" data-chain="tron" class="landing-chain-tab py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2.5 transition-all border bg-ivory-100 dark:bg-onyx-800 border-ivory-300/80 dark:border-onyx-700 text-ivory-600 dark:text-ivory-400 hover:bg-ivory-200 dark:hover:bg-onyx-750 hover:text-ivory-900 dark:hover:text-ivory-100 cursor-pointer">
+                                    <span class="text-base">🟢</span><span>TRON Network (TRC-20)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Hidden compatibility inputs -->
+                        <select id="explorer-network-select" class="hidden">
+                            <option value="ethereum" selected>Ethereum</option>
+                            <option value="tron">TRON</option>
+                        </select>
+                        <div id="dash-network-tabs" class="hidden"></div>
+
+                        <!-- Step 2: Address Input & Tools -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <label for="dash-address-input" class="font-bold text-ivory-700 dark:text-ivory-300 uppercase tracking-widest text-[11px] flex items-center gap-1.5">
+                                    <span class="w-4 h-4 rounded-full bg-gold-500/20 text-gold-700 dark:text-gold-300 flex items-center justify-center text-[10px] font-extrabold font-mono">2</span>
+                                    <span>Target Wallet or Contract Address</span>
+                                </label>
+                                <span class="text-ivory-500 font-mono text-[11px]">EVM (0x...) or TRON (T...)</span>
+                            </div>
+
+                            <div class="relative">
+                                <input id="dash-address-input" type="text" autocomplete="off" spellcheck="false"
+                                    value=""
+                                    placeholder="Enter wallet address..."
+                                    class="w-full bg-ivory-100/90 dark:bg-onyx-850 hover:bg-white dark:hover:bg-onyx-800 focus:bg-white dark:focus:bg-onyx-800 border border-ivory-300 dark:border-onyx-700 hover:border-gold-500/50 focus:border-gold-500 rounded-xl py-3.5 pl-11 pr-24 text-xs sm:text-sm font-mono text-ivory-900 dark:text-ivory-100 placeholder-ivory-500 focus:outline-none focus:ring-3 focus:ring-gold-500/20 transition-all shadow-inner"
+                                />
+                                <input id="explorer-address-input" type="hidden" value="">
+                                <span class="absolute left-4 top-4 text-ivory-500 text-sm pointer-events-none">🔍</span>
+                                
+                                <div class="absolute right-2.5 top-2.5 flex items-center gap-1.5">
+                                    <button id="dash-paste-btn" type="button" title="Paste from clipboard" class="text-xs font-semibold text-ivory-700 dark:text-ivory-300 hover:text-ivory-900 bg-white dark:bg-onyx-800 hover:bg-ivory-100 dark:hover:bg-onyx-750 px-2.5 py-1.5 rounded-lg border border-ivory-300 dark:border-onyx-600 transition-colors cursor-pointer shadow-2xs">
+                                        Paste
+                                    </button>
+                                    <button id="dash-clear-btn" type="button" title="Clear input" class="text-xs font-semibold text-ivory-500 hover:text-ivory-800 bg-white dark:bg-onyx-800 hover:bg-ivory-100 dark:hover:bg-onyx-750 px-2.5 py-1.5 rounded-lg border border-ivory-300 dark:border-onyx-600 transition-colors cursor-pointer shadow-2xs">
+                                        ✕
+                                    </button>
+                                    <button id="paste-btn" class="hidden"></button>
+                                    <button id="clear-btn" class="hidden"></button>
+                                </div>
+                            </div>
+
+                            <!-- Recent Scans Horizontal Scrollable Bar (Last 5) -->
+                            <div id="recent-scans-container" class="hidden pt-2 space-y-1.5 border-t border-ivory-200 dark:border-onyx-700">
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span class="text-ivory-700 dark:text-ivory-300 font-semibold flex items-center gap-1.5">
+                                        <span>🕒</span><span>Recent Scans</span>
+                                        <span class="text-ivory-500 text-[10px] font-normal">(Last 5 · Click to scan)</span>
+                                    </span>
+                                    <button id="clear-recent-scans-btn" type="button" class="text-ivory-500 hover:text-rose-600 text-[10px] font-medium transition-colors cursor-pointer bg-ivory-200/80 dark:bg-onyx-800 hover:bg-ivory-300 px-2 py-0.5 rounded-md border border-ivory-300 dark:border-onyx-700">
+                                        Clear History
+                                    </button>
+                                </div>
+                                <div id="recent-scans-list" class="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar scroll-smooth">
+                                    <!-- Populated dynamically via JS -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Primary Scan CTA Button in Black + Gold luxury palette -->
+                        <button id="dash-analyze-btn" type="button" class="w-full bg-gradient-to-r from-gold-600 via-gold-500 to-gold-400 hover:from-gold-500 hover:to-gold-300 active:scale-[0.99] text-onyx-950 font-extrabold text-sm sm:text-base py-3.5 px-6 rounded-xl shadow-md shadow-gold-500/20 hover:shadow-lg hover:shadow-gold-500/30 transition-all flex items-center justify-center gap-2.5 cursor-pointer font-heading">
+                            <span class="text-base">⚡</span><span>Analyze & Generate Risk Report →</span>
+                        </button>
+                        <button id="explorer-analyze-btn" class="hidden"></button>
+
+                        <!-- Error Alert -->
+                        <div id="explorer-error-alert" class="hidden p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-medium flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <span>⚠️</span>
+                                <span id="explorer-error-msg">Invalid address entered</span>
+                            </div>
+                            <button type="button" onclick="document.getElementById('explorer-error-alert').classList.add('hidden')" class="text-rose-500 hover:text-rose-800 font-bold cursor-pointer">✕</button>
+                        </div>
+
+                        <!-- 1-Click Benchmark Wallets -->
+                        <div class="space-y-2 pt-2 border-t border-ivory-200 dark:border-onyx-700 text-xs">
+                            <span class="text-ivory-500 font-semibold block text-[11px] uppercase tracking-wider">⚡ 1-Click Benchmark Preset Wallets:</span>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30 transition-all cursor-pointer shadow-2xs flex items-center gap-1.5" data-address="0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045" data-chain="ethereum">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                    <span>vitalik.eth (Safe EOA)</span>
+                                </button>
+                                <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-xl bg-gold-500/10 hover:bg-gold-500/20 text-gold-900 dark:text-gold-300 border border-gold-500/30 transition-all cursor-pointer shadow-2xs flex items-center gap-1.5" data-address="0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D" data-chain="ethereum">
+                                    <span class="w-2 h-2 rounded-full bg-gold-500"></span>
+                                    <span>🦄 Uniswap Router</span>
+                                </button>
+                                <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-500/30 transition-all cursor-pointer shadow-2xs flex items-center gap-1.5" data-address="0x8589427373D6D84E98730D7795D8f6f8731FDA16" data-chain="ethereum">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                    <span>🚨 Tornado.Cash (Sanctioned)</span>
+                                </button>
+                                <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-500/30 transition-all cursor-pointer shadow-2xs flex items-center gap-1.5" data-address="0x098B716B8Aaf21512996dC57EB0615e2383E2f96" data-chain="ethereum">
+                                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                    <span>🔴 Ronin Hacker (Lazarus)</span>
+                                </button>
+                                <button type="button" class="dash-sample-badge text-[11px] font-mono px-3 py-1.5 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-800 dark:text-teal-300 border border-teal-500/30 transition-all cursor-pointer shadow-2xs flex items-center gap-1.5" data-address="TLa2f6VPqDgRE67v1736s7bJ8Ray5wYjU7" data-chain="tron">
+                                    <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                                    <span>⚡ TRON Active Wallet</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </section>
+
+                </main>
+
+                <!-- ═══════════════════════════════════════════ PAGE 2: EXECUTIVE REPORT & DASHBOARD ══════════════════════ -->
+                <main id="dashboard-view" class="space-y-6 max-w-6xl mx-auto hidden">
+
+                    <!-- Top Breadcrumb Navigation Bar -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-onyx-850 p-3.5 sm:p-4 rounded-2xl border border-ivory-300 dark:border-onyx-700 shadow-xs">
+                        <div class="flex items-center gap-3">
+                            <button id="back-to-scan-btn" type="button" class="flex items-center gap-2 text-xs font-bold text-ivory-800 dark:text-ivory-200 bg-ivory-100 dark:bg-onyx-800 hover:bg-ivory-200 dark:hover:bg-onyx-750 border border-ivory-300 dark:border-onyx-700 active:scale-95 px-4 py-2 rounded-xl transition-all cursor-pointer">
+                                <span>←</span>
+                                <span>Scan Another Wallet</span>
+                            </button>
+                            <div class="hidden lg:flex items-center gap-1.5 text-xs text-ivory-500 font-medium border-l border-ivory-300 dark:border-onyx-700 pl-3">
+                                <span class="w-1.5 h-1.5 rounded-full bg-gold-500"></span>
+                                <span class="font-heading font-semibold text-ivory-700 dark:text-ivory-300">AI-Based Risk Prediction in Decentralized Finance</span>
+                            </div>
+                        </div>
+                        <button id="back-to-explorer-btn" class="hidden"></button>
+
+                        <div class="flex items-center gap-2 flex-wrap text-xs">
+                            <span class="text-ivory-500">Target:</span>
+                            <span id="nav-target-address" class="font-mono font-bold text-ivory-900 dark:text-ivory-100 bg-ivory-100 dark:bg-onyx-800 px-2.5 py-1 rounded-lg border border-ivory-300 dark:border-onyx-700 max-w-[180px] sm:max-w-xs truncate">—</span>
+                            <span id="nav-chain-badge" class="tag-pill bg-gold-500/10 text-gold-800 dark:text-gold-300 border border-gold-500/30 text-[10px]">ETHEREUM</span>
+                        </div>
                     </div>
-                </section>
+
+                    <!-- ── HERO CARD: EXECUTIVE WALLET RISK & PROFILE ── -->
+                    <section class="card-panel p-5 md:p-7 space-y-6">
+                        
+                        <!-- Address Header Strip -->
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-ivory-200 dark:border-onyx-700">
+                            <div class="flex items-center gap-3.5 min-w-0">
+                                <div id="dash-entity-icon" class="w-12 h-12 rounded-xl bg-gold-500/10 border border-gold-500/30 text-gold-600 dark:text-gold-400 flex items-center justify-center text-xl flex-shrink-0 shadow-xs">
+                                    👤
+                                </div>
+                                <div class="min-w-0 space-y-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span id="dash-entity-name" class="font-extrabold text-base sm:text-lg text-ivory-900 dark:text-ivory-50 font-heading">Target Wallet</span>
+                                        <span id="dash-chain-pill" class="tag-pill bg-gold-500/10 text-gold-800 dark:text-gold-300 border border-gold-500/30 font-mono text-[10px]">ETHEREUM</span>
+                                        <span id="dash-entity-badge" class="tag-pill bg-ivory-200 dark:bg-onyx-800 text-ivory-700 dark:text-ivory-300 border border-ivory-300 dark:border-onyx-700 text-[10px]">Standard EOA</span>
+                                        <span id="dash-live-badge" class="tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px]">⚡ Live RPC Synced</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs flex-wrap">
+                                        <span class="text-ivory-500">Address:</span>
+                                        <span id="dash-full-address" class="font-mono text-ivory-700 dark:text-ivory-300 font-semibold truncate max-w-xs sm:max-w-md">—</span>
+                                        <button id="dash-copy-addr-btn" type="button" title="Copy Address" class="text-ivory-400 hover:text-ivory-700 dark:hover:text-ivory-200 transition-colors cursor-pointer text-sm">📋</button>
+                                        <a id="dash-explorer-link" href="https://etherscan.io" target="_blank" rel="noopener noreferrer" class="text-gold-600 dark:text-gold-400 hover:underline font-semibold flex items-center gap-0.5 text-xs">
+                                            <span>Explorer</span><span>↗</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-3 self-start md:self-auto flex-wrap text-xs">
+                                <div class="bg-ivory-100 dark:bg-onyx-850 px-3.5 py-2 rounded-xl border border-ivory-300/80 dark:border-onyx-700">
+                                    <span class="text-ivory-500 block text-[10px] uppercase font-bold tracking-wider">Native Balance</span>
+                                    <span id="dash-native-balance" class="font-mono font-bold text-ivory-900 dark:text-ivory-100 text-sm">—</span>
+                                </div>
+                                <div class="bg-ivory-100 dark:bg-onyx-850 px-3.5 py-2 rounded-xl border border-ivory-300/80 dark:border-onyx-700">
+                                    <span class="text-ivory-500 block text-[10px] uppercase font-bold tracking-wider">Est. Volume</span>
+                                    <span id="dash-portfolio-val" class="font-mono font-bold text-gold-600 dark:text-gold-400 text-sm">—</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Risk Score & Executive Stats Grid -->
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                            
+                            <!-- Risk Donut & Calibrated Score -->
+                            <div class="lg:col-span-4 flex items-center justify-center p-4 bg-ivory-100/60 dark:bg-onyx-850/80 rounded-xl border border-ivory-300/70 dark:border-onyx-700">
+                                <div class="flex items-center gap-5">
+                                    <div class="relative w-28 h-28 flex-shrink-0">
+                                        <svg id="risk-donut-svg" viewBox="0 0 100 100" class="w-full h-full">
+                                            <circle class="track" cx="50" cy="50" r="40"/>
+                                            <circle id="donut-fill" class="fill" cx="50" cy="50" r="40" stroke="#10B981" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+                                        </svg>
+                                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                            <span id="donut-score" class="text-2xl font-black text-ivory-900 dark:text-ivory-50 font-display">0</span>
+                                            <span class="text-[9px] font-bold text-ivory-500 uppercase">/ 100</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-1.5">
+                                        <span class="text-[10px] uppercase font-bold tracking-wider text-ivory-500 block">Risk Evaluation</span>
+                                        <div id="risk-level-badge" class="tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-xs px-3 py-1 font-bold">
+                                            VERY LOW RISK
+                                        </div>
+                                        <span id="calibrated-risk-score" class="hidden">0</span>
+                                        <span id="risk-level-text" class="hidden">VERY LOW RISK</span>
+                                        <span id="risk-score-suffix" class="hidden"></span>
+                                        <p id="target-address" class="text-[11px] text-ivory-500 font-mono">Clean Reputation</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 4 Key Forensic Stats Cards -->
+                            <div class="lg:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                                <div class="p-4 bg-ivory-100/60 dark:bg-onyx-850/80 rounded-xl border border-ivory-300/70 dark:border-onyx-700 space-y-1">
+                                    <span class="text-ivory-500 uppercase font-bold text-[10px] block tracking-wider">Account Age</span>
+                                    <p id="wallet-age-text" class="text-xl font-extrabold text-ivory-900 dark:text-ivory-50 font-mono">—</p>
+                                    <span id="wallet-age-subtext" class="text-[11px] text-ivory-500">Active History</span>
+                                </div>
+                                <div class="p-4 bg-ivory-100/60 dark:bg-onyx-850/80 rounded-xl border border-ivory-300/70 dark:border-onyx-700 space-y-1">
+                                    <span class="text-ivory-500 uppercase font-bold text-[10px] block tracking-wider">Operations</span>
+                                    <p id="tx-count-text" class="text-xl font-extrabold text-ivory-900 dark:text-ivory-50 font-mono">—</p>
+                                    <span id="failed-tx-text" class="text-[11px] text-ivory-500">0 reverted</span>
+                                </div>
+                                <div class="p-4 bg-ivory-100/60 dark:bg-onyx-850/80 rounded-xl border border-ivory-300/70 dark:border-onyx-700 space-y-1">
+                                    <span class="text-ivory-500 uppercase font-bold text-[10px] block tracking-wider">Blacklist Hops</span>
+                                    <p id="hops-text" class="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">Safe</p>
+                                    <span class="text-[11px] text-ivory-500">OFAC Separation</span>
+                                </div>
+                                <div class="p-4 bg-ivory-100/60 dark:bg-onyx-850/80 rounded-xl border border-ivory-300/70 dark:border-onyx-700 space-y-1">
+                                    <span class="text-ivory-500 uppercase font-bold text-[10px] block tracking-wider">Risk Trend</span>
+                                    <p id="risk-trend-indicator" class="text-sm font-bold text-ivory-800 dark:text-ivory-200 mt-1">Stable →</p>
+                                    <span class="text-[11px] text-ivory-500">Historical Check</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- 1-Sentence Executive Verdict Summary -->
+                        <div id="ai-summary-box" class="p-4 rounded-xl bg-gold-500/10 border border-gold-500/25 text-xs flex items-start gap-3.5">
+                            <span class="text-xl flex-shrink-0">🤖</span>
+                            <div class="space-y-0.5">
+                                <span class="font-bold text-gold-900 dark:text-gold-300 block text-xs font-heading">Executive Verdict (Plain English)</span>
+                                <p id="ai-summary-text" class="text-ivory-800 dark:text-ivory-200 leading-relaxed text-xs">
+                                    Scanning wallet telemetry to compute calibrated multi-model risk intelligence...
+                                </p>
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <!-- ── 2-COLUMN MAIN CONTENT GRID ── -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                        <!-- LEFT COLUMN: Key Risk Drivers & Interactive Gemini AI (lg:col-span-7) -->
+                        <div class="lg:col-span-7 space-y-6">
+
+                            <!-- Pointwise Risk Drivers Card -->
+                            <section class="card-panel p-5 sm:p-6 space-y-4">
+                                <div class="flex items-center justify-between border-b border-ivory-200 dark:border-onyx-700 pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-base">📌</span>
+                                        <h2 class="text-sm font-bold text-ivory-900 dark:text-ivory-50 font-heading">Forensic Risk & Safety Drivers</h2>
+                                    </div>
+                                    <span id="driver-count-badge" class="tag-pill bg-ivory-100 dark:bg-onyx-800 border border-ivory-300 dark:border-onyx-700 text-[10px] text-ivory-600 dark:text-ivory-400 font-mono">
+                                        5 Pointwise Factors
+                                    </span>
+                                </div>
+
+                                <div id="pointwise-drivers-container" class="space-y-3">
+                                    <div class="p-3.5 rounded-xl bg-ivory-100 dark:bg-onyx-850 border border-ivory-300 dark:border-onyx-700 text-ivory-500 text-xs">
+                                        Awaiting wallet scan reasons...
+                                    </div>
+                                </div>
+                            </section>
+
+                            <!-- Interactive Gemini AI Assistant Card -->
+                            <section class="card-panel p-5 sm:p-6 space-y-4">
+                                <div class="flex items-center justify-between border-b border-ivory-200 dark:border-onyx-700 pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-base">💬</span>
+                                        <h2 class="text-sm font-bold text-ivory-900 dark:text-ivory-50 font-heading">Ask Gemini AI About This Wallet</h2>
+                                    </div>
+                                    <span id="ai-loading-spinner" class="hidden text-xs text-gold-600 dark:text-gold-400 animate-pulse font-mono">Thinking with Gemini...</span>
+                                </div>
+
+                                <!-- Quick Prompt Chips -->
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button type="button" onclick="askAiQuestion('Explain why this wallet is scored this way in very simple 5th-grade words')" class="tag-pill bg-ivory-100 dark:bg-onyx-800 hover:bg-gold-500/10 text-ivory-700 dark:text-ivory-300 hover:text-gold-700 dark:hover:text-gold-300 border border-ivory-300 dark:border-onyx-700 hover:border-gold-500/40 transition-all cursor-pointer text-[11px] py-1">
+                                        👶 Simple Words
+                                    </button>
+                                    <button type="button" onclick="askAiQuestion('What is the single biggest risk factor or vulnerability for this wallet?')" class="tag-pill bg-ivory-100 dark:bg-onyx-800 hover:bg-gold-500/10 text-ivory-700 dark:text-ivory-300 hover:text-gold-700 dark:hover:text-gold-300 border border-ivory-300 dark:border-onyx-700 hover:border-gold-500/40 transition-all cursor-pointer text-[11px] py-1">
+                                        🎯 Biggest Risk Factor
+                                    </button>
+                                    <button type="button" onclick="askAiQuestion('Is it safe to transfer crypto to or from this address? Give a clear verdict.')" class="tag-pill bg-ivory-100 dark:bg-onyx-800 hover:bg-gold-500/10 text-ivory-700 dark:text-ivory-300 hover:text-gold-700 dark:hover:text-gold-300 border border-ivory-300 dark:border-onyx-700 hover:border-gold-500/40 transition-all cursor-pointer text-[11px] py-1">
+                                        🛡️ Safety Verdict
+                                    </button>
+                                    <button type="button" onclick="askAiQuestion('Analyze this wallet\'s distance to OFAC sanctions, mixers, and blacklisted entities.')" class="tag-pill bg-ivory-100 dark:bg-onyx-800 hover:bg-gold-500/10 text-ivory-700 dark:text-ivory-300 hover:text-gold-700 dark:hover:text-gold-300 border border-ivory-300 dark:border-onyx-700 hover:border-gold-500/40 transition-all cursor-pointer text-[11px] py-1">
+                                        🕸️ Sanctions & AML
+                                    </button>
+                                </div>
+
+                                <!-- Custom Prompt Input -->
+                                <div class="flex gap-2">
+                                    <input id="ai-custom-input" type="text" placeholder="Ask AI anything about this wallet (e.g. Is this a bot or human?)..." 
+                                        class="flex-1 bg-ivory-100 dark:bg-onyx-850 border border-ivory-300 dark:border-onyx-700 focus:border-gold-500 rounded-xl px-3.5 py-2.5 text-xs text-ivory-900 dark:text-ivory-100 placeholder-ivory-500 focus:outline-none focus:ring-3 focus:ring-gold-500/20 transition-all"
+                                        onkeydown="if(event.key === 'Enter') submitCustomAiQuestion()">
+                                    <button id="ai-ask-btn" type="button" onclick="submitCustomAiQuestion()" 
+                                        class="px-4 py-2.5 bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 active:scale-95 text-onyx-950 font-bold text-xs rounded-xl shadow transition-all cursor-pointer flex items-center gap-1">
+                                        <span>Ask</span>
+                                        <span>✨</span>
+                                    </button>
+                                </div>
+
+                                <!-- Live AI Q&A Response Bubble -->
+                                <div id="ai-response-box" class="hidden p-4 rounded-xl bg-gold-500/10 border border-gold-500/25 text-xs text-ivory-900 dark:text-ivory-100 space-y-2 shadow-xs">
+                                    <div class="flex items-center justify-between border-b border-gold-500/20 pb-2">
+                                        <span class="font-bold text-gold-800 dark:text-gold-300 flex items-center gap-1.5">
+                                            <span>🧠 Gemini AI Deep Analysis</span>
+                                            <span id="ai-model-tag" class="tag-pill bg-gold-500/20 text-gold-900 dark:text-gold-300 border border-gold-500/30 text-[9px] font-mono">gemini-3.7-flash</span>
+                                        </span>
+                                        <button onclick="document.getElementById('ai-response-box').classList.add('hidden')" class="text-ivory-400 hover:text-ivory-700 dark:hover:text-ivory-200 text-xs cursor-pointer font-bold">✕</button>
+                                    </div>
+                                    <div id="ai-response-content" class="text-ivory-800 dark:text-ivory-200 leading-relaxed whitespace-pre-wrap font-sans">
+                                        AI response will appear here...
+                                    </div>
+                                </div>
+
+                                <!-- Actionable Security Guidance -->
+                                <div id="recommendation-box" class="p-3.5 rounded-xl bg-gold-500/10 border border-gold-500/25 text-xs space-y-1">
+                                    <span class="font-bold text-gold-900 dark:text-gold-300 block font-heading">Actionable Security Advice</span>
+                                    <p id="recommendation-text" class="text-ivory-800 dark:text-ivory-200 leading-relaxed">
+                                        Safe to proceed with standard interactions. Continue regular monitoring.
+                                    </p>
+                                </div>
+                            </section>
+
+                        </div>
+
+                        <!-- RIGHT COLUMN: Metrics, Assets & Activity (lg:col-span-5) -->
+                        <div class="lg:col-span-5 space-y-6">
+
+                            <!-- Engineered Risk Metrics Vector -->
+                            <section class="card-panel p-5 sm:p-6 space-y-4">
+                                <div class="flex items-center justify-between border-b border-ivory-200 dark:border-onyx-700 pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-base">📊</span>
+                                        <h2 class="text-sm font-bold text-ivory-900 dark:text-ivory-50 font-heading">Behavioral Telemetry</h2>
+                                    </div>
+                                    <span class="text-[10px] text-ivory-500 font-mono">On-Chain Vector</span>
+                                </div>
+
+                                <div id="features-table" class="space-y-1 text-xs">
+                                    <div class="text-ivory-400 text-center py-4">No features loaded.</div>
+                                </div>
+                            </section>
+
+                            <!-- Token Portfolio Holdings -->
+                            <section class="card-panel p-5 sm:p-6 space-y-4">
+                                <div class="flex items-center justify-between border-b border-ivory-200 dark:border-onyx-700 pb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-base">🪙</span>
+                                        <h2 class="text-sm font-bold text-ivory-900 dark:text-ivory-50 font-heading">Token Portfolio Holdings</h2>
+                                    </div>
+                                    <span class="text-[10px] text-ivory-500 font-mono">Verified Balances</span>
+                                </div>
+
+                                <div id="token-holdings" class="space-y-2 text-xs max-h-60 overflow-y-auto pr-1">
+                                    <div class="text-ivory-400 text-center py-4">No token data loaded.</div>
+                                </div>
+                            </section>
+
+                            <!-- Model Ensemble Breakdown -->
+                            <section class="card-panel p-5 sm:p-6 space-y-3">
+                                <div class="flex items-center justify-between border-b border-ivory-200 dark:border-onyx-700 pb-2">
+                                    <h2 class="text-xs font-bold uppercase tracking-wider text-ivory-500">ML Fusion Weights</h2>
+                                    <span id="model-fusion-signals" class="font-mono text-[10px] text-gold-600 dark:text-gold-400 font-medium">50% Tabular · 30% GNN · 20% Anomaly</span>
+                                </div>
+                                <div class="space-y-2.5 text-xs">
+                                    <div>
+                                        <div class="flex justify-between font-semibold mb-1">
+                                            <span class="text-ivory-700 dark:text-ivory-300">Tabular ML (XGBoost)</span>
+                                            <span id="tabular-percent" class="font-mono text-ivory-900 dark:text-ivory-100">0%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-ivory-200 dark:bg-onyx-800 rounded-full overflow-hidden">
+                                            <div id="tabular-bar" class="h-full rounded-full bg-gold-500 transition-all duration-700" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between font-semibold mb-1">
+                                            <span class="text-ivory-700 dark:text-ivory-300">GraphSAGE GNN Network</span>
+                                            <span id="gnn-percent" class="font-mono text-ivory-900 dark:text-ivory-100">0%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-ivory-200 dark:bg-onyx-800 rounded-full overflow-hidden">
+                                            <div id="gnn-bar" class="h-full rounded-full bg-purple-500 transition-all duration-700" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between font-semibold mb-1">
+                                            <span class="text-ivory-700 dark:text-ivory-300">Autoencoder Anomaly</span>
+                                            <span id="anomaly-percent" class="font-mono text-ivory-900 dark:text-ivory-100">0%</span>
+                                        </div>
+                                        <div class="w-full h-2 bg-ivory-200 dark:bg-onyx-800 rounded-full overflow-hidden">
+                                            <div id="anomaly-bar" class="h-full rounded-full bg-sky-500 transition-all duration-700" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ── FULL-WIDTH ROW: RECENT ON-CHAIN TRANSACTIONS TABLE ── -->
+                    <section class="card-panel p-5 md:p-7 space-y-4">
+                        <div class="flex items-center justify-between border-b border-ivory-200 dark:border-onyx-700 pb-3 flex-wrap gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-base">💸</span>
+                                <h2 class="text-sm font-bold text-ivory-900 dark:text-ivory-50 font-heading">Recent Recorded On-Chain Transfers</h2>
+                            </div>
+                            <span id="tx-chain-badge" class="tag-pill bg-gold-500/10 text-gold-800 dark:text-gold-300 border border-gold-500/30 text-xs font-mono font-bold">ETHEREUM</span>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-ivory-200 dark:border-onyx-700 text-[10px] uppercase tracking-widest text-ivory-500 font-bold">
+                                        <th class="pb-2.5 pr-4">Tx Hash</th>
+                                        <th class="pb-2.5 pr-4">Direction</th>
+                                        <th class="pb-2.5 pr-4">Counterparty</th>
+                                        <th class="pb-2.5 pr-4">Token</th>
+                                        <th class="pb-2.5 pr-4">Amount</th>
+                                        <th class="pb-2.5 pr-4">Status</th>
+                                        <th class="pb-2.5">Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactions-table-body">
+                                    <tr><td colspan="7" class="py-6 text-center text-ivory-500">No transactions loaded.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Page 2 Bottom Action Bar -->
+                    <div class="card-panel p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <button id="bottom-back-to-scan-btn" type="button" class="w-full sm:w-auto flex items-center justify-center gap-2 text-xs font-bold text-onyx-950 bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 active:scale-95 px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer font-heading">
+                            <span>←</span>
+                            <span>Scan Another Wallet</span>
+                        </button>
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button id="bottom-export-report-btn" type="button" class="w-full sm:w-auto flex items-center justify-center gap-1.5 text-xs font-semibold text-ivory-800 dark:text-ivory-200 bg-white dark:bg-onyx-800 hover:bg-ivory-100 dark:hover:bg-onyx-750 border border-ivory-300 dark:border-onyx-700 px-4 py-2.5 rounded-xl transition-colors cursor-pointer shadow-xs">
+                                <span>📄</span>
+                                <span>Export Audit Report</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </main>
 
             </div>
 
-            <!-- RIGHT COLUMN: Metrics, Assets & Activity (lg:col-span-5) -->
-            <div class="lg:col-span-5 space-y-6">
-
-                <!-- Engineered Risk Metrics Vector -->
-                <section class="card-panel p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">📊</span>
-                            <h2 class="text-sm font-bold text-white">Engineered Behavioral Metrics</h2>
-                        </div>
-                        <span class="text-[10px] text-slate-400 font-mono">On-Chain Telemetry</span>
-                    </div>
-
-                    <div id="features-table" class="space-y-1 text-xs">
-                        <div class="text-slate-500 text-center py-4">No features loaded.</div>
-                    </div>
-                </section>
-
-                <!-- Token Portfolio Holdings -->
-                <section class="card-panel p-5 space-y-4">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">🪙</span>
-                            <h2 class="text-sm font-bold text-white">Token Portfolio Holdings</h2>
-                        </div>
-                        <span class="text-[10px] text-slate-400 font-mono">Verified Balances</span>
-                    </div>
-
-                    <div id="token-holdings" class="space-y-2 text-xs max-h-60 overflow-y-auto pr-1">
-                        <div class="text-slate-500 text-center py-4">No token data loaded.</div>
-                    </div>
-                </section>
-
-                <!-- Model Ensemble Breakdown (Compact & Clean) -->
-                <section class="card-panel p-5 space-y-3">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
-                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400">ML Fusion Weights</h2>
-                        <span id="model-fusion-signals" class="font-mono text-[10px] text-indigo-400">50% Tabular · 30% GNN · 20% Anomaly</span>
-                    </div>
-                    <div class="space-y-2 text-xs">
-                        <div>
-                            <div class="flex justify-between font-semibold mb-1">
-                                <span class="text-slate-400">Tabular ML (XGBoost)</span>
-                                <span id="tabular-percent" class="font-mono text-white">0%</span>
-                            </div>
-                            <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
-                                <div id="tabular-bar" class="h-full rounded-full bg-indigo-500" style="width:0%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between font-semibold mb-1">
-                                <span class="text-slate-400">GraphSAGE GNN Network</span>
-                                <span id="gnn-percent" class="font-mono text-white">0%</span>
-                            </div>
-                            <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
-                                <div id="gnn-bar" class="h-full rounded-full bg-purple-500" style="width:0%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between font-semibold mb-1">
-                                <span class="text-slate-400">Autoencoder Anomaly</span>
-                                <span id="anomaly-percent" class="font-mono text-white">0%</span>
-                            </div>
-                            <div class="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden">
-                                <div id="anomaly-bar" class="h-full rounded-full bg-pink-500" style="width:0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-            </div>
+            <!-- Footer Strip -->
+            <footer class="border-t border-ivory-300/60 dark:border-onyx-700/60 px-6 py-3.5 bg-white/70 dark:bg-onyx-900/80 backdrop-blur-sm text-center text-xs text-ivory-500">
+                <p>AI-Based Risk Prediction in Decentralized Finance · Multi-Chain Web3 Security & Forensic Anomaly Detection</p>
+            </footer>
 
         </div>
 
-        <!-- ── FULL-WIDTH ROW: RECENT ON-CHAIN TRANSACTIONS TABLE ── -->
-        <section class="card-panel p-5 md:p-6 space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-wrap gap-2">
-                <div class="flex items-center gap-2">
-                    <span class="text-base">💸</span>
-                    <h2 class="text-sm font-bold text-white">Recent Recorded On-Chain Transfers</h2>
-                </div>
-                <span id="tx-chain-badge" class="tag-pill bg-slate-800 text-slate-300 border border-slate-700 text-xs">ETHEREUM</span>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead>
-                        <tr class="border-b border-slate-800 text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-                            <th class="pb-2.5 pr-4">Tx Hash</th>
-                            <th class="pb-2.5 pr-4">Direction</th>
-                            <th class="pb-2.5 pr-4">Counterparty</th>
-                            <th class="pb-2.5 pr-4">Token</th>
-                            <th class="pb-2.5 pr-4">Amount</th>
-                            <th class="pb-2.5 pr-4">Status</th>
-                            <th class="pb-2.5">Time</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactions-table-body">
-                        <tr><td colspan="7" class="py-6 text-center text-slate-500">No transactions loaded.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Page 2 Bottom Action Bar -->
-        <div class="card-panel p-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900 border-slate-800">
-            <button id="bottom-back-to-scan-btn" type="button" class="w-full sm:w-auto flex items-center justify-center gap-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-500 active:scale-95 px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer">
-                <span>←</span>
-                <span>Scan Another Wallet</span>
-            </button>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-                <button id="bottom-export-report-btn" type="button" class="w-full sm:w-auto flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-200 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2.5 rounded-xl transition-colors cursor-pointer">
-                    <span>📄</span>
-                    <span>Export Audit Report</span>
-                </button>
-            </div>
-        </div>
-
-    </main>
+    </div>
 
     <!-- ═══════════════════════════════════════════ HIDDEN COMPATIBILITY CANVAS ELEMENTS ══════════════════════ -->
     <div class="hidden">
@@ -652,30 +1049,30 @@
     </div>
 
     <!-- ═══════════════════════════════════════════ LOADING MODAL ══════════════════════ -->
-    <div id="analysis-loading-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="card-panel p-6 max-w-sm w-full space-y-5 text-center shadow-2xl border-slate-700">
+    <div id="analysis-loading-modal" class="fixed inset-0 bg-onyx-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="card-panel p-6 max-w-sm w-full space-y-5 text-center shadow-xl border-ivory-200 dark:border-onyx-700 bg-white dark:bg-onyx-850">
             <div class="relative w-14 h-14 mx-auto flex items-center justify-center">
-                <div class="absolute inset-0 rounded-full border-3 border-indigo-500/20 border-t-indigo-500 animate-spin"></div>
+                <div class="absolute inset-0 rounded-full border-3 border-gold-500/20 border-t-gold-500 animate-spin"></div>
                 <span class="text-2xl">🛡️</span>
             </div>
             <div>
-                <h3 class="text-base font-bold text-white">Analyzing Wallet Intelligence</h3>
-                <p id="loading-target-addr" class="text-xs font-mono text-indigo-400 mt-1 break-all">0x...</p>
+                <h3 class="text-base font-bold text-ivory-900 dark:text-ivory-50 font-heading">Analyzing Wallet Intelligence</h3>
+                <p id="loading-target-addr" class="text-xs font-mono text-gold-600 dark:text-gold-400 mt-1 break-all">0x...</p>
             </div>
-            <div class="space-y-2 text-left text-xs bg-slate-950 p-3.5 rounded-xl border border-slate-800">
-                <div id="step-1" class="flex items-center gap-2 text-slate-400">
+            <div class="space-y-2 text-left text-xs bg-ivory-100 dark:bg-onyx-900 p-3.5 rounded-xl border border-ivory-300 dark:border-onyx-750">
+                <div id="step-1" class="flex items-center gap-2 text-ivory-500">
                     <span>⟳</span><span>Validating address checksum...</span>
                 </div>
-                <div id="step-2" class="flex items-center gap-2 text-slate-400">
+                <div id="step-2" class="flex items-center gap-2 text-ivory-500">
                     <span>⟳</span><span>Identifying network...</span>
                 </div>
-                <div id="step-3" class="flex items-center gap-2 text-slate-400">
+                <div id="step-3" class="flex items-center gap-2 text-ivory-500">
                     <span>⟳</span><span>Fetching on-chain RPC telemetry...</span>
                 </div>
-                <div id="step-4" class="flex items-center gap-2 text-slate-400">
+                <div id="step-4" class="flex items-center gap-2 text-ivory-500">
                     <span>⟳</span><span>Running multi-model risk engine...</span>
                 </div>
-                <div id="step-5" class="flex items-center gap-2 text-slate-400">
+                <div id="step-5" class="flex items-center gap-2 text-ivory-500">
                     <span>⟳</span><span>Generating AI explanations...</span>
                 </div>
             </div>
@@ -683,95 +1080,96 @@
     </div>
 
     <!-- ═══════════════════════════════════════════ EXECUTIVE RISK REPORT MODAL ══════════════════════ -->
-    <div id="executive-report-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="card-panel max-w-3xl w-full max-h-[92vh] overflow-y-auto p-6 md:p-8 space-y-6 shadow-2xl border-slate-700 relative bg-slate-900">
+    <div id="executive-report-modal" class="fixed inset-0 bg-onyx-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="card-panel max-w-3xl w-full max-h-[92vh] overflow-y-auto p-6 md:p-8 space-y-6 shadow-2xl border-ivory-300 dark:border-onyx-700 relative bg-white dark:bg-onyx-850">
             
             <!-- Header -->
-            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div class="flex items-center justify-between pb-4 border-b border-ivory-200 dark:border-onyx-700">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-lg shadow-md shadow-indigo-600/30">📄</div>
+                    <div class="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-600 dark:text-gold-400 text-lg shadow-xs font-bold">📄</div>
                     <div>
-                        <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+                        <div class="text-[10px] uppercase font-bold text-gold-600 dark:text-gold-400 tracking-wider">AI-Based Risk Prediction in Decentralized Finance</div>
+                        <h2 class="text-base font-extrabold text-ivory-900 dark:text-ivory-50 flex items-center gap-2 font-heading">
                             <span>Executive Wallet Risk Report</span>
-                            <span id="rep-chain-pill" class="tag-pill bg-indigo-950 text-indigo-300 border border-indigo-700">ETHEREUM</span>
+                            <span id="rep-chain-pill" class="tag-pill bg-gold-500/10 text-gold-800 dark:text-gold-300 border border-gold-500/30 font-mono text-[10px]">ETHEREUM</span>
                         </h2>
-                        <p class="text-xs text-slate-400">Generated on <span id="rep-timestamp" class="text-slate-300 font-mono">—</span></p>
+                        <p class="text-xs text-ivory-500">Generated on <span id="rep-timestamp" class="text-ivory-700 dark:text-ivory-300 font-mono">—</span></p>
                     </div>
                 </div>
-                <button id="close-report-btn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-sm transition-colors cursor-pointer" title="Close">✕</button>
+                <button id="close-report-btn" class="w-8 h-8 rounded-lg bg-ivory-100 dark:bg-onyx-800 hover:bg-ivory-200 dark:hover:bg-onyx-750 text-ivory-500 hover:text-ivory-900 dark:hover:text-ivory-100 flex items-center justify-center text-sm transition-colors cursor-pointer" title="Close">✕</button>
             </div>
 
             <!-- Verdict Banner -->
-            <div id="rep-verdict-card" class="p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-950">
+            <div id="rep-verdict-card" class="p-4 rounded-xl border flex flex-col md:flex-row md:items-center justify-between gap-4 bg-ivory-100 dark:bg-onyx-800 border-ivory-300 dark:border-onyx-700">
                 <div class="space-y-1">
                     <div class="flex items-center gap-2">
                         <span id="rep-verdict-icon" class="text-xl">🛡️</span>
-                        <span id="rep-verdict-level" class="text-lg font-extrabold text-emerald-300">SAFE & VERIFIED</span>
+                        <span id="rep-verdict-level" class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 font-heading">SAFE & VERIFIED</span>
                     </div>
-                    <p id="rep-verdict-summary" class="text-xs text-slate-300 leading-relaxed max-w-xl">
+                    <p id="rep-verdict-summary" class="text-xs text-ivory-600 dark:text-ivory-400 leading-relaxed max-w-xl">
                         Organic user activity profile with steady on-chain history and clean separation from blacklisted entities.
                     </p>
                 </div>
-                <div class="text-right flex-shrink-0 bg-slate-900 px-4 py-2.5 rounded-xl border border-slate-800">
-                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Risk Score</span>
+                <div class="text-right flex-shrink-0 bg-white dark:bg-onyx-850 px-4 py-2.5 rounded-xl border border-ivory-300/80 dark:border-onyx-700 shadow-xs">
+                    <span class="text-[10px] uppercase font-bold text-ivory-500 tracking-wider block">Risk Score</span>
                     <div class="flex items-baseline justify-end gap-1">
-                        <span id="rep-score-num" class="text-2xl font-black text-white">0</span>
-                        <span class="text-xs font-bold text-slate-500">/ 100</span>
+                        <span id="rep-score-num" class="text-2xl font-black text-ivory-900 dark:text-ivory-50 font-display">0</span>
+                        <span class="text-xs font-bold text-ivory-500">/ 100</span>
                     </div>
                 </div>
             </div>
 
             <!-- Profile Snapshot -->
             <div class="space-y-2">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">1. Target Wallet Profile</h3>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-ivory-500">1. Target Wallet Profile</h3>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block mb-0.5">Account Age</span>
-                        <span id="rep-age" class="font-bold text-white text-sm">— days</span>
+                    <div class="p-3 bg-ivory-100 dark:bg-onyx-800 rounded-xl border border-ivory-300 dark:border-onyx-700">
+                        <span class="text-ivory-500 block mb-0.5">Account Age</span>
+                        <span id="rep-age" class="font-bold text-ivory-900 dark:text-ivory-100 text-sm font-mono">— days</span>
                     </div>
-                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block mb-0.5">Total Operations</span>
-                        <span id="rep-tx-count" class="font-bold text-white text-sm">—</span>
+                    <div class="p-3 bg-ivory-100 dark:bg-onyx-800 rounded-xl border border-ivory-300 dark:border-onyx-700">
+                        <span class="text-ivory-500 block mb-0.5">Operations</span>
+                        <span id="rep-tx-count" class="font-bold text-ivory-900 dark:text-ivory-100 text-sm font-mono">—</span>
                     </div>
-                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block mb-0.5">Failed Calls</span>
-                        <span id="rep-failed-tx" class="font-bold text-white text-sm">0</span>
+                    <div class="p-3 bg-ivory-100 dark:bg-onyx-800 rounded-xl border border-ivory-300 dark:border-onyx-700">
+                        <span class="text-ivory-500 block mb-0.5">Failed Calls</span>
+                        <span id="rep-failed-tx" class="font-bold text-ivory-900 dark:text-ivory-100 text-sm font-mono">0</span>
                     </div>
-                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
-                        <span class="text-slate-500 block mb-0.5">Estimated Balance</span>
-                        <span id="rep-balance" class="font-bold text-emerald-400 text-sm">—</span>
+                    <div class="p-3 bg-ivory-100 dark:bg-onyx-800 rounded-xl border border-ivory-300 dark:border-onyx-700">
+                        <span class="text-ivory-500 block mb-0.5">Estimated Balance</span>
+                        <span id="rep-balance" class="font-bold text-gold-600 dark:text-gold-400 text-sm font-mono">—</span>
                     </div>
                 </div>
-                <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs flex items-center justify-between">
-                    <span class="text-slate-400">Full Address:</span>
-                    <span id="rep-full-address" class="font-mono text-slate-200 font-bold truncate max-w-md">—</span>
+                <div class="p-2.5 rounded-xl bg-ivory-100 dark:bg-onyx-800 border border-ivory-300 dark:border-onyx-700 text-xs flex items-center justify-between">
+                    <span class="text-ivory-500">Full Address:</span>
+                    <span id="rep-full-address" class="font-mono text-ivory-800 dark:text-ivory-200 font-bold truncate max-w-md">—</span>
                 </div>
             </div>
 
             <!-- Pointwise Drivers -->
             <div class="space-y-2">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">2. Key Risk Drivers (Pointwise Analysis)</h3>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-ivory-500">2. Key Risk Drivers (Pointwise Analysis)</h3>
                 <div id="rep-drivers-container" class="space-y-2.5">
                     <!-- Dynamic drivers -->
                 </div>
             </div>
 
             <!-- Guidance -->
-            <div class="p-3.5 rounded-xl bg-indigo-950/60 border border-indigo-800 text-xs space-y-1">
-                <span class="font-bold text-indigo-300 block">3. Actionable Security Guidance</span>
-                <p id="rep-action-text" class="text-indigo-100 leading-relaxed">
+            <div class="p-3.5 rounded-xl bg-gold-500/10 border border-gold-500/25 text-xs space-y-1">
+                <span class="font-bold text-gold-900 dark:text-gold-300 block font-heading">3. Actionable Security Guidance</span>
+                <p id="rep-action-text" class="text-ivory-800 dark:text-ivory-200 leading-relaxed">
                     Safe to proceed with standard interactions.
                 </p>
             </div>
 
             <!-- Modal Action Buttons -->
-            <div id="report-action-buttons" class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <span class="text-xs text-slate-500">Official Forensics Audit · AI-DeFi Risk Intelligence</span>
+            <div id="report-action-buttons" class="pt-4 border-t border-ivory-200 dark:border-onyx-700 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <span class="text-xs text-ivory-500">Official Forensics Audit · AI-Based Risk Prediction in Decentralized Finance</span>
                 <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <button id="copy-summary-report-btn" type="button" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-4 py-2 rounded-xl border border-slate-700 transition-colors cursor-pointer">
+                    <button id="copy-summary-report-btn" type="button" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 bg-white dark:bg-onyx-800 hover:bg-ivory-100 dark:hover:bg-onyx-750 text-ivory-800 dark:text-ivory-200 font-bold text-xs px-4 py-2 rounded-xl border border-ivory-300 dark:border-onyx-700 transition-colors cursor-pointer shadow-xs">
                         <span>📋</span><span>Copy Summary</span>
                     </button>
-                    <button id="print-clean-report-btn" type="button" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs px-4 py-2 rounded-xl transition-colors cursor-pointer">
+                    <button id="print-clean-report-btn" type="button" class="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 text-onyx-950 font-bold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shadow-xs font-heading">
                         <span>🖨️</span><span>Print / Save PDF</span>
                     </button>
                 </div>
@@ -781,41 +1179,41 @@
     </div>
 
     <!-- ═══════════════════════════════════════════ ACTIVE API INTEGRATIONS MODAL ══════════════════════ -->
-    <div id="api-hub-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="card-panel max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl border-slate-700 relative bg-slate-900">
+    <div id="api-hub-modal" class="fixed inset-0 bg-onyx-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="card-panel max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 shadow-2xl border-ivory-300 dark:border-onyx-700 relative bg-white dark:bg-onyx-850">
             
-            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div class="flex items-center justify-between pb-3 border-b border-ivory-200 dark:border-onyx-700">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white text-base">🔌</div>
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-base font-bold border border-emerald-500/30">🔌</div>
                     <div>
-                        <h2 class="text-base font-extrabold text-white">Active Verified On-Chain APIs</h2>
-                        <p class="text-xs text-slate-400">Live RPC gateways powering real-time risk calculations</p>
+                        <h2 class="text-base font-extrabold text-ivory-900 dark:text-ivory-50 font-heading">Active Verified On-Chain APIs</h2>
+                        <p class="text-xs text-ivory-500">Live RPC gateways powering real-time risk calculations</p>
                     </div>
                 </div>
-                <button id="close-api-hub-btn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-sm transition-colors cursor-pointer">✕</button>
+                <button id="close-api-hub-btn" class="w-8 h-8 rounded-lg bg-ivory-100 dark:bg-onyx-800 hover:bg-ivory-200 dark:hover:bg-onyx-750 text-ivory-500 hover:text-ivory-900 dark:hover:text-ivory-100 flex items-center justify-center text-sm transition-colors cursor-pointer font-bold">✕</button>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                <div class="p-4 rounded-xl bg-ivory-100 dark:bg-onyx-800 border border-ivory-300 dark:border-onyx-700 space-y-1.5">
                     <div class="flex items-center justify-between">
-                        <span class="font-bold text-white flex items-center gap-1.5"><span>🔷</span> Ethereum Mainnet</span>
-                        <span class="tag-pill bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">Active</span>
+                        <span class="font-bold text-ivory-900 dark:text-ivory-100 flex items-center gap-1.5"><span>🔷</span> Ethereum Mainnet</span>
+                        <span class="tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px]">Active</span>
                     </div>
-                    <p class="text-slate-400 text-[11px]">Etherscan V2 Multi-Chain API & Public RPC nodes synced.</p>
+                    <p class="text-ivory-500 text-[11px]">Etherscan V2 Multi-Chain API & Public RPC nodes synced.</p>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5">
+                <div class="p-4 rounded-xl bg-ivory-100 dark:bg-onyx-800 border border-ivory-300 dark:border-onyx-700 space-y-1.5">
                     <div class="flex items-center justify-between">
-                        <span class="font-bold text-white flex items-center gap-1.5"><span>🟢</span> TRON Network</span>
-                        <span class="tag-pill bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">TronGrid Pro</span>
+                        <span class="font-bold text-ivory-900 dark:text-ivory-100 flex items-center gap-1.5"><span>🟢</span> TRON Network</span>
+                        <span class="tag-pill bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 text-[10px]">TronGrid Pro</span>
                     </div>
-                    <p class="text-slate-400 text-[11px]">Authenticated API: TRC-20 token transfers & TRX telemetry.</p>
+                    <p class="text-ivory-500 text-[11px]">Authenticated API: TRC-20 token transfers & TRX telemetry.</p>
                 </div>
             </div>
 
-            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+            <div class="p-4 rounded-xl bg-ivory-100 dark:bg-onyx-800 border border-ivory-300 dark:border-onyx-700 space-y-3">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold text-white">Live API Gateway Latency Tester</span>
-                    <button id="ping-apis-btn" class="text-xs bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer">
+                    <span class="text-xs font-bold text-ivory-900 dark:text-ivory-100">Live API Gateway Latency Tester</span>
+                    <button id="ping-apis-btn" class="text-xs bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer shadow-xs">
                         <span id="ping-icon">⚡</span>
                         <span id="ping-text">Run Latency Test</span>
                     </button>
@@ -827,11 +1225,6 @@
 
         </div>
     </div>
-
-    <!-- ═══════════════════════════════════════════ FOOTER ══════════════════════ -->
-    <footer class="text-center text-xs text-slate-500 py-4 border-t border-slate-800/80">
-        <p>AI-DeFi Risk Intelligence Platform · Multi-Chain Web3 Security & Forensic Anomaly Detection</p>
-    </footer>
 
     <script src="app.js"></script>
 </body>

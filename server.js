@@ -237,7 +237,9 @@ async function fetchLiveOnChainData(address, chain) {
         const acc = accRes.data[0];
         result.balance = (acc.balance || 0) / 1e6; // Sun to TRX
         result.isLive = true;
-        result.addressFound = true;
+        if (result.balance > 0 || acc.create_time || (Array.isArray(acc.trc20) && acc.trc20.length > 0)) {
+          result.addressFound = true;
+        }
         if (acc.account_name || acc.type === "Contract") {
           result.isContract = acc.type === "Contract";
         }
@@ -392,7 +394,9 @@ async function fetchLiveOnChainData(address, chain) {
       if (balRes && balRes.status === "1" && typeof balRes.result === "string" && !isNaN(Number(balRes.result))) {
         result.balance = Number(BigInt(balRes.result)) / 1e18;
         result.isLive = true;
-        result.addressFound = true;
+        if (result.balance > 0) {
+          result.addressFound = true;
+        }
       }
 
       const etherscanTransfers = [];
@@ -662,7 +666,9 @@ async function fetchLiveOnChainData(address, chain) {
       if (ethpRes.ok) {
         const ethp = await ethpRes.json();
         if (ethp && ethp.ETH) {
-          result.addressFound = true;
+          if (ethp.ETH.balance > 0 || (ethp.countTxs != null && ethp.countTxs > 0) || (Array.isArray(ethp.tokens) && ethp.tokens.length > 0)) {
+            result.addressFound = true;
+          }
           if (result.balance === null) result.balance = ethp.ETH.balance;
           if (ethp.countTxs != null) {
             result.totalTransactions = Math.max(result.totalTransactions || 0, ethp.countTxs);
@@ -1376,13 +1382,17 @@ async function handleWalletCheck(req, res) {
 
   if (!address || !isValidAddress(address)) {
     return res.status(400).json({
-      detail: `Invalid wallet address: '${address}'. Must be valid EVM (0x...) or TRON (T...) address.`
+      status: "error",
+      error: "invalid_address",
+      detail: `Invalid wallet address: '${address || ""}'. Must be a valid 42-character EVM address (0x...) or 34-character TRON address (T...).`
     });
   }
 
   if (!SUPPORTED_CHAINS.includes(chain)) {
     return res.status(400).json({
-      detail: `Unsupported chain '${chain}'. Supported: ${SUPPORTED_CHAINS.join(", ")}`
+      status: "error",
+      error: "unsupported_chain",
+      detail: `Unsupported chain '${chain}'. Supported networks: ${SUPPORTED_CHAINS.join(", ")}`
     });
   }
 
@@ -1397,6 +1407,26 @@ async function handleWalletCheck(req, res) {
   try {
     // 1. Live on-chain RPC lookup
     const liveData = await fetchLiveOnChainData(address, chain);
+
+    const lowerAddr = address.trim().toLowerCase();
+    const isSanctioned = Boolean(OFAC_AND_EXPLOIT_REGISTRY[lowerAddr]);
+    const isVerifiedSafe = Boolean(VERIFIED_SAFE_REGISTRY[lowerAddr]);
+    const isKnownGenesis = Boolean(KNOWN_WALLET_GENESIS[lowerAddr]);
+
+    const hasOnChainActivity = liveData.addressFound ||
+      (liveData.totalTransactions != null && liveData.totalTransactions > 0) ||
+      (liveData.balance != null && liveData.balance > 0) ||
+      (Array.isArray(liveData.transfers) && liveData.transfers.length > 0) ||
+      liveData.isContract === true;
+
+    // Check if the address exists on the target blockchain
+    if (!hasOnChainActivity && !isSanctioned && !isVerifiedSafe && !isKnownGenesis) {
+      return res.status(404).json({
+        status: "error",
+        error: "address_not_found",
+        detail: `Address does not exist: No on-chain transaction history, contract code, or balance found for '${address}' on ${chain.toUpperCase()}.`
+      });
+    }
 
     // 2. Evaluate with ML fusion models trained on official datasets
     const result = evaluateWalletIntelligence(address, chain, liveData);
@@ -1745,7 +1775,7 @@ process.on("unhandledRejection", (reason) => {
 
 // Start server
 const server = app.listen(PORT, "0.0.0.0", () => {
-  console.log(`AI-DeFi Risk Intelligence Platform running on http://0.0.0.0:${PORT}`);
+  console.log(`AI-Based Risk Prediction in Decentralized Finance running on http://0.0.0.0:${PORT}`);
 });
 
 server.on("error", (err) => {
