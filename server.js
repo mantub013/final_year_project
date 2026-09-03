@@ -5,7 +5,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1632,15 +1632,19 @@ INSTRUCTIONS:
 5. Keep it concise, high-contrast, and easy to read.`;
 
       const aiPromise = genAI.models.generateContent({
-        model: "gemini-2.5-flash",
+        model: "gemini-3.7-flash",
         contents: prompt,
+        config: {
+          thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+          temperature: 0.2
+        }
       });
-      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("AI timeout")), 5000));
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("AI timeout")), 15000));
       const response = await Promise.race([aiPromise, timeoutPromise]);
 
       if (response && response.text) {
         return {
-          source: "gemini-2.5-flash",
+          source: "gemini-3.7-flash",
           answer: response.text.trim(),
           timestamp: Date.now()
         };
